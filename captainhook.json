@@ -59,6 +59,9 @@
                         "args": ["php"]
                     }
                 ]
+            },
+            {
+                "action": "composer run dev:grpc:generate"
             }
         ]
     },

@@ -12,6 +12,7 @@
     ],
     "require": {
         "php": "^7.4 || ^8",
+        "grpc/grpc": "^1.42",
         "open-feature/sdk": "^0.0.2",
         "psr/log": "^1.1"
     },
@@ -75,6 +76,16 @@
         "dev:analyze:phpstan": "phpstan analyse --ansi --debug --memory-limit=512M",
         "dev:analyze:psalm": "psalm",
         "dev:build:clean": "git clean -fX build/",
+        "dev:grpc": [
+            "@dev:grpc:init",
+            "@dev:grpc:setup",
+            "@dev:grpc:generate",
+            "@dev:grpc:stage"
+        ],
+        "dev:grpc:generate": "pushd schemas && make gen-php && popd",
+        "dev:grpc:init": "git submodule update --recursive",
+        "dev:grpc:setup": "export GOPATH=\"$(pwd)/schema/vendor",
+        "dev:grpc:stage": "git add --force ./proto",
         "dev:lint": [
             "@dev:lint:syntax",
             "@dev:lint:style"
