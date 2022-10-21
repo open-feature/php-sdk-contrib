@@ -84,7 +84,7 @@
         ],
         "dev:grpc:generate": "pushd schemas && make gen-php && popd",
         "dev:grpc:init": "git submodule update --recursive",
-        "dev:grpc:setup": "export GOPATH=\"$(pwd)/schema/vendor",
+        "dev:grpc:setup": "export GOPATH=\"$(pwd)/schema/vendor\"",
         "dev:grpc:stage": "git add --force ./proto",
         "dev:lint": [
             "@dev:lint:syntax",
