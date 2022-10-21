@@ -7,11 +7,13 @@ namespace OpenFeature\Providers\Flagd;
 use OpenFeature\Providers\Flagd\config\IConfig;
 use OpenFeature\Providers\Flagd\config\Validator;
 use OpenFeature\implementation\common\Metadata;
-use OpenFeature\implementation\provider\ResolutionDetailsFactory;
 use OpenFeature\interfaces\flags\EvaluationContext;
+use OpenFeature\interfaces\flags\FlagValueType;
 use OpenFeature\interfaces\hooks\Hook;
 use OpenFeature\interfaces\provider\Provider;
 use OpenFeature\interfaces\provider\ResolutionDetails;
+use OpenFeature\Providers\Flagd\service\ServiceFactory;
+use OpenFeature\Providers\Flagd\service\ServiceInterface;
 use Psr\Log\LoggerAwareTrait;
 
 class FlagdProvider implements Provider
@@ -23,12 +25,16 @@ class FlagdProvider implements Provider
 
     private IConfig $config;
 
+    private ServiceInterface $service;
+
     /**
      * @param mixed|IConfig|mixed[] $config
      */
     public function __construct($config = null)
     {
         $this->config = Validator::validate($config);
+
+        $this->service = ServiceFactory::fromConfig($config);
     }
 
     /**
@@ -56,26 +62,22 @@ class FlagdProvider implements Provider
 
     public function resolveBooleanValue(string $flagKey, bool $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
     {
-        // TODO: Implement
-        return ResolutionDetailsFactory::fromSuccess($defaultValue);
+        return $this->service->resolvevalue($flagKey, FlagValueType::BOOLEAN, $defaultValue, $context);
     }
 
     public function resolveStringValue(string $flagKey, string $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
     {
-        // TODO: Implement
-        return ResolutionDetailsFactory::fromSuccess($defaultValue);
+        return $this->service->resolvevalue($flagKey, FlagValueType::STRING, $defaultValue, $context);
     }
 
     public function resolveIntegerValue(string $flagKey, int $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
     {
-        // TODO: Implement
-        return ResolutionDetailsFactory::fromSuccess($defaultValue);
+        return $this->service->resolvevalue($flagKey, FlagValueType::INTEGER, $defaultValue, $context);
     }
 
     public function resolveFloatValue(string $flagKey, float $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
     {
-        // TODO: Implement
-        return ResolutionDetailsFactory::fromSuccess($defaultValue);
+        return $this->service->resolvevalue($flagKey, FlagValueType::FLOAT, $defaultValue, $context);
     }
 
     /**
@@ -83,7 +85,6 @@ class FlagdProvider implements Provider
      */
     public function resolveObjectValue(string $flagKey, $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
     {
-        // TODO: Implement
-        return ResolutionDetailsFactory::fromSuccess($defaultValue);
+        return $this->service->resolvevalue($flagKey, FlagValueType::OBJECT, $defaultValue, $context);
     }
 }

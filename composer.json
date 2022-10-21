@@ -12,6 +12,7 @@
     ],
     "require": {
         "php": "^7.4 || ^8",
+        "google/protobuf": "^3.17",
         "grpc/grpc": "^1.42",
         "open-feature/sdk": "^0.0.2",
         "psr/log": "^1.1"
@@ -42,7 +43,8 @@
     "prefer-stable": true,
     "autoload": {
         "psr-4": {
-            "OpenFeature\\Providers\\Flagd\\": "src/"
+            "OpenFeature\\Providers\\Flagd\\": "src/",
+            "": "proto/php/"
         }
     },
     "autoload-dev": {
