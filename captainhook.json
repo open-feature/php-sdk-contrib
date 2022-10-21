@@ -61,7 +61,7 @@
                 ]
             },
             {
-                "action": "composer run dev:grpc:generate"
+                "action": "composer run dev:grpc"
             }
         ]
     },
