@@ -12,15 +12,9 @@
     ],
     "require": {
         "php": "^7.4 || ^8",
-        "0xc/openfeature": "dev-main",
+        "open-feature/sdk": "^0.0.2",
         "psr/log": "^1.1"
     },
-    "repositories":  [
-        {
-          "type": "vcs",
-          "url": "https://github.com/tcarrio/openfeature-php-sdk"
-        }
-    ],
     "require-dev": {
         "captainhook/captainhook": "^5.10",
         "captainhook/plugin-composer": "^5.3",

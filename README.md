@@ -5,7 +5,7 @@
 
 ## Disclaimer
 
-_I'm throwing this project together as a potential demo-phase of OpenFeature for PHP, with future work surrounding a Split PHP provider (probably utilizing their existing package). It is not complete and is very much work in progress._
+_I'm throwing this project together as a potential demo-phase of OpenFeature for PHP, with future work surrounding a Split PHP provider (wrapping their existing package). It is not complete and is very much work in progress._
 
 ## Overview
 
