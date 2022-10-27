@@ -17,6 +17,7 @@ class ServiceFactory
                 return GrpcService::fromConfig($config);
 
             case "http":
+            default:
                 return HttpService::fromConfig($config);
         }
     }

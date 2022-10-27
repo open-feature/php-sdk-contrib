@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace OpenFeature\Providers\Flagd\grpc;
 
-use OpenFeature\implementation\provider\ResolutionDetailsBuilder;
-use OpenFeature\implementation\provider\ResolutionError;
 use OpenFeature\interfaces\flags\FlagValueType;
-use OpenFeature\interfaces\provider\ErrorCode;
-use OpenFeature\interfaces\provider\ResolutionDetails;
 use Schema\V1\ResolveBooleanResponse;
 use Schema\V1\ResolveFloatResponse;
 use Schema\V1\ResolveIntResponse;

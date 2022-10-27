@@ -6,22 +6,17 @@ namespace OpenFeature\Providers\Flagd\config;
 
 class Config implements IConfig
 {
-    private string $service;
     private string $host;
     private int $port;
     private string $protocol;
+    private bool $secure;
 
-    public function __construct(?string $service = null, ?string $host = null, ?int $port = null, ?string $protocol = null)
+    public function __construct(?string $host = null, ?int $port = null, ?string $protocol = null, ?bool $secure = null)
     {
-        $this->service = $service ?? Defaults::DEFAULT_SERVICE;
         $this->host = $host ?? Defaults::DEFAULT_HOST;
         $this->port = $port ?? Defaults::DEFAULT_PORT;
         $this->protocol = $protocol ?? Defaults::DEFAULT_PROTOCOL;
-    }
-
-    public function getService(): string
-    {
-        return $this->service;
+        $this->secure = $secure ?? Defaults::DEFAULT_SECURE;
     }
 
     public function getHost(): string
@@ -37,5 +32,10 @@ class Config implements IConfig
     public function getProtocol(): string
     {
         return $this->protocol;
+    }
+
+    public function isSecure(): bool
+    {
+        return $this->secure;
     }
 }

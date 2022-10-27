@@ -12,8 +12,6 @@
     ],
     "require": {
         "php": "^7.4 || ^8",
-        "google/protobuf": "^3.17",
-        "grpc/grpc": "^1.42",
         "open-feature/sdk": "^0.0.2",
         "psr/log": "^1.1"
     },
@@ -21,6 +19,8 @@
         "captainhook/captainhook": "^5.10",
         "captainhook/plugin-composer": "^5.3",
         "ergebnis/composer-normalize": "^2.25",
+        "google/protobuf": "^3.17",
+        "grpc/grpc": "^1.42",
         "hamcrest/hamcrest-php": "^2.0",
         "mdwheele/zalgo": "^0.3.1",
         "mockery/mockery": "^1.5",
@@ -32,6 +32,9 @@
         "phpstan/phpstan-phpunit": "^1.1",
         "psalm/plugin-mockery": "^0.9.1",
         "psalm/plugin-phpunit": "^0.17.0",
+        "psr/http-client": "^1.0",
+        "psr/http-factory": "^1.0",
+        "psr/http-message": "^1.0",
         "ramsey/coding-standard": "^2.0.3",
         "ramsey/composer-repl": "^1.4",
         "ramsey/conventional-commits": "^1.3",
