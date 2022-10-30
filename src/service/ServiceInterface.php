@@ -9,5 +9,8 @@ use OpenFeature\interfaces\provider\ResolutionDetails;
 
 interface ServiceInterface
 {
-    public function resolveValue(string $flagKey, string $flagType, mixed $defaultValue, ?EvaluationContext $context): ResolutionDetails;
+    /**
+     * @param mixed $defaultValue
+     */
+    public function resolveValue(string $flagKey, string $flagType, $defaultValue, ?EvaluationContext $context): ResolutionDetails;
 }

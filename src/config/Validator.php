@@ -112,7 +112,10 @@ class Validator
         return Defaults::DEFAULT_PROTOCOL;
     }
 
-    private static function validateHttpConfig(mixed $httpConfig): ?IHttpConfig
+    /**
+     * @param mixed $httpConfig
+     */
+    private static function validateHttpConfig($httpConfig): ?IHttpConfig
     {
         if (is_null($httpConfig)) {
             return null;

@@ -44,7 +44,10 @@ class ResponseValidator
         return $expectedType !== $actualType;
     }
 
-    private static function determineType(mixed $value): string
+    /**
+     * @param mixed $value
+     */
+    private static function determineType($value): string
     {
         if (is_bool($value)) {
             return FlagValueType::BOOLEAN;

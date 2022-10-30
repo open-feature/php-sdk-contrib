@@ -50,7 +50,10 @@ class HttpService implements ServiceInterface
         $this->requestFactory = $requestFactory;
     }
 
-    public function resolveValue(string $flagKey, string $flagType, mixed $defaultValue, ?EvaluationContext $context): ResolutionDetails
+    /**
+     * @param mixed $defaultValue
+     */
+    public function resolveValue(string $flagKey, string $flagType, $defaultValue, ?EvaluationContext $context): ResolutionDetails
     {
         $path = $this->determinePathByFlagType($flagType);
 

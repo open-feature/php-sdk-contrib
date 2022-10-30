@@ -43,7 +43,10 @@ class GrpcService implements ServiceInterface
         ]);
     }
 
-    public function resolveValue(string $flagKey, string $flagType, mixed $defaultValue, ?EvaluationContext $context): ResolutionDetails
+    /**
+     * @param mixed $defaultValue
+     */
+    public function resolveValue(string $flagKey, string $flagType, $defaultValue, ?EvaluationContext $context): ResolutionDetails
     {
         $methodName = $this->getMethodName($flagType);
         $request = $this->getRequestInstance($flagType);
@@ -104,12 +107,18 @@ class GrpcService implements ServiceInterface
         throw new ResolutionError(ErrorCode::GENERAL(), 'Attempted to use invalid flag value type: ' . $flagType);
     }
 
-    private function isSuccessStatus(mixed $status): bool
+    /**
+     * @param mixed $status
+     */
+    private function isSuccessStatus($status): bool
     {
         return $status === Grpc\STATUS_OK;
     }
 
-    private function throwForStatus(mixed $status): void
+    /**
+     * @param mixed $status
+     */
+    private function throwForStatus($status): void
     {
         switch ($status) {
             default:
