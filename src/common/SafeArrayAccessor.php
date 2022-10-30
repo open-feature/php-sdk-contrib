@@ -6,25 +6,35 @@ namespace OpenFeature\Providers\Flagd\common;
 
 class SafeArrayAccessor
 {
-  private array $arr;
+    /** @var mixed[] $arr */
+    private array $arr;
 
-  public function __construct(array $arr)
-  {
-    $this->arr = $arr;
-  }
+    /**
+     * @param mixed[] $arr
+     */
+    public function __construct(array $arr)
+    {
+        $this->arr = $arr;
+    }
 
-  public static function with(array $arr): SafeArrayAccessor
-  {
-    return new static($arr);
-  }
+    /**
+     * @param mixed[] $arr
+     */
+    public static function with(array $arr): SafeArrayAccessor
+    {
+        return new SafeArrayAccessor($arr);
+    }
 
-  public static function getKeyFromArray(array $arr, string $key): mixed
-  {
-    return isset($arr[$key]) ? $arr[$key] : null;
-  }
+    /**
+     * @param mixed[] $arr
+     */
+    public static function getKeyFromArray(array $arr, string $key): mixed
+    {
+        return $arr[$key] ?? null;
+    }
 
-  public function get(string $key): mixed
-  {
-    return self::getKeyFromArray($this->arr, $key);
-  }
+    public function get(string $key): mixed
+    {
+        return self::getKeyFromArray($this->arr, $key);
+    }
 }

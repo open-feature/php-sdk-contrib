@@ -9,6 +9,9 @@ use OpenFeature\interfaces\provider\ResolutionDetails;
 
 class ResponseResolutionDetailsAdapter
 {
+    /**
+     * @param mixed[] $response
+     */
     public static function fromResponse(array $response): ResolutionDetails
     {
         return (new ResolutionDetailsBuilder())

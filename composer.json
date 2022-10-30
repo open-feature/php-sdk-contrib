@@ -18,7 +18,7 @@
     ],
     "require": {
         "php": "^7.4 || ^8",
-        "open-feature/sdk": "^0.0.5",
+        "open-feature/sdk": "^0.0.6",
         "php-http/httplug": "^2.3.0",
         "psr/http-client": "^1.0",
         "psr/http-factory": "^1.0",

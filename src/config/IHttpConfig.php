@@ -11,5 +11,8 @@ interface IHttpConfig
 {
     public function getClient(): ClientInterface;
 
+    // TODO: Support async client
+    // public function getAsyncClient(): ?HttpAsyncClient;
+
     public function getRequestFactory(): RequestFactoryInterface;
 }

@@ -6,6 +6,6 @@ namespace OpenFeature\Providers\Flagd\config;
 
 class Protocols
 {
-  public const GRPC = "grpc";
-  public const HTTP = "http";
+    public const GRPC = 'grpc';
+    public const HTTP = 'http';
 }

@@ -6,22 +6,17 @@ namespace OpenFeature\Providers\Flagd;
 
 use OpenFeature\Providers\Flagd\config\IConfig;
 use OpenFeature\Providers\Flagd\config\Validator;
-use OpenFeature\implementation\common\Metadata;
-use OpenFeature\interfaces\flags\EvaluationContext;
-use OpenFeature\interfaces\flags\FlagValueType;
-use OpenFeature\interfaces\hooks\Hook;
-use OpenFeature\interfaces\provider\Provider;
-use OpenFeature\interfaces\provider\ResolutionDetails;
 use OpenFeature\Providers\Flagd\service\ServiceFactory;
 use OpenFeature\Providers\Flagd\service\ServiceInterface;
-use Psr\Log\LoggerAwareTrait;
+use OpenFeature\implementation\provider\AbstractProvider;
+use OpenFeature\interfaces\flags\EvaluationContext;
+use OpenFeature\interfaces\flags\FlagValueType;
+use OpenFeature\interfaces\provider\Provider;
+use OpenFeature\interfaces\provider\ResolutionDetails;
 
-class FlagdProvider implements Provider
+class FlagdProvider extends AbstractProvider implements Provider
 {
-    use LoggerAwareTrait;
-
-    /** @var Hook[] $hooks */
-    private array $hooks = [];
+    protected const NAME = 'FlagdProvider';
 
     private IConfig $config;
 
@@ -34,50 +29,27 @@ class FlagdProvider implements Provider
     {
         $this->config = Validator::validate($config);
 
-        $this->service = ServiceFactory::fromConfig($config);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getHooks(): array
-    {
-        return $this->hooks;
-    }
-
-    public function getMetadata(): Metadata
-    {
-        return new Metadata('flagd');
-    }
-
-    public function getEvaluationContext(): ?EvaluationContext
-    {
-        return $this->evaluationContext;
-    }
-
-    public function setEvaluationContext(EvaluationContext $context): void
-    {
-        $this->evaluationContext = $context;
+        $this->service = ServiceFactory::fromConfig($this->config);
     }
 
     public function resolveBooleanValue(string $flagKey, bool $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
     {
-        return $this->service->resolvevalue($flagKey, FlagValueType::BOOLEAN, $defaultValue, $context);
+        return $this->service->resolveValue($flagKey, FlagValueType::BOOLEAN, $defaultValue, $context);
     }
 
     public function resolveStringValue(string $flagKey, string $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
     {
-        return $this->service->resolvevalue($flagKey, FlagValueType::STRING, $defaultValue, $context);
+        return $this->service->resolveValue($flagKey, FlagValueType::STRING, $defaultValue, $context);
     }
 
     public function resolveIntegerValue(string $flagKey, int $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
     {
-        return $this->service->resolvevalue($flagKey, FlagValueType::INTEGER, $defaultValue, $context);
+        return $this->service->resolveValue($flagKey, FlagValueType::INTEGER, $defaultValue, $context);
     }
 
     public function resolveFloatValue(string $flagKey, float $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
     {
-        return $this->service->resolvevalue($flagKey, FlagValueType::FLOAT, $defaultValue, $context);
+        return $this->service->resolveValue($flagKey, FlagValueType::FLOAT, $defaultValue, $context);
     }
 
     /**
@@ -85,6 +57,6 @@ class FlagdProvider implements Provider
      */
     public function resolveObjectValue(string $flagKey, $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
     {
-        return $this->service->resolvevalue($flagKey, FlagValueType::OBJECT, $defaultValue, $context);
+        return $this->service->resolveValue($flagKey, FlagValueType::OBJECT, $defaultValue, $context);
     }
 }

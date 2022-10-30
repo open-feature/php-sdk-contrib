@@ -4,19 +4,25 @@ declare(strict_types=1);
 
 namespace OpenFeature\Providers\Flagd\config;
 
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
+
 use function in_array;
 use function is_array;
+use function is_bool;
+use function is_int;
+use function is_null;
+use function is_string;
 use function preg_match;
 
 class Validator
 {
-    private const VALID_SERVICES = ['http', 'grpc'];
     private const VALID_HOST_REGEXP = '/^(([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.)*([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])$/i';
     private const VALID_PORT_RANGE = [1, 65535];
-    private const VALID_PROTOCOLS = ['http', 'https'];
+    private const VALID_PROTOCOLS = ['grpc', 'http'];
 
     /**
-     * @param mixed[] $config
+     * @param mixed $config
      */
     public static function validate($config = null): IConfig
     {
@@ -36,34 +42,36 @@ class Validator
      */
     private static function validateArray(array $config = []): IConfig
     {
-        $service = self::validateService($config['service'] ?? null);
         $host = self::validateHost($config['host'] ?? null);
         $port = self::validatePort($config['port'] ?? null);
         $protocol = self::validateProtocol($config['protocol'] ?? null);
+        $secure = self::validateSecure($config['secure'] ?? null);
+        $httpConfig = self::validateHttpConfig($config['httpConfig'] ?? null);
 
-        return new Config($service, $host, $port, $protocol);
+        return new Config($host, $port, $protocol, $secure, $httpConfig);
     }
 
     private static function validateConfig(IConfig $config): IConfig
     {
-        $service = self::validateService($config->getService());
         $host = self::validateHost($config->getHost());
         $port = self::validatePort($config->getPort());
         $protocol = self::validateProtocol($config->getProtocol());
+        $secure = self::validateSecure($config->isSecure());
+        $httpConfig = self::validateHttpConfig($config->getHttpConfig());
 
-        return new Config($service, $host, $port, $protocol);
+        return new Config($host, $port, $protocol, $secure, $httpConfig);
     }
 
     /**
-     * @param mixed $service
+     * @param mixed $secure
      */
-    private static function validateService($service): string
+    private static function validateSecure($secure): bool
     {
-        if (in_array($service, self::VALID_SERVICES)) {
-            return $service;
+        if (is_bool($secure)) {
+            return $secure;
         }
 
-        return Defaults::DEFAULT_SERVICE;
+        return Defaults::DEFAULT_SECURE;
     }
 
     /**
@@ -71,7 +79,7 @@ class Validator
      */
     private static function validateHost($host): string
     {
-        if (preg_match(self::VALID_HOST_REGEXP, $host)) {
+        if (is_string($host) && preg_match(self::VALID_HOST_REGEXP, $host)) {
             return $host;
         }
 
@@ -85,7 +93,7 @@ class Validator
     {
         [$minPort, $maxPort] = self::VALID_PORT_RANGE;
 
-        if ($port >= $minPort && $port <= $maxPort) {
+        if (is_int($port) && $port >= $minPort && $port <= $maxPort) {
             return $port;
         }
 
@@ -97,10 +105,32 @@ class Validator
      */
     private static function validateProtocol($protocol): string
     {
-        if (in_array($protocol, self::VALID_PROTOCOLS)) {
+        if (is_string($protocol) && in_array($protocol, self::VALID_PROTOCOLS)) {
             return $protocol;
         }
 
         return Defaults::DEFAULT_PROTOCOL;
+    }
+
+    private static function validateHttpConfig(mixed $httpConfig): ?IHttpConfig
+    {
+        if (is_null($httpConfig)) {
+            return null;
+        }
+
+        if (is_array($httpConfig)) {
+            $client = $httpConfig['client'];
+            $requestFactory = $httpConfig['requestFactory'];
+
+            if ($client instanceof ClientInterface && $requestFactory instanceof RequestFactoryInterface) {
+                return new HttpConfig($client, $requestFactory);
+            }
+        }
+
+        if ($httpConfig instanceof IHttpConfig) {
+            return $httpConfig;
+        }
+
+        return null;
     }
 }

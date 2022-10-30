@@ -8,20 +8,24 @@ use OpenFeature\Providers\Flagd\common\SafeArrayAccessor;
 
 class ConfigFactory
 {
-  public function fromOptions(?string $host = null, ?int $port = null, ?string $protocol = null, ?bool $secure = null): IConfig
-  {
-    return new Config($host, $port, $protocol, $secure);
-  }
+    public static function fromOptions(?string $host = null, ?int $port = null, ?string $protocol = null, ?bool $secure = null, ?IHttpConfig $httpConfig): IConfig
+    {
+        return Validator::validate(new Config($host, $port, $protocol, $secure, $httpConfig));
+    }
 
-  public function fromArray(array $options): IConfig
-  {
-    $accessor = SafeArrayAccessor::with($options);
+    /**
+     * @param mixed[] $options
+     */
+    public static function fromArray(array $options): IConfig
+    {
+        $accessor = SafeArrayAccessor::with($options);
 
-    return new Config(
-      $accessor->get('host'),
-      $accessor->get('port'),
-      $accessor->get('protocol'),
-      $accessor->get('secure'),
-    );
-  }
+        return Validator::validate(new Config(
+            $accessor->get('host'),
+            $accessor->get('port'),
+            $accessor->get('protocol'),
+            $accessor->get('secure'),
+            $accessor->get('httpConfig'),
+        ));
+    }
 }

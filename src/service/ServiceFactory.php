@@ -13,10 +13,9 @@ class ServiceFactory
     public static function fromConfig(IConfig $config): ServiceInterface
     {
         switch ($config->getProtocol()) {
-            case "grpc":
+            case 'grpc':
                 return GrpcService::fromConfig($config);
-
-            case "http":
+            case 'http':
             default:
                 return HttpService::fromConfig($config);
         }

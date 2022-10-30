@@ -11,6 +11,13 @@ use Schema\V1\ResolveIntResponse;
 use Schema\V1\ResolveObjectResponse;
 use Schema\V1\ResolveStringResponse;
 
+use function is_array;
+use function is_bool;
+use function is_float;
+use function is_int;
+use function is_null;
+use function is_string;
+
 class ResponseValidator
 {
     /**
@@ -18,12 +25,11 @@ class ResponseValidator
      */
     public static function isResponse($response): bool
     {
-        return ($response instanceof ResolveBooleanResponse ||
+        return $response instanceof ResolveBooleanResponse ||
             $response instanceof ResolveFloatResponse ||
             $response instanceof ResolveIntResponse ||
             $response instanceof ResolveObjectResponse ||
-            $response instanceof ResolveStringResponse
-        );
+            $response instanceof ResolveStringResponse;
     }
 
     /**
@@ -35,10 +41,10 @@ class ResponseValidator
 
         $actualType = self::determineType($value);
 
-        return ($expectedType !== $actualType);
+        return $expectedType !== $actualType;
     }
 
-    private static function determineType($value): string
+    private static function determineType(mixed $value): string
     {
         if (is_bool($value)) {
             return FlagValueType::BOOLEAN;

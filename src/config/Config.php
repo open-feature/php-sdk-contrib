@@ -10,13 +10,15 @@ class Config implements IConfig
     private int $port;
     private string $protocol;
     private bool $secure;
+    private ?IHttpConfig $httpConfig;
 
-    public function __construct(?string $host = null, ?int $port = null, ?string $protocol = null, ?bool $secure = null)
+    public function __construct(?string $host = null, ?int $port = null, ?string $protocol = null, ?bool $secure = null, ?IHttpConfig $httpConfig)
     {
         $this->host = $host ?? Defaults::DEFAULT_HOST;
         $this->port = $port ?? Defaults::DEFAULT_PORT;
         $this->protocol = $protocol ?? Defaults::DEFAULT_PROTOCOL;
         $this->secure = $secure ?? Defaults::DEFAULT_SECURE;
+        $this->httpConfig = $httpConfig ?? null;
     }
 
     public function getHost(): string
@@ -37,5 +39,10 @@ class Config implements IConfig
     public function isSecure(): bool
     {
         return $this->secure;
+    }
+
+    public function getHttpConfig(): ?IHttpConfig
+    {
+        return $this->httpConfig;
     }
 }
