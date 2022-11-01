@@ -7,3 +7,5 @@ parameters:
     excludePaths:
         - */tests/fixtures/*
         - */tests/*/fixtures/*
+        # TODO: Implement gRPC Completely
+        - ./src/grpc
