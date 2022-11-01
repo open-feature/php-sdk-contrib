@@ -75,10 +75,7 @@
   },
   "extra": {
     "captainhook": {
-      "force-install": true
-    },
-    "ramsey/conventional-commits": {
-      "configFile": "conventional-commits.json"
+      "force-install": false
     }
   },
   "scripts": {
