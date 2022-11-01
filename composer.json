@@ -1,6 +1,6 @@
 {
-  "name": "0xc/openfeature-flagd-provider",
-  "description": "OpenFeature provider for flagd",
+  "name": "open-feature/sdk-contrib",
+  "description": "The contributor repo for OpenFeature PHP",
   "license": "Apache-2.0",
   "type": "library",
   "keywords": [
