@@ -2,8 +2,8 @@ parameters:
     tmpDir: ./build/cache/phpstan
     level: max
     paths:
-        - ./src/Flagd/src
-        - ./src/Flagd/tests
+        - ./src
+        - ./tests
     excludePaths:
         - */tests/fixtures/*
         - */tests/*/fixtures/*

@@ -13,58 +13,6 @@
             }
         ]
     },
-    "pre-push": {
-        "enabled": true,
-        "actions": [
-            {
-                "action": "composer test"
-            }
-        ]
-    },
-    "pre-commit": {
-        "enabled": true,
-        "actions": [
-            {
-                "action": "composer validate",
-                "conditions": [
-                    {
-                        "exec": "\\CaptainHook\\App\\Hook\\Condition\\FileStaged\\Any",
-                        "args": [["composer.json"]]
-                    }
-                ]
-            },
-            {
-                "action": "composer normalize --dry-run",
-                "conditions": [
-                    {
-                        "exec": "\\CaptainHook\\App\\Hook\\Condition\\FileStaged\\Any",
-                        "args": [["composer.json"]]
-                    }
-                ]
-            },
-            {
-                "action": "composer dev:lint:syntax -- {$STAGED_FILES|of-type:php}",
-                "conditions": [
-                    {
-                        "exec": "\\CaptainHook\\App\\Hook\\Condition\\FileStaged\\OfType",
-                        "args": ["php"]
-                    }
-                ]
-            },
-            {
-                "action": "composer dev:lint:style -- {$STAGED_FILES|of-type:php}",
-                "conditions": [
-                    {
-                        "exec": "\\CaptainHook\\App\\Hook\\Condition\\FileStaged\\OfType",
-                        "args": ["php"]
-                    }
-                ]
-            },
-            {
-                "action": "composer run dev:grpc"
-            }
-        ]
-    },
     "prepare-commit-msg": {
         "enabled": true,
         "actions": [

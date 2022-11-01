@@ -7,9 +7,9 @@
        errorBaseline="./psalm-baseline.xml">
 
     <projectFiles>
-        <directory name="./src/Flagd/src"/>
+        <directory name="./src"/>
         <ignoreFiles>
-            <directory name="./src/Flagd/tests"/>
+            <directory name="./tests"/>
             <directory name="./vendor"/>
             <!-- TODO: Implement gRPC Completely -->
             <!-- <file name="./src/grpc/GrpcService.php" /> -->

@@ -5,8 +5,8 @@
     <arg name="colors"/>
     <arg value="sp"/>
 
-    <file>./src/Flagd/src</file>
-    <file>./src/Flagd/tests</file>
+    <file>./src</file>
+    <file>./tests</file>
 
     <exclude-pattern>*/tests/fixtures/*</exclude-pattern>
     <exclude-pattern>*/tests/*/fixtures/*</exclude-pattern>

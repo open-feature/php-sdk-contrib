@@ -8,7 +8,7 @@
 
     <testsuites>
         <testsuite name="unit-tests">
-            <directory>./src/Flagd/tests</directory>
+            <directory>./tests</directory>
         </testsuite>
     </testsuites>
 
