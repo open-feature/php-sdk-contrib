@@ -6,6 +6,7 @@ namespace OpenFeature\Providers\Flagd\config;
 
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 
 interface IHttpConfig
 {
@@ -15,4 +16,6 @@ interface IHttpConfig
     // public function getAsyncClient(): ?HttpAsyncClient;
 
     public function getRequestFactory(): RequestFactoryInterface;
+
+    public function getStreamFactory(): StreamFactoryInterface;
 }

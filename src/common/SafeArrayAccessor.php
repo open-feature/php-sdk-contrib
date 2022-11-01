@@ -27,13 +27,18 @@ class SafeArrayAccessor
 
     /**
      * @param mixed[] $arr
+     *
+     * @return mixed
      */
-    public static function getKeyFromArray(array $arr, string $key): mixed
+    public static function getKeyFromArray(array $arr, string $key)
     {
         return $arr[$key] ?? null;
     }
 
-    public function get(string $key): mixed
+    /**
+     * @return mixed
+     */
+    public function get(string $key)
     {
         return self::getKeyFromArray($this->arr, $key);
     }

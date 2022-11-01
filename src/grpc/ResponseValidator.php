@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenFeature\Providers\Flagd\grpc;
 
+use OpenFeature\implementation\errors\FlagValueTypeError;
 use OpenFeature\interfaces\flags\FlagValueType;
 use Schema\V1\ResolveBooleanResponse;
 use Schema\V1\ResolveFloatResponse;
@@ -33,10 +34,22 @@ class ResponseValidator
     }
 
     /**
-     * @param ResolveBooleanResponse|ResolveFloatResponse|ResolveIntResponse|ResolveObjectResponse|ResolveStringResponse $response
+     * @param ResolveBooleanResponse|ResolveFloatResponse|ResolveIntResponse|ResolveObjectResponse|ResolveStringResponse|mixed $response
      */
     public static function isCorrectType($response, string $expectedType): bool
     {
+        if (
+            !(
+                $response instanceof ResolveBooleanResponse ||
+                $response instanceof ResolveFloatResponse ||
+                $response instanceof ResolveIntResponse ||
+                $response instanceof ResolveObjectResponse ||
+                $response instanceof ResolveStringResponse
+            )
+        ) {
+            return false;
+        }
+
         $value = $response->getValue();
 
         $actualType = self::determineType($value);
@@ -69,6 +82,6 @@ class ResponseValidator
             return FlagValueType::STRING;
         }
 
-        return null;
+        throw new FlagValueTypeError('Unknown');
     }
 }

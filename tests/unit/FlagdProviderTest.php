@@ -13,6 +13,8 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamFactoryInterface;
+use Psr\Http\Message\StreamInterface;
 
 class FlagdProviderTest extends TestCase
 {
@@ -23,6 +25,7 @@ class FlagdProviderTest extends TestCase
             'httpConfig' => [
                 'client' => $this->mockery(ClientInterface::class),
                 'requestFactory' => $this->mockery(RequestFactoryInterface::class),
+                'streamFactory' => $this->mockery(StreamFactoryInterface::class),
             ],
         ];
 
@@ -43,9 +46,15 @@ class FlagdProviderTest extends TestCase
 
         $mockRequest = $this->mockery(RequestInterface::class);
         $mockRequest->shouldReceive('withHeader')->andReturn($mockRequest);
+        $mockRequest->shouldReceive('withBody')->andReturn($mockRequest);
 
         $mockRequestFactory = $this->mockery(RequestFactoryInterface::class);
         $mockRequestFactory->shouldReceive('createRequest')->andReturn($mockRequest);
+
+        $mockStream = $this->mockery(StreamInterface::class);
+
+        $mockStreamFactory = $this->mockery(StreamFactoryInterface::class);
+        $mockStreamFactory->shouldReceive('createStream')->andReturn($mockStream);
 
         $mockResponse = $this->mockery(ResponseInterface::class);
         $mockResponse->shouldReceive('getBody')->andReturn("{
@@ -61,13 +70,15 @@ class FlagdProviderTest extends TestCase
         $client = $mockClient;
         /** @var RequestFactoryInterface $requestFactory */
         $requestFactory = $mockRequestFactory;
+        /** @var StreamFactoryInterface $streamFactory */
+        $streamFactory = $mockStreamFactory;
 
         $config = ConfigFactory::fromOptions(
             'localhost',
             8013,
             'http',
             true,
-            new HttpConfig($client, $requestFactory),
+            new HttpConfig($client, $requestFactory, $streamFactory),
         );
 
         // When
@@ -89,9 +100,15 @@ class FlagdProviderTest extends TestCase
 
         $mockRequest = $this->mockery(RequestInterface::class);
         $mockRequest->shouldReceive('withHeader')->andReturn($mockRequest);
+        $mockRequest->shouldReceive('withBody')->andReturn($mockRequest);
 
         $mockRequestFactory = $this->mockery(RequestFactoryInterface::class);
         $mockRequestFactory->shouldReceive('createRequest')->andReturn($mockRequest);
+
+        $mockStream = $this->mockery(StreamInterface::class);
+
+        $mockStreamFactory = $this->mockery(StreamFactoryInterface::class);
+        $mockStreamFactory->shouldReceive('createStream')->andReturn($mockStream);
 
         $mockResponse = $this->mockery(ResponseInterface::class);
         $mockResponse->shouldReceive('getBody')->andReturn("{
@@ -107,6 +124,8 @@ class FlagdProviderTest extends TestCase
         $client = $mockClient;
         /** @var RequestFactoryInterface $requestFactory */
         $requestFactory = $mockRequestFactory;
+        /** @var StreamFactoryInterface $streamFactory */
+        $streamFactory = $mockStreamFactory;
 
         $config = [
             'host' => 'localhost',
@@ -116,6 +135,7 @@ class FlagdProviderTest extends TestCase
             'httpConfig' => [
                 'client' => $client,
                 'requestFactory' => $requestFactory,
+                'streamFactory' => $streamFactory,
             ],
         ];
 

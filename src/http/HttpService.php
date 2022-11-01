@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace OpenFeature\Providers\Flagd\http;
 
+use OpenFeature\Providers\Flagd\common\EvaluationContextArrayFactory;
 use OpenFeature\Providers\Flagd\config\IConfig;
+use OpenFeature\Providers\Flagd\errors\InvalidConfigException;
+use OpenFeature\Providers\Flagd\errors\RequestBuildException;
 use OpenFeature\Providers\Flagd\service\ServiceInterface;
 use OpenFeature\implementation\errors\FlagValueTypeError;
 use OpenFeature\implementation\provider\ResolutionDetailsBuilder;
@@ -14,8 +17,10 @@ use OpenFeature\interfaces\provider\ResolutionDetails;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 
 use function json_decode;
+use function json_encode;
 use function sprintf;
 
 class HttpService implements ServiceInterface
@@ -23,6 +28,7 @@ class HttpService implements ServiceInterface
     private string $target;
     private ClientInterface $client;
     private RequestFactoryInterface $requestFactory;
+    private StreamFactoryInterface $streamFactory;
 
     private const FLAGD_GRPC_WEB_HEADERS = [
         ['Content-Type', 'application/json'],
@@ -36,18 +42,23 @@ class HttpService implements ServiceInterface
         $target = sprintf('%s://%s:%d', $protocol, $host, $port);
 
         $http = $config->getHttpConfig();
+        if (!$http) {
+            throw new InvalidConfigException("'http' config property is required to use an HTTP service");
+        }
+
         $client = $http->getClient(); // TODO: Support $http->getAsyncClient();
         $requestFactory = $http->getRequestFactory();
+        $streamFactory = $http->getStreamFactory();
 
-        return new HttpService($protocol, $target, $client, $requestFactory);
+        return new HttpService($target, $client, $requestFactory, $streamFactory);
     }
 
-    public function __construct(string $protocol, string $target, ClientInterface $client, RequestFactoryInterface $requestFactory)
+    public function __construct(string $target, ClientInterface $client, RequestFactoryInterface $requestFactory, StreamFactoryInterface $streamFactory)
     {
-        $this->protocol = $protocol;
         $this->target = $target;
         $this->client = $client;
         $this->requestFactory = $requestFactory;
+        $this->streamFactory = $streamFactory;
     }
 
     /**
@@ -59,6 +70,7 @@ class HttpService implements ServiceInterface
 
         $response = $this->sendRequest($path, $flagKey, $context);
 
+        /** @var string[] $details */
         $details = json_decode((string) $response->getBody(), true);
 
         // @todo: validate
@@ -89,6 +101,21 @@ class HttpService implements ServiceInterface
         foreach (self::FLAGD_GRPC_WEB_HEADERS as $headerInfo) {
             $request = $request->withHeader(...$headerInfo);
         }
+
+        $contextArray = EvaluationContextArrayFactory::build($context);
+
+        $bodyString = json_encode([
+            'flagKey' => $flagKey,
+            'context' => $contextArray,
+        ]);
+
+        if ($bodyString === false) {
+            throw new RequestBuildException();
+        }
+
+        $bodyStream = $this->streamFactory->createStream($bodyString);
+
+        $request->withBody($bodyStream);
 
         return $this->client->sendRequest($request);
     }

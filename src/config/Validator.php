@@ -6,6 +6,7 @@ namespace OpenFeature\Providers\Flagd\config;
 
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 
 use function in_array;
 use function is_array;
@@ -122,11 +123,19 @@ class Validator
         }
 
         if (is_array($httpConfig)) {
+            /** @var ClientInterface|mixed $client */
             $client = $httpConfig['client'];
+            /** @var RequestFactoryInterface|mixed $requestFactory */
             $requestFactory = $httpConfig['requestFactory'];
+            /** @var StreamFactoryInterface|mixed $streamFactory */
+            $streamFactory = $httpConfig['streamFactory'];
 
-            if ($client instanceof ClientInterface && $requestFactory instanceof RequestFactoryInterface) {
-                return new HttpConfig($client, $requestFactory);
+            if (
+                $client instanceof ClientInterface &&
+                $requestFactory instanceof RequestFactoryInterface &&
+                $streamFactory instanceof StreamFactoryInterface
+            ) {
+                return new HttpConfig($client, $requestFactory, $streamFactory);
             }
         }
 

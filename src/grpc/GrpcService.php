@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace OpenFeature\Providers\Flagd\grpc;
 
+use Google\Protobuf\Struct;
 use Grpc;
 use Grpc\ChannelCredentials;
+use Grpc\UnaryCall;
+use OpenFeature\Providers\Flagd\common\EvaluationContextArrayFactory;
 use OpenFeature\Providers\Flagd\config\IConfig;
 use OpenFeature\Providers\Flagd\service\ServiceInterface;
 use OpenFeature\implementation\provider\ResolutionError;
@@ -14,10 +17,15 @@ use OpenFeature\interfaces\flags\FlagValueType;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\ResolutionDetails;
 use Schema\V1\ResolveBooleanRequest;
+use Schema\V1\ResolveBooleanResponse;
 use Schema\V1\ResolveFloatRequest;
+use Schema\V1\ResolveFloatResponse;
 use Schema\V1\ResolveIntRequest;
+use Schema\V1\ResolveIntResponse;
 use Schema\V1\ResolveObjectRequest;
+use Schema\V1\ResolveObjectResponse;
 use Schema\V1\ResolveStringRequest;
+use Schema\V1\ResolveStringResponse;
 use Schema\V1\ServiceClient;
 
 use function sprintf;
@@ -36,9 +44,13 @@ class GrpcService implements ServiceInterface
 
     private function __construct(string $hostname, bool $secure)
     {
+        /**
+         * @psalm-suppress UndefinedClass
+         * @var ChannelCredentials $credentials
+         */
         $credentials = $secure ? ChannelCredentials::createSsl() : ChannelCredentials::createInsecure();
 
-        $this->service = new ServiceClient($hostname, [
+        $this->client = new ServiceClient($hostname, [
             'credentials' => $credentials,
         ]);
     }
@@ -52,17 +64,25 @@ class GrpcService implements ServiceInterface
         $request = $this->getRequestInstance($flagType);
 
         $request->setFlagKey($flagKey);
-        $request->setContext($context);
+        $request->setContext($this->buildContextAsStruct($context));
 
-        [$response, $status] = $this->client->$methodName($request)->wait();
+        /** @var UnaryCall $clientCall */
+        $clientCall = $this->client->$methodName($request);
+
+        /** @var mixed $maybeResponse */
+        /** @var mixed $status */
+        [$maybeResponse, $status] = $clientCall->wait();
 
         if (!$this->isSuccessStatus($status)) {
             $this->throwForStatus($status);
         }
 
-        if (!ResponseValidator::isResponse($response)) {
+        if (!ResponseValidator::isResponse($maybeResponse)) {
             throw new ResolutionError(ErrorCode::PARSE_ERROR(), 'The response type could not be parsed');
         }
+
+        /** @var ResolveBooleanResponse|ResolveFloatResponse|ResolveIntResponse|ResolveObjectResponse|ResolveStringResponse $response */
+        $response = $maybeResponse;
 
         if (!ResponseValidator::isCorrectType($response, $flagType)) {
             throw new ResolutionError(ErrorCode::TYPE_MISMATCH(), 'The resolution type is incorrect');
@@ -89,7 +109,10 @@ class GrpcService implements ServiceInterface
         throw new ResolutionError(ErrorCode::GENERAL(), 'Attempted to use invalid flag value type: ' . $flagType);
     }
 
-    private function getRequestInstance(string $flagType): mixed
+    /**
+     * @return ResolveBooleanRequest|ResolveFloatRequest|ResolveIntRequest|ResolveObjectRequest|ResolveStringRequest
+     */
+    private function getRequestInstance(string $flagType)
     {
         switch ($flagType) {
             case FlagValueType::BOOLEAN:
@@ -112,6 +135,9 @@ class GrpcService implements ServiceInterface
      */
     private function isSuccessStatus($status): bool
     {
+        /**
+         * @psalm-suppress UndefinedConstant
+         */
         return $status === Grpc\STATUS_OK;
     }
 
@@ -124,5 +150,12 @@ class GrpcService implements ServiceInterface
             default:
                 throw new ResolutionError(ErrorCode::GENERAL(), 'Error occurred in gRPC call');
         }
+    }
+
+    private function buildContextAsStruct(?EvaluationContext $context): Struct
+    {
+        $contextArray = EvaluationContextArrayFactory::build($context);
+
+        return new Struct($contextArray);
     }
 }

@@ -11,6 +11,8 @@
         <ignoreFiles>
             <directory name="./tests"/>
             <directory name="./vendor"/>
+            <!-- TODO: Implement gRPC Completely -->
+            <!-- <file name="./src/grpc/GrpcService.php" /> -->
         </ignoreFiles>
     </projectFiles>
 
