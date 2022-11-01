@@ -81,9 +81,10 @@ jobs:
     #   working-directory: src/${{ matrix.project }}
     #   run: bash <(curl -s https://codecov.io/bash) -F ${{ matrix.php-version }}
 
-  packages:
-    uses: opentelemetry-php/gh-workflows/.github/workflows/validate-packages.yml@main
-    needs: php
-    with:
-      matrix_extension: '["ast, json, grpc"]'
-      install_directory: '~/.test/.packages'
+  ### TODO: Replicate any necessary package checks
+  # packages:
+  #   uses: opentelemetry-php/gh-workflows/.github/workflows/validate-packages.yml@main
+  #   needs: php
+  #   with:
+  #     matrix_extension: '["ast, json, grpc"]'
+  #     install_directory: '~/.test/.packages'
