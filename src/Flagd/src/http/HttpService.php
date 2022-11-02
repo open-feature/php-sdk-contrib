@@ -11,9 +11,12 @@ use OpenFeature\Providers\Flagd\errors\RequestBuildException;
 use OpenFeature\Providers\Flagd\service\ServiceInterface;
 use OpenFeature\implementation\errors\FlagValueTypeError;
 use OpenFeature\implementation\provider\ResolutionDetailsBuilder;
+use OpenFeature\implementation\provider\ResolutionError;
 use OpenFeature\interfaces\flags\EvaluationContext;
 use OpenFeature\interfaces\flags\FlagValueType;
+use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\ResolutionDetails;
+use OpenFeature\Providers\Flagd\common\ResponseCodeErrorCodeMap;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -31,7 +34,7 @@ class HttpService implements ServiceInterface
     private StreamFactoryInterface $streamFactory;
 
     private const FLAGD_GRPC_WEB_HEADERS = [
-        ['Content-Type', 'application/json'],
+        ['content-type', 'application/json'],
     ];
 
     public static function fromConfig(IConfig $config): HttpService
@@ -68,18 +71,28 @@ class HttpService implements ServiceInterface
     {
         $path = $this->determinePathByFlagType($flagType);
 
+        print_r("Requesting gRPC Route: " . $path);
+
         $response = $this->sendRequest($path, $flagKey, $context);
+
+        var_export("Received response");
+
+        print_r("Got status code " . (string)$response->getStatusCode());
 
         /** @var string[] $details */
         $details = json_decode((string) $response->getBody(), true);
 
-        // @todo: validate
+        var_export($details);
 
-        return (new ResolutionDetailsBuilder())
-            ->withValue($details['value'])
-            ->withVariant($details['variant'])
-            ->withReason($details['reason'])
-            ->build();
+        if (FlagdResponseValidator::isTypeMismatch($details)) {
+            return FlagdResponseResolutionDetailsAdapter::forTypeMismatch($details);
+        }
+
+        if (FlagdResponseValidator::isErrorResponse($details)) {
+            return FlagdResponseResolutionDetailsAdapter::forError($details, $defaultValue);
+        }
+
+        return FlagdResponseResolutionDetailsAdapter::forSuccess($details);
     }
 
     private function buildRoute(string $path): string
@@ -93,7 +106,7 @@ class HttpService implements ServiceInterface
          * This method is equivalent to:
          * curl -X POST http://localhost:8013/{path} \
          *      -H "Content-Type: application/json" \
-         *      -d '{"flagKey": key, "context": evaluation_context}'
+         *      -d '{"flag_key": key, "context": evaluation_context}'
          */
 
         $request = $this->requestFactory->createRequest(Method::POST, $this->buildRoute($path));
@@ -105,9 +118,13 @@ class HttpService implements ServiceInterface
         $contextArray = EvaluationContextArrayFactory::build($context);
 
         $bodyString = json_encode([
-            'flagKey' => $flagKey,
-            'context' => $contextArray,
+            'flag_key' => $flagKey,
+            'context' => [
+                'fields' => $contextArray,
+            ],
         ]);
+
+        var_export(['body' => $bodyString]);
 
         if ($bodyString === false) {
             throw new RequestBuildException();
@@ -115,7 +132,9 @@ class HttpService implements ServiceInterface
 
         $bodyStream = $this->streamFactory->createStream($bodyString);
 
-        $request->withBody($bodyStream);
+        $request = $request->withBody($bodyStream);
+
+        var_export($request);
 
         return $this->client->sendRequest($request);
     }
