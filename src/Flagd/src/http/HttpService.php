@@ -137,4 +137,7 @@ class HttpService implements ServiceInterface
                 throw new FlagValueTypeError($flagType);
         }
     }
+
+    // TODO: Coerce the type if it's a string due to gRPC handling of integers
+    // private function coerceTypeIfNecessary()
 }
