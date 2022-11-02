@@ -1,0 +1,12 @@
+{
+  "bootstrap-sha": "321f8f5a23083a0d3f1990320393abacf63113bb",
+  "packages": {
+    ".": {
+      "release-type": "php",
+      "prerelease": false,
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": true,
+      "include-v-in-tag": false
+    }
+  }
+}
