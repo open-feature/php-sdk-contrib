@@ -7,7 +7,7 @@ project_url: "https://github.com/open-feature/php-sdk-contrib.git"
 # List of splits.
 splits:
   - prefix: "src/Flagd"
-    target: "https://${GH_TOKEN}@github.com/tcarrio/php-sdk-contrib-flagd-provider.git"
+    target: "https://${GH_TOKEN}@github.com/tcarrio/openfeature-php-flagd-provider.git"
 
 # List of references to split (defined as regexp)
 origins:
