@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         operating-system: [ubuntu-latest]
-        php-version: ['7.4'] # , '8.0', '8.1']
+        php-version: ['7.4', '8.0', '8.1']
         project: ['Flagd']
 
     # todo exclude some matrix combinations based on php version requirements
