@@ -13,6 +13,14 @@ jobs:
   gitsplit:
     runs-on: ubuntu-latest
     steps:
+      - name: test environment variables
+        run: |
+          echo "GITHUB_SERVER_URL is $GITHUB_SERVER_URL"
+          echo "GITHUB_REPOSITORY is $GITHUB_REPOSITORY"
+          echo "GITHUB_WORKSPACE is $GITHUB_WORKSPACE"
+          echo "GITHUB_WORKSPACE is $GITHUB_WORKSPACE"
+          echo "GITHUB_SHA is $GITHUB_SHA"
+
       - name: checkout
         run: git clone "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout $GITHUB_SHA
       - name: Split repositories
