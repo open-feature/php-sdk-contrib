@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace OpenFeature\Providers\Flagd\http;
 
+use DateTime;
+use OpenFeature\Providers\Flagd\common\ResponseCodeErrorCodeMap;
 use OpenFeature\implementation\provider\ResolutionDetailsBuilder;
 use OpenFeature\implementation\provider\ResolutionError;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\ResolutionDetails;
-use OpenFeature\Providers\Flagd\common\ResponseCodeErrorCodeMap;
 
 class FlagdResponseResolutionDetailsAdapter
 {
+    /**
+     * @param mixed[]|bool|DateTime|float|int|string|null $defaultValue
+     */
     public static function forTypeMismatch($defaultValue): ResolutionDetails
     {
         return (new ResolutionDetailsBuilder())
@@ -21,16 +25,19 @@ class FlagdResponseResolutionDetailsAdapter
     }
 
     /**
-     * @param mixed[] $response
-     * @param mixed $defaultValue
+     * @param string[] $response
+     * @param mixed[]|bool|DateTime|float|int|string|null $defaultValue
      */
     public static function forError(array $response, $defaultValue): ResolutionDetails
     {
         $responseCode = $response['code'];
         if ($responseCode && ResponseCodeErrorCodeMap::has($responseCode)) {
+            /** @var ErrorCode $responseErrorCode */
+            $responseErrorCode = ResponseCodeErrorCodeMap::get($responseCode);
+
             $resolutionError = new ResolutionError(
-                ResponseCodeErrorCodeMap::get($responseCode),
-                $response['message'] ?? (string) ErrorCode::GENERAL()
+                $responseErrorCode,
+                $response['message'] ?? (string) ErrorCode::GENERAL(),
             );
         } else {
             $resolutionError = new ResolutionError(ErrorCode::GENERAL(), (string) ErrorCode::GENERAL());
@@ -43,7 +50,7 @@ class FlagdResponseResolutionDetailsAdapter
     }
 
     /**
-     * @param mixed[] $response
+     * @param array{value: mixed[]|bool|DateTime|float|int|string|null, variant: ?string, reason: ?string} $response
      */
     public static function forSuccess(array $response): ResolutionDetails
     {

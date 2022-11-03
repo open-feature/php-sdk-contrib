@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace OpenFeature\Tests\Providers\Flagd\unit;
+namespace OpenFeature\Providers\Flagd\Test\unit;
 
 use OpenFeature\Providers\Flagd\FlagdProvider;
+use OpenFeature\Providers\Flagd\Test\TestCase;
 use OpenFeature\Providers\Flagd\config\ConfigFactory;
 use OpenFeature\Providers\Flagd\config\HttpConfig;
-use OpenFeature\Tests\Providers\Flagd\TestCase;
 use OpenFeature\interfaces\provider\Provider;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;

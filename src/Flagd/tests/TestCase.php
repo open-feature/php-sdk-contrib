@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace OpenFeature\Tests\Providers\Flagd;
+namespace OpenFeature\Providers\Flagd\Test;
 
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
