@@ -10,14 +10,14 @@ use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\ResolutionError;
 use OpenFeature\interfaces\provider\ThrowableWithResolutionError;
 
-class InvalidTreatmentTypeException extends Exception implements ThrowableWithResolutionError
+class TargetingKeyMissingException extends Exception implements ThrowableWithResolutionError
 {
     private ResolutionError $resolutionError;
 
     public function __construct()
     {
-        parent::__construct('The treatment value does not match the expected type');
-        $this->resolutionError = new ProviderResolutionError(ErrorCode::TYPE_MISMATCH(), 'Treatment value does not match the expected type');
+        parent::__construct('The targeting key was not included in the evaluation context');
+        $this->resolutionError = new ProviderResolutionError(ErrorCode::TARGETING_KEY_MISSING(), 'The targeting key is required for Split');
     }
 
     public function getResolutionError(): ResolutionError

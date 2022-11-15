@@ -96,8 +96,12 @@
     ],
     "dev:test:coverage:ci": "phpunit --colors=always --coverage-text --coverage-clover build/coverage/clover.xml --coverage-cobertura build/coverage/cobertura.xml --coverage-crap4j build/coverage/crap4j.xml --coverage-xml build/coverage/coverage-xml --log-junit build/junit.xml",
     "dev:test:coverage:html": "phpunit --colors=always --coverage-html build/coverage/coverage-html/",
-    "dev:test:unit": "phpunit --colors=always --testdox",
+    "dev:test:unit": [
+      "@dev:test:unit:setup",
+      "phpunit --colors=always --testdox"
+    ],
     "dev:test:unit:debug": "phpunit --colors=always --testdox -d xdebug.profiler_enable=on",
+    "dev:test:unit:setup": "cp ./tests/.split ~",
     "test": "@dev:test"
   },
   "scripts-descriptions": {
