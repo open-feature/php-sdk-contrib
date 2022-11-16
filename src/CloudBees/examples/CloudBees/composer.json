@@ -1,0 +1,21 @@
+{
+    "name": "open-feature/cloudbees-sdk-example",
+    "description": "An example of using OpenFeature with the CloudBees provider",
+    "type": "project",
+    "license": "Apache-2.0",
+    "autoload": {
+        "psr-4": {
+            "OpenFeature\\Providers\\Examples\\CloudBeesSdkExample\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Tom Carrio",
+            "email": "tom@carrio.dev"
+        }
+    ],
+    "require": {
+        "open-feature/sdk": "^0.0.5",
+        "open-feature/cloudbees-provider": "^0.0.1"
+    }
+}
