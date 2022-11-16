@@ -101,6 +101,8 @@
     "dev:test:coverage:html": "phpunit --colors=always --coverage-html build/coverage/coverage-html/",
     "dev:test:unit": "phpunit --colors=always --testdox tests/unit",
     "dev:test:unit:debug": "phpunit --colors=always --testdox -d xdebug.profiler_enable=on tests/unit",
+    "dev:test:unit:setup": "echo 'Setup for unit tests...'",
+    "dev:test:unit:teardown": "echo 'Tore down unit tests...'",
     "dev:test:integration": [
       "@dev:test:integration:setup",
       "phpunit --colors=always --testdox tests/integration",
