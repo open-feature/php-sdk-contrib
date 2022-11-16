@@ -23,7 +23,29 @@ $ composer require open-feature/cloudbees-provider   // installs the latest vers
 
 ## Usage
 
-TODO
+The `CloudBeesProvider` can be created with the static `setup` method. This works in much the same way as the `Rox::setup` method, so you can refer to the Rollout documentation for PHP [here](https://docs.cloudbees.com/docs/cloudbees-feature-management/latest/getting-started/php-sdk) for more information.
+
+```php
+// retrieve the OpenFeatureAPI instance
+$api = OpenFeatureAPI::getInstance();
+
+// setup the CloudBeesProvider with the default settings
+$provider = CloudBeesProvider::setup($apiKey);
+
+// set the OpenFeature provider
+$api->setProvider($provider);
+
+// retrieve an OpenFeatureClient
+$client = $api->getClient('cloudbees-example', '1.0');
+
+$flagValue = $client->getBooleanDetails('dev.openfeature.example_flag', true, null, null);
+
+// ... do work with the $flagValue
+
+// IMPORTANT! make sure to shutdown the CloudBees provider
+CloudBeesProvider::shutdown();
+
+```
 
 ## Development
 
