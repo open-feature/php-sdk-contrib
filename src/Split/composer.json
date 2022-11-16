@@ -103,6 +103,9 @@
     ],
     "dev:test:unit:debug": "phpunit --colors=always --testdox -d xdebug.profiler_enable=on",
     "dev:test:unit:setup": "cp ./tests/.split ~",
+    "dev:test:unit:teardown": "rm ~/.split",
+    "dev:test:integration:setup": "echo 'Setup for integration tests...'",
+    "dev:test:integration:teardown": "echo 'Tore down integration tests...'",
     "test": "@dev:test"
   },
   "scripts-descriptions": {

@@ -69,12 +69,17 @@ jobs:
 
     - name: Run PHPUnit (unit tests)
       working-directory: src/${{ matrix.project }}
-      run: vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover --testsuite unit
+      run: |
+        composer run dev:test:unit:setup
+        vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover --testsuite unit
+        composer run dev:test:unit:teardown
 
-    ### TODO: Implement integration testing
-    # - name: Run PHPUnit (integration tests)
-    #   working-directory: src/${{ matrix.project }}
-    #   run: vendor/bin/phpunit --testsuite integration
+    - name: Run PHPUnit (integration tests)
+      working-directory: src/${{ matrix.project }}
+      run: |
+        composer run dev:test:integration:setup
+        vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover --testsuite integration
+        composer run dev:test:integration:teardown
 
     ### TODO: Enable codecov support
     # - name: Code Coverage
