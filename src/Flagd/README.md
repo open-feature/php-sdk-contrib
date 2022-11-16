@@ -18,7 +18,7 @@ This package also builds on various PSRs (PHP Standards Recommendations) such as
 ## Installation
 
 ```
-$ composer require 0xc/openfeature-flagd-provider   // installs the latest version
+$ composer require open-feature/flagd-provider   // installs the latest version
 ```
 
 ## Usage
