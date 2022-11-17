@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace OpenFeature\Providers\CloudBees;
 
-use Exception;
 use OpenFeature\Providers\CloudBees\context\ContextAdapter;
 use OpenFeature\Providers\CloudBees\transformers\IdentityTransformer;
 use OpenFeature\Providers\CloudBees\transformers\JsonTransformer;
@@ -23,9 +22,7 @@ use Rox\Server\RoxOptions;
 use Throwable;
 
 use function call_user_func;
-use function is_bool;
 use function is_null;
-use function json_encode;
 
 class CloudBeesProvider extends AbstractProvider implements Provider
 {
@@ -101,15 +98,9 @@ class CloudBeesProvider extends AbstractProvider implements Provider
      */
     public function resolveObjectValue(string $flagKey, $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
     {
-        $stringifiedDefault = json_encode($defaultValue);
-
-        if (is_bool($stringifiedDefault)) {
-            throw new Exception('Invalid default value');
-        }
-
         return $this->resolve(
             $defaultValue,
-            fn () => Rox::dynamicApi()->getValue($flagKey, $stringifiedDefault, [/* TODO: Variations */], ContextAdapter::adapt($context)),
+            fn () => Rox::dynamicApi()->getValue($flagKey, 'anything', [/* TODO: Variations */], ContextAdapter::adapt($context)),
             new JsonTransformer(),
         );
     }

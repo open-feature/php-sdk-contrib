@@ -1,0 +1,22 @@
+[
+  {
+    "name": "dev.openfeature.bool_flag",
+    "expression": "true"
+  },
+  {
+    "name": "dev.openfeature.string_flag",
+    "expression": "\"string-value\""
+  },
+  {
+    "name": "dev.openfeature.int_flag",
+    "expression": "42"
+  },
+  {
+    "name": "dev.openfeature.float_flag",
+    "expression": "3.14"
+  },
+  {
+    "name": "dev.openfeature.object_flag",
+    "expression": "\"{\"name\":\"OpenFeature\",\"version\":\"1.0.0\"}'"
+  }
+]

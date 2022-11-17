@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 PORT="4444"
 CONTAINER_NAME="roxy-integration-test-server"
 
@@ -14,7 +16,9 @@ function server::start_roxy() {
 }
 
 function server::shutdown_roxy() {
-  docker stop $CONTAINER_NAME
+  if [ -n "$(docker ps -a --format='{{.Names}}' | grep -E "^$CONTAINER_NAME$")" ]; then
+    docker stop $CONTAINER_NAME
+  fi
 }
 
 function server::await_roxy() {
@@ -93,14 +97,6 @@ function client::__send() {
     data=""
   fi
 
-  # echo
-  # echo "client::__send()"
-  # echo "    method: $method"
-  # echo "    endpoint: $endpoint"
-  # echo "    data: $data"
-  # echo "    headers: $headers"
-  # echo
-
   curl --request $method \
       --header "$headers" \
       --data "$data" \
@@ -157,10 +153,10 @@ function main() {
   )
   declare -a flag_expressions=(
     "true"
-    "'"string-value"'"
+    "_string-value_"
     "42"
     "3.14"
-    "'{"name":"OpenFeature","version":"1.0.0"}'"
+    "_{_name_:_OpenFeature_,_version_:_1.0.0_}'"
   )
 
   names_length=${#flag_names[@]}
@@ -174,9 +170,12 @@ function main() {
   for (( i=0; i<${names_length}; i++ ));
   do
     echo "Seeding ${flag_names[$i]}..."
+    echo "${flag_expressions[$i]}"
     client::update_flag "${flag_names[$i]}" "${flag_expressions[$i]}"
     echo
   done
+
+  client::get_flags | jq .
 
   echo "Integration test suite ready!"
 }

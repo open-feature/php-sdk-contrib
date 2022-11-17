@@ -104,13 +104,14 @@
     "dev:test:unit:setup": "echo 'Setup for unit tests...'",
     "dev:test:unit:teardown": "echo 'Tore down unit tests...'",
     "dev:test:integration": [
+      "@dev:test:integration:teardown",
       "@dev:test:integration:setup",
       "phpunit --colors=always --testdox tests/integration",
       "@dev:test:integration:teardown"
     ],
     "dev:test:integration:debug": "phpunit --colors=always --testdox -d xdebug.profiler_enable=on tests/integration",
-    "dev:test:integration:setup": "bash scripts/scaffold-integration-tests.sh",
-    "dev:test:integration:teardown": "bash scripts/scaffold-integration-tests.sh stop",
+    "dev:test:integration:setup": "python3 scripts/scaffold-integration-tests.py",
+    "dev:test:integration:teardown": "python3 scripts/scaffold-integration-tests.py stop",
     "test": "@dev:test"
   },
   "scripts-descriptions": {
