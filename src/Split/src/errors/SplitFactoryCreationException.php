@@ -10,6 +10,6 @@ class SplitFactoryCreationException extends Exception
 {
     public function __construct()
     {
-        parent::__construct('Failed to create Split Factory');
+        parent::__construct('Failed to create Split Factory. Was it already instantiated elsewhere?');
     }
 }

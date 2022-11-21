@@ -1,0 +1,10 @@
+- dev.openfeature.bool_flag:
+  treatment: true
+- dev.openfeature.string_flag:
+  treatment: "string-value"
+- dev.openfeature.int_flag:
+  treatment: 42
+- dev.openfeature.float_flag:
+  treatment: 3.14
+- dev.openfeature.object_flag:
+  treatment: '{"name":"OpenFeature","version":"1.0.0"}'

@@ -31,6 +31,7 @@
     "friendsofphp/php-cs-fixer": "^3.13",
     "hamcrest/hamcrest-php": "^2.0",
     "mdwheele/zalgo": "^0.3.1",
+    "mikey179/vfsstream": "v1.6.11",
     "mockery/mockery": "^1.5",
     "phan/phan": "^5.4",
     "php-parallel-lint/php-console-highlighter": "^1.0",
@@ -99,11 +100,18 @@
     "dev:test:coverage:html": "phpunit --colors=always --coverage-html build/coverage/coverage-html/",
     "dev:test:unit": [
       "@dev:test:unit:setup",
-      "phpunit --colors=always --testdox"
+      "phpunit --colors=always --testdox --testsuite=unit",
+      "@dev:test:unit:teardown"
     ],
     "dev:test:unit:debug": "phpunit --colors=always --testdox -d xdebug.profiler_enable=on",
-    "dev:test:unit:setup": "cp ./tests/.split ~",
-    "dev:test:unit:teardown": "rm ~/.split",
+    "dev:test:unit:setup": "echo 'Setup for unit tests...'",
+    "dev:test:unit:teardown": "echo 'Tore down for unit tests...'",
+    "dev:test:integration": [
+      "@dev:test:integration:setup",
+      "phpunit --colors=always --testdox --testsuite=integration",
+      "@dev:test:integration:teardown"
+    ],
+    "dev:test:integration:debug": "phpunit --colors=always --testdox -d xdebug.profiler_enable=on",
     "dev:test:integration:setup": "echo 'Setup for integration tests...'",
     "dev:test:integration:teardown": "echo 'Tore down integration tests...'",
     "test": "@dev:test"
