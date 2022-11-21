@@ -48,7 +48,7 @@ class CloudBeesProviderTest extends TestCase
     {
         // Given
         $flagName = 'dev.openfeature.bool_flag';
-        $defaultValue =  false;
+        $defaultValue = false;
         $expectedValue = true;
 
         // When
@@ -64,7 +64,7 @@ class CloudBeesProviderTest extends TestCase
     {
         // Given
         $flagName = 'dev.openfeature.int_flag';
-        $defaultValue =  0;
+        $defaultValue = 0;
         $expectedValue = 42;
 
         // When
@@ -80,7 +80,7 @@ class CloudBeesProviderTest extends TestCase
     {
         // Given
         $flagName = 'dev.openfeature.float_flag';
-        $defaultValue =  0.0;
+        $defaultValue = 0.0;
         $expectedValue = 3.14;
 
         // When
@@ -96,7 +96,7 @@ class CloudBeesProviderTest extends TestCase
     {
         // Given
         $flagName = 'dev.openfeature.string_flag';
-        $defaultValue =  'default';
+        $defaultValue = 'default';
         $expectedValue = 'string-value';
 
         // When
