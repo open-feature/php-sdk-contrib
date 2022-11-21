@@ -3,10 +3,6 @@
 ![Experimental](https://img.shields.io/badge/experimental-breaking%20changes%20allowed-yellow)
 ![Alpha](https://img.shields.io/badge/alpha-release-red)
 
-## Disclaimer
-
-:warning: **Work in Progress** :warning:
-
 ## Overview
 
 The `php-contrib-sdk` repository is a monorepository containing various providers and hooks for OpenFeature's PHP SDK. Packages include:
