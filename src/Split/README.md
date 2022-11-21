@@ -1,13 +1,10 @@
 # OpenFeature SplitIO Provider for PHP
 
-![Experimental](https://img.shields.io/badge/experimental-breaking%20changes%20allowed-yellow)
-![Alpha](https://img.shields.io/badge/alpha-release-red)
-
-## Disclaimer
-
-:warning: **Work in Progress** :warning:
-
-_I'm throwing this project together as a potential demo-phase of OpenFeature for PHP utilizing the Split SDK. It is not complete and is very much work in progress._
+[![a](https://img.shields.io/badge/slack-%40cncf%2Fopenfeature-brightgreen?style=flat&logo=slack)](https://cloud-native.slack.com/archives/C0344AANLA1)
+[![Latest Stable Version](http://poser.pugx.org/open-feature/split-provider/v)](https://packagist.org/packages/open-feature/split-provider)
+[![Total Downloads](http://poser.pugx.org/open-feature/split-provider/downloads)](https://packagist.org/packages/open-feature/split-provider)
+![PHP 7.4+](https://img.shields.io/badge/php->=7.4-blue.svg)
+[![License](http://poser.pugx.org/open-feature/split-provider/license)](https://packagist.org/packages/open-feature/split-provider)
 
 ## Overview
 
