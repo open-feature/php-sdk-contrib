@@ -13,7 +13,7 @@ jobs:
       matrix:
         operating-system: [ubuntu-latest]
         php-version: ['7.4', '8.0', '8.1']
-        project: ['Flagd', 'Split']
+        project: ['Flagd', 'Split', 'CloudBees']
 
     # todo exclude some matrix combinations based on php version requirements
     # https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs#excluding-matrix-configurations
@@ -27,6 +27,11 @@ jobs:
         php-version: ${{ matrix.php-version }}
         coverage: xdebug
         extensions: ast, grpc
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10' 
 
     - name: Validate composer.json and composer.lock
       run: composer validate
@@ -69,12 +74,17 @@ jobs:
 
     - name: Run PHPUnit (unit tests)
       working-directory: src/${{ matrix.project }}
-      run: vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover --testsuite unit
+      run: |
+        composer run dev:test:unit:setup
+        vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover --testsuite unit
+        composer run dev:test:unit:teardown
 
-    ### TODO: Implement integration testing
-    # - name: Run PHPUnit (integration tests)
-    #   working-directory: src/${{ matrix.project }}
-    #   run: vendor/bin/phpunit --testsuite integration
+    - name: Run PHPUnit (integration tests)
+      working-directory: src/${{ matrix.project }}
+      run: |
+        composer run dev:test:integration:setup
+        vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover --testsuite integration
+        composer run dev:test:integration:teardown
 
     ### TODO: Enable codecov support
     # - name: Code Coverage

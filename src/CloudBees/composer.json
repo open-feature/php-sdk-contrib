@@ -1,14 +1,15 @@
 {
-  "name": "open-feature/split-provider",
-  "description": "The Split provider package for OpenFeature",
+  "name": "open-feature/cloudbees-provider",
+  "description": "The CloudBees provider package for OpenFeature",
   "license": "Apache-2.0",
   "type": "library",
   "keywords": [
     "featureflags",
     "featureflagging",
     "openfeature",
-    "split",
-    "splitio",
+    "cloudbees",
+    "rox",
+    "rollout",
     "provider"
   ],
   "authors": [
@@ -24,7 +25,7 @@
   "require": {
     "php": "^7.4 || ^8",
     "open-feature/sdk": "^0.1.0",
-    "splitsoftware/split-sdk-php": "^7.1"
+    "rollout/rox": "^5.0"
   },
   "require-dev": {
     "ergebnis/composer-normalize": "^2.25",
@@ -52,12 +53,12 @@
   "prefer-stable": true,
   "autoload": {
     "psr-4": {
-      "OpenFeature\\Providers\\Split\\": "src/"
+      "OpenFeature\\Providers\\CloudBees\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "OpenFeature\\Providers\\Split\\Test\\": "tests/"
+      "OpenFeature\\Providers\\CloudBees\\Test\\": "tests/"
     }
   },
   "config": {
@@ -93,19 +94,24 @@
     "dev:test": [
       "@dev:lint",
       "@dev:analyze",
-      "@dev:test:unit"
+      "@dev:test:unit",
+      "@dev:test:integration"
     ],
     "dev:test:coverage:ci": "phpunit --colors=always --coverage-text --coverage-clover build/coverage/clover.xml --coverage-cobertura build/coverage/cobertura.xml --coverage-crap4j build/coverage/crap4j.xml --coverage-xml build/coverage/coverage-xml --log-junit build/junit.xml",
     "dev:test:coverage:html": "phpunit --colors=always --coverage-html build/coverage/coverage-html/",
-    "dev:test:unit": [
-      "@dev:test:unit:setup",
-      "phpunit --colors=always --testdox"
+    "dev:test:unit": "phpunit --colors=always --testdox tests/unit",
+    "dev:test:unit:debug": "phpunit --colors=always --testdox -d xdebug.profiler_enable=on tests/unit",
+    "dev:test:unit:setup": "echo 'Setup for unit tests...'",
+    "dev:test:unit:teardown": "echo 'Tore down unit tests...'",
+    "dev:test:integration": [
+      "@dev:test:integration:teardown",
+      "@dev:test:integration:setup",
+      "phpunit --colors=always --testdox tests/integration",
+      "@dev:test:integration:teardown"
     ],
-    "dev:test:unit:debug": "phpunit --colors=always --testdox -d xdebug.profiler_enable=on",
-    "dev:test:unit:setup": "cp ./tests/.split ~",
-    "dev:test:unit:teardown": "rm ~/.split",
-    "dev:test:integration:setup": "echo 'Setup for integration tests...'",
-    "dev:test:integration:teardown": "echo 'Tore down integration tests...'",
+    "dev:test:integration:debug": "phpunit --colors=always --testdox -d xdebug.profiler_enable=on tests/integration",
+    "dev:test:integration:setup": "python3 scripts/scaffold-integration-tests.py",
+    "dev:test:integration:teardown": "python3 scripts/scaffold-integration-tests.py stop",
     "test": "@dev:test"
   },
   "scripts-descriptions": {
