@@ -15,6 +15,10 @@ CloudBees Feature Management is designed to release, control, and measure featur
 
 This package also builds on various PSRs (PHP Standards Recommendations) such as the Logger interfaces (PSR-3) and the Basic and Extended Coding Standards (PSR-1 and PSR-12).
 
+### Limitations
+
+There is [an open issue](https://github.com/rollout/rox-php/issues/37) with object deserialization in the upstream library used for Rollout, CloudBees Feature Management SDK for PHP. Objects are also not first-class citizens of the feature management system, as in there is no direct "object" retrieval. Instead the OpenFeature provider builds upon the string retrieval with JSON as the expected format. This doesn't _really_ work though, due to the open issue above. Once that is resolved, JSON objects saved in CloudBees Feature Management system will simply be accessible.
+
 ## Installation
 
 ```
