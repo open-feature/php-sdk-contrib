@@ -33,6 +33,9 @@ class SplitProvider extends AbstractProvider implements Provider
 {
     protected const NAME = 'SplitProvider';
 
+    /** The Split factory will only be created one time */
+    private static SplitFactoryInterface $factory;
+
     private ClientInterface $client;
 
     /**
@@ -51,16 +54,16 @@ class SplitProvider extends AbstractProvider implements Provider
      */
     public function __construct(?string $apiKey = '', $options = [])
     {
-        /** @var SplitFactoryInterface|null $factory */
-        $factory = Sdk::factory($apiKey, $options);
-
-        if (is_null($factory)) {
+        if (isset(self::$factory)) {
+            $factory = self::$factory;
+        } else {
             /** @var SplitFactoryInterface|null $factory */
-            $factory = Di::get(Di::KEY_FACTORY_TRACKER);
-
+            $factory = Sdk::factory($apiKey, $options);
             if (is_null($factory)) {
                 throw new SplitFactoryCreationException();
             }
+
+            self::$factory = $factory;
         }
 
         $this->client = $factory->client();
@@ -75,7 +78,7 @@ class SplitProvider extends AbstractProvider implements Provider
     {
         $logger = Di::getLogger();
 
-        return is_null($logger) ? new NullLogger() : $logger;
+        return $logger instanceof LoggerInterface ? $logger : new NullLogger();
     }
 
     public function resolveBooleanValue(string $flagKey, bool $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
@@ -125,7 +128,9 @@ class SplitProvider extends AbstractProvider implements Provider
                 throw new InvalidTreatmentTypeException();
             }
 
-            return ResolutionDetailsFactory::fromSuccess(TreatmentParser::parse($flagType, $treatment));
+            return ResolutionDetailsFactory::fromSuccess(
+                TreatmentParser::parse($flagType, $treatment),
+            );
         } catch (Throwable $err) {
             $detailsBuilder = new ResolutionDetailsBuilder();
 
@@ -134,7 +139,9 @@ class SplitProvider extends AbstractProvider implements Provider
             if ($err instanceof ThrowableWithResolutionError) {
                 $detailsBuilder->withError($err->getResolutionError());
             } else {
-                $detailsBuilder->withError(new ResolutionError(ErrorCode::GENERAL(), $err->getMessage()));
+                $detailsBuilder->withError(
+                    new ResolutionError(ErrorCode::GENERAL(), $err->getMessage()),
+                );
             }
 
             return $detailsBuilder->build();
