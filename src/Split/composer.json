@@ -94,7 +94,8 @@
     "dev:test": [
       "@dev:lint",
       "@dev:analyze",
-      "@dev:test:unit"
+      "@dev:test:unit",
+      "@dev:test:integration"
     ],
     "dev:test:coverage:ci": "phpunit --colors=always --coverage-text --coverage-clover build/coverage/clover.xml --coverage-cobertura build/coverage/cobertura.xml --coverage-crap4j build/coverage/crap4j.xml --coverage-xml build/coverage/coverage-xml --log-junit build/junit.xml",
     "dev:test:coverage:html": "phpunit --colors=always --coverage-html build/coverage/coverage-html/",
