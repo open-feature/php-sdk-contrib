@@ -59,10 +59,10 @@ class SplitProvider extends AbstractProvider implements Provider
         } else {
             /** @var SplitFactoryInterface|null $factory */
             $factory = Sdk::factory($apiKey, $options);
-            
+
             self::$factory = $factory;
         }
-        
+
         if (is_null($factory)) {
             throw new SplitFactoryCreationException();
         }

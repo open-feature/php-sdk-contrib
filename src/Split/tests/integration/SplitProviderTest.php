@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace OpenFeature\Providers\Split\Test\integration;
 
-use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\Providers\Split\SplitProvider;
 use OpenFeature\Providers\Split\Test\TestCase;
+use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\interfaces\provider\Provider;
 use Psr\Log\NullLogger;
 
@@ -37,13 +37,13 @@ class SplitProviderTest extends TestCase
         // Then
         $this->assertNotNull($provider);
         $this->assertInstanceOf(Provider::class, $provider);
-    }    
+    }
 
     public function testCanResolveBoolean(): void
     {
         // Given
         $expectedValue = true;
-        
+
         // When
         $actualDetails = $this->provider->resolveBooleanValue('dev.openfeature.bool_flag', false, $this->evaluationContext);
         $actualValue = $actualDetails->getValue();
@@ -57,7 +57,7 @@ class SplitProviderTest extends TestCase
         // Given
         $expectedValue = true;
         $defaultValue = $expectedValue;
-        
+
         // When
         $actualDetails = $this->provider->resolveBooleanValue('dev.openfeature.bool_flag', $defaultValue, null);
         $actualValue = $actualDetails->getValue();
@@ -70,7 +70,7 @@ class SplitProviderTest extends TestCase
     {
         // Given
         $expectedValue = 3.14;
-                
+
         // When
         $actualDetails = $this->provider->resolveFloatValue('dev.openfeature.float_flag', 0.0, $this->evaluationContext);
         $actualValue = $actualDetails->getValue();
@@ -84,7 +84,7 @@ class SplitProviderTest extends TestCase
         // Given
         $expectedValue = 3.14;
         $defaultValue = $expectedValue;
-                
+
         // When
         $actualDetails = $this->provider->resolveFloatValue('dev.openfeature.float_flag', $defaultValue, null);
         $actualValue = $actualDetails->getValue();
@@ -97,7 +97,7 @@ class SplitProviderTest extends TestCase
     {
         // Given
         $expectedValue = 42;
-        
+
         // When
         $actualDetails = $this->provider->resolveIntegerValue('dev.openfeature.int_flag', 0, $this->evaluationContext);
         $actualValue = $actualDetails->getValue();
@@ -111,7 +111,7 @@ class SplitProviderTest extends TestCase
         // Given
         $expectedValue = 42;
         $defaultValue = $expectedValue;
-        
+
         // When
         $actualDetails = $this->provider->resolveIntegerValue('dev.openfeature.int_flag', $defaultValue, null);
         $actualValue = $actualDetails->getValue();
@@ -123,8 +123,8 @@ class SplitProviderTest extends TestCase
     public function testCanResolveObject(): void
     {
         // Given
-        $expectedValue = ["name"=>"OpenFeature","version"=>"1.0.0"];
-        
+        $expectedValue = ['name' => 'OpenFeature', 'version' => '1.0.0'];
+
         // When
         $actualDetails = $this->provider->resolveObjectValue('dev.openfeature.object_flag', [], $this->evaluationContext);
         $actualValue = $actualDetails->getValue();
@@ -136,9 +136,9 @@ class SplitProviderTest extends TestCase
     public function testCanResolveObjectDefaultValueWhenErrorOccurs(): void
     {
         // Given
-        $expectedValue = ["name"=>"OpenFeature","version"=>"1.0.0"];
+        $expectedValue = ['name' => 'OpenFeature', 'version' => '1.0.0'];
         $defaultValue = $expectedValue;
-        
+
         // When
         $actualDetails = $this->provider->resolveObjectValue('dev.openfeature.object_flag', $defaultValue, null);
         $actualValue = $actualDetails->getValue();
@@ -151,7 +151,7 @@ class SplitProviderTest extends TestCase
     {
         // Given
         $expectedValue = 'string-value';
-        
+
         // When
         $actualDetails = $this->provider->resolveStringValue('dev.openfeature.string_flag', 'not-the-string-value', $this->evaluationContext);
         $actualValue = $actualDetails->getValue();
@@ -165,7 +165,7 @@ class SplitProviderTest extends TestCase
         // Given
         $expectedValue = 'string-value';
         $defaultValue = $expectedValue;
-        
+
         // When
         $actualDetails = $this->provider->resolveStringValue('dev.openfeature.string_flag', $defaultValue, null);
         $actualValue = $actualDetails->getValue();

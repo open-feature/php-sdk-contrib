@@ -34,8 +34,7 @@ class SplitProviderTest extends TestCase
         $splitFs = vfsStream::setup('root', 0777, [
             '.split' => '',
         ]);
-        $splitFile = $splitFs->getChild('.split')->url();
 
-        return $splitFile;
+        return $splitFs->getChild('.split')->url();
     }
 }
