@@ -30,7 +30,7 @@ class TreatmentParser
                 return (int) $value;
             case FlagValueType::OBJECT:
                 /** @var mixed[] $object */
-                $object = json_decode($value);
+                $object = json_decode($value, true);
 
                 return $object;
             case FlagValueType::STRING:
