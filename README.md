@@ -1,7 +1,9 @@
 # OpenFeature PHP SDK Contrib Library
 
-![Experimental](https://img.shields.io/badge/experimental-breaking%20changes%20allowed-yellow)
-![Alpha](https://img.shields.io/badge/alpha-release-red)
+[![a](https://img.shields.io/badge/slack-%40cncf%2Fopenfeature-brightgreen?style=flat&logo=slack)](https://cloud-native.slack.com/archives/C0344AANLA1)
+![PHP 7.4+](https://img.shields.io/badge/php->=7.4-blue.svg)
+![License](https://img.shields.io/github/license/open-feature/php-sdk-contrib)
+![Experimental](https://img.shields.io/badge/Status-Experimental-yellow)
 
 ## Overview
 
@@ -10,6 +12,10 @@ The `php-contrib-sdk` repository is a monorepository containing various provider
 - [Flagd](./src/Flagd/README.md)
 - [Split](./src/Split/README.md)
 - [CloudBees](./src/CloudBees/README.md)
+
+### Status
+
+This repository is marked as **experimental** since the repository structure itself could change. However, each the packages within the repository maintains its own release status.
 
 ## Development
 
