@@ -27,7 +27,7 @@ class TreatmentValidator
         switch ($flagType) {
             case FlagValueType::BOOLEAN:
                 return is_bool(
-                    filter_var($value, FILTER_NULL_ON_FAILURE | FILTER_VALIDATE_BOOLEAN),
+                    filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE),
                 );
             case FlagValueType::FLOAT:
             case FlagValueType::INTEGER:
