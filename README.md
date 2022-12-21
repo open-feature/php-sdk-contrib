@@ -9,9 +9,12 @@
 
 The `php-contrib-sdk` repository is a monorepository containing various providers and hooks for OpenFeature's PHP SDK. Packages include:
 
-- [Flagd](./src/Flagd/README.md)
-- [Split](./src/Split/README.md)
-- [CloudBees](./src/CloudBees/README.md)
+- Providers
+  - [Flagd](./providers/Flagd/README.md)
+  - [Split](./providers/Split/README.md)
+  - [CloudBees](./providers/CloudBees/README.md)
+- Hooks
+  - [OpenTelemetry](./hooks/OpenTelemetry/README.md)
 
 ### Status
 

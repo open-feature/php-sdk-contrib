@@ -6,11 +6,13 @@ project_url: "https://github.com/open-feature/php-sdk-contrib.git"
 
 # List of splits.
 splits:
-  - prefix: "src/Flagd"
+  - prefix: "hooks/OpenTelemetry"
+    target: "https://${GH_TOKEN}@github.com/open-feature-php/otel-hook.git"
+  - prefix: "providers/Flagd"
     target: "https://${GH_TOKEN}@github.com/open-feature-php/flagd-provider.git"
-  - prefix: "src/Split"
+  - prefix: "providers/Split"
     target: "https://${GH_TOKEN}@github.com/open-feature-php/split-provider.git"
-  - prefix: "src/CloudBees"
+  - prefix: "providers/CloudBees"
     target: "https://${GH_TOKEN}@github.com/open-feature-php/cloudbees-provider.git"
 
 # List of references to split (defined as regexp)
