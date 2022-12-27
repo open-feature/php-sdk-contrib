@@ -1,14 +1,14 @@
 {
-  "name": "open-feature/split-provider",
-  "description": "The Split provider package for OpenFeature",
+  "name": "open-feature/otel-hook",
+  "description": "The OpenTelemetry hook package for OpenFeature",
   "license": "Apache-2.0",
   "type": "library",
   "keywords": [
     "featureflags",
     "featureflagging",
     "openfeature",
-    "split",
-    "splitio",
+    "otel",
+    "opentelemetry",
     "provider"
   ],
   "authors": [
@@ -24,8 +24,7 @@
   "require": {
     "php": "^7.4 || ^8",
     "open-feature/sdk": "^1.1.0",
-    "open-telemetry/api": "^0.0.17",
-    "splitsoftware/split-sdk-php": "^7.1"
+    "open-telemetry/api": "^0.0.17"
   },
   "require-dev": {
     "ergebnis/composer-normalize": "^2.25",
