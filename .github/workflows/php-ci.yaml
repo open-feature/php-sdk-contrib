@@ -86,7 +86,7 @@ jobs:
     - name: Run PHPUnit (integration tests)
       working-directory: ${{ matrix.project-dir }}
       run: |
-        composer run dev:test:integration
+        composer run dev:test:integration:setup
         vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover --testsuite integration
         composer run dev:test:integration:teardown
 
