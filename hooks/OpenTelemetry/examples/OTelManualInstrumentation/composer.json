@@ -1,0 +1,21 @@
+{
+    "name": "open-feature/otel-manual-instrumentation-example",
+    "description": "An example of using the OpenTelemetry hook for OpenFeature with manual instrumentation",
+    "type": "project",
+    "license": "Apache-2.0",
+    "autoload": {
+        "psr-4": {
+            "OpenFeature\\Providers\\Examples\\SplitSdkExample\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Tom Carrio",
+            "email": "tom@carrio.dev"
+        }
+    ],
+    "require": {
+        "open-feature/sdk": "^1.1.2",
+        "open-telemetry/api": "^0.0.17"
+    }
+}

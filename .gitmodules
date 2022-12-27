@@ -1,3 +1,6 @@
 [submodule "schemas"]
-	path = src/Flagd/schemas
+	path = providers/Flagd/schemas
+	url = https://github.com/tcarrio/schemas/
+[submodule "providers/Flagd/schemas"]
+	path = providers/Flagd/schemas
 	url = https://github.com/tcarrio/schemas/

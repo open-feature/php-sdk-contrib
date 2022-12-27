@@ -12,8 +12,12 @@ jobs:
     strategy:
       matrix:
         operating-system: [ubuntu-latest]
-        php-version: ['7.4', '8.0', '8.1']
-        project: ['Flagd', 'Split', 'CloudBees']
+        php-version: ['7.4', '8.0', '8.1', '8.2']
+        project-dir:
+          - hooks/OpenTelemetry
+          - providers/Flagd
+          - providers/Split
+          - providers/CloudBees
 
     # todo exclude some matrix combinations based on php version requirements
     # https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs#excluding-matrix-configurations
@@ -40,47 +44,47 @@ jobs:
       id: composer-cache
       uses: actions/cache@v3
       with:
-        path: src/${{ matrix.project }}/vendor
+        path: ${{ matrix.project-dir }}/vendor
         key: ${{ runner.os }}-${{ matrix.php-version }}-php-${{ hashFiles('**/composer.json') }}
         restore-keys: |
           ${{ runner.os }}-${{ matrix.php-version }}-php-
 
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
-      working-directory: src/${{ matrix.project }}
+      working-directory: ${{ matrix.project-dir }}
       run: composer install --prefer-dist --no-progress --no-suggest
 
     - name: Validate Packages composer.json
-      working-directory: src/${{ matrix.project }}
+      working-directory: ${{ matrix.project-dir }}
       run: composer validate
 
     - name: Check Style
-      working-directory: src/${{ matrix.project }}
+      working-directory: ${{ matrix.project-dir }}
       run: vendor/bin/phpcs
 
     - name: Run Phan
-      working-directory: src/${{ matrix.project }}
+      working-directory: ${{ matrix.project-dir }}
       env:
         PHAN_DISABLE_XDEBUG_WARN: 1
       run: vendor/bin/phan
 
     - name: Run Psalm
-      working-directory: src/${{ matrix.project }}
+      working-directory: ${{ matrix.project-dir }}
       run: vendor/bin/psalm --output-format=github --php-version=${{ matrix.php-version }}
 
     - name: Run Phpstan
-      working-directory: src/${{ matrix.project }}
+      working-directory: ${{ matrix.project-dir }}
       run: vendor/bin/phpstan analyse --error-format=github
 
     - name: Run PHPUnit (unit tests)
-      working-directory: src/${{ matrix.project }}
+      working-directory: ${{ matrix.project-dir }}
       run: |
         composer run dev:test:unit:setup
         vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover --testsuite unit
         composer run dev:test:unit:teardown
 
     - name: Run PHPUnit (integration tests)
-      working-directory: src/${{ matrix.project }}
+      working-directory: ${{ matrix.project-dir }}
       run: |
         composer run dev:test:integration:setup
         vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover --testsuite integration
@@ -88,7 +92,7 @@ jobs:
 
     ### TODO: Enable codecov support
     # - name: Code Coverage
-    #   working-directory: src/${{ matrix.project }}
+    #   working-directory: ${{ matrix.project-dir }}
     #   run: bash <(curl -s https://codecov.io/bash) -F ${{ matrix.php-version }}
 
   ### TODO: Replicate any necessary package checks
