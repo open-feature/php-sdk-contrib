@@ -8,6 +8,8 @@ project_url: "https://github.com/open-feature/php-sdk-contrib.git"
 splits:
   - prefix: "hooks/OpenTelemetry"
     target: "https://${GH_TOKEN}@github.com/open-feature-php/otel-hook.git"
+  - prefix: "hooks/DDTrace"
+    target: "https://${GH_TOKEN}@github.com/open-feature-php/dd-trace-hook.git"
   - prefix: "providers/Flagd"
     target: "https://${GH_TOKEN}@github.com/open-feature-php/flagd-provider.git"
   - prefix: "providers/Split"
