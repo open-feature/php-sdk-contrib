@@ -15,6 +15,7 @@ The `php-contrib-sdk` repository is a monorepository containing various provider
   - [CloudBees](./providers/CloudBees/README.md)
 - Hooks
   - [OpenTelemetry](./hooks/OpenTelemetry/README.md)
+  - [Datadog](./hooks/DDTrace/README.md)
 
 ### Status
 
