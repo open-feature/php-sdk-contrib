@@ -23,7 +23,7 @@
   ],
   "require": {
     "php": "^7.4 || ^8",
-    "open-feature/sdk": "^1.1.0",
+    "open-feature/sdk": "^1.2.0",
     "open-telemetry/api": "^0.0.17"
   },
   "require-dev": {
@@ -54,7 +54,10 @@
   "autoload": {
     "psr-4": {
       "OpenFeature\\Hooks\\OpenTelemetry\\": "src"
-    }
+    },
+    "files": [
+      "src/_autoload.php"
+    ]
   },
   "autoload-dev": {
     "psr-4": {
@@ -109,7 +112,7 @@
     "dev:test:unit:teardown": "echo 'Tore down for unit tests...'",
     "dev:test:integration": [
       "@dev:test:integration:setup",
-      "echo 'No integration tests to run'",
+      "phpunit --colors=always --testdox --testsuite=integration",
       "@dev:test:integration:teardown"
     ],
     "dev:test:integration:debug": "phpunit --colors=always --testdox -d xdebug.profiler_enable=on",

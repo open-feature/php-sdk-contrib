@@ -10,13 +10,7 @@
         }
     ],
     "require": {
-        "guzzlehttp/guzzle": "*",
-        "php-http/guzzle7-adapter": "*",
-        "slim/slim": "~4",
-        "php-di/php-di": "^6.3",
-        "php-di/slim-bridge": "^3.2",
         "open-telemetry/api": "0.0.17",
-        "open-telemetry/sdk": "0.0.17",
         "open-feature/sdk": "^1.2.0"
     }
 }

@@ -15,6 +15,6 @@
         }
     ],
     "require": {
-        "open-feature/sdk": "^0.0.5"
+        "open-feature/sdk": "^1.2.0"
     }
 }

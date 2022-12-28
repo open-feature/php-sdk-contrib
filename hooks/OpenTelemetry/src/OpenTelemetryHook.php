@@ -42,7 +42,7 @@ class OpenTelemetryHook implements Hook
             self::$instance = new OpenTelemetryHook();
         }
 
-        if (self::$registeredHook) {
+        if (self::$registeredHook && self::isRegisteredInHooks()) {
             return;
         }
 
@@ -87,5 +87,22 @@ class OpenTelemetryHook implements Hook
     public function supportsFlagValueType(string $flagValueType): bool
     {
         return true;
+    }
+
+    /**
+     * Hooks can be cleared by other means so we can't simply memoize whether a registration has occurred
+     *
+     * However if no registration has yet happened then we can absolutely determine that the hook will
+     * not be registered yet.
+     */
+    private static function isRegisteredInHooks(): bool
+    {
+        foreach (OpenFeatureAPI::getInstance()->getHooks() as $hook) {
+            if ($hook instanceof OpenTelemetryHook) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
