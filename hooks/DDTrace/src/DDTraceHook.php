@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace OpenFeature\Hooks\DDTrace;
 
+use DDTrace\GlobalTracer;
+use DDTrace\Span;
+use DDTrace\Tag;
 use DateTimeImmutable;
 use OpenFeature\OpenFeatureAPI;
 use OpenFeature\interfaces\flags\EvaluationContext;
@@ -11,9 +14,9 @@ use OpenFeature\interfaces\hooks\Hook;
 use OpenFeature\interfaces\hooks\HookContext;
 use OpenFeature\interfaces\hooks\HookHints;
 use OpenFeature\interfaces\provider\ResolutionDetails;
-use DDTrace\API\Trace\Span;
-use Psr\Log\LogLevel;
 use Throwable;
+
+use function class_exists;
 
 /**
  * Creates a DDTrace hook for OpenFeature. This emits a structured log event
@@ -68,10 +71,10 @@ class DDTraceHook implements Hook
         }
 
         $span->log([
-            \DDTrace\Tag::LOG_MESSAGE => [
+            Tag::LOG_MESSAGE => [
                 self::FLAG_KEY => $context->getFlagKey(),
                 self::FLAG_PROVIDER_NAME => OpenFeatureAPI::getInstance()->getProvider()->getMetadata()->getName(),
-                self::FLAG_VARIANT => $details->getVariant()
+                self::FLAG_VARIANT => $details->getVariant(),
             ],
         ], new DateTimeImmutable('now'));
     }
@@ -84,9 +87,9 @@ class DDTraceHook implements Hook
         }
 
         $span->log([
-            \DDTrace\Tag::LOG_ERROR_OBJECT => [
+            Tag::LOG_ERROR_OBJECT => [
                 self::FLAG_KEY => $context->getFlagKey(),
-                self::FLAG_PROVIDER_NAME => OpenFeatureAPI::getInstance()->getProvider()->getMetadata()->getName()
+                self::FLAG_PROVIDER_NAME => OpenFeatureAPI::getInstance()->getProvider()->getMetadata()->getName(),
             ],
         ], new DateTimeImmutable('now'));
     }
@@ -118,13 +121,13 @@ class DDTraceHook implements Hook
         return false;
     }
 
-    private static function getCurrentSpan(): \DDTrace\Span|null
+    private static function getCurrentSpan(): Span | null
     {
-        if (!class_exists(\DDTrace\GlobalTracer::class)) {
+        if (!class_exists(GlobalTracer::class)) {
             return null;
         }
 
-        $tracer = \DDTrace\GlobalTracer::get();
+        $tracer = GlobalTracer::get();
         if (!$tracer) {
             return null;
         }
