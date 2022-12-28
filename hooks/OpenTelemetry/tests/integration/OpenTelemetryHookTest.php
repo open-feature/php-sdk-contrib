@@ -18,8 +18,7 @@ class OpenTelemetryHookTest extends TestCase
         $api->clearHooks();
 
         // When
-        // simulates the composer autoload
-        require_once __DIR__ . '/../../src/_autoload.php';
+        $this->simulateAutoload();
 
         // Then
         $this->assertNotEmpty($api->getHooks());
@@ -38,5 +37,10 @@ class OpenTelemetryHookTest extends TestCase
         // Then
         $this->assertNotEmpty($api->getHooks());
         $this->assertInstanceOf(Hook::class, $api->getHooks()[0]);
+    }
+
+    private function simulateAutoload(): void
+    {
+        require_once __DIR__ . '/../../src/_autoload.php';
     }
 }
