@@ -45,7 +45,7 @@ class OpenTelemetryHookTest extends TestCase
 
     private function simulateAutoload(): void
     {
-        require_once __DIR__ . '/../../src/_autoload.php';
+        require __DIR__ . '/../../src/_autoload.php';
     }
 
     private function isAutoloadSupported(): bool
