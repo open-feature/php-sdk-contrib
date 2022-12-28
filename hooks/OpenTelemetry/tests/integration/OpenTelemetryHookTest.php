@@ -11,7 +11,7 @@ use OpenFeature\interfaces\hooks\Hook;
 
 class OpenTelemetryHookTest extends TestCase
 {
-    public function testIsRegisteredAutomatically(): void
+    public function testAutoload(): void
     {
         // Given
         $api = OpenFeatureAPI::getInstance();
