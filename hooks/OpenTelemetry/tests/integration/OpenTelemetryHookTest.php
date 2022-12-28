@@ -9,9 +9,6 @@ use OpenFeature\Hooks\OpenTelemetry\Test\TestCase;
 use OpenFeature\OpenFeatureAPI;
 use OpenFeature\interfaces\hooks\Hook;
 
-use function phpversion;
-use function preg_match;
-
 class OpenTelemetryHookTest extends TestCase
 {
     public function testIsRegisteredAutomatically(): void
