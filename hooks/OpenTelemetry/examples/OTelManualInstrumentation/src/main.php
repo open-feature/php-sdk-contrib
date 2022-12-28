@@ -32,7 +32,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Routing\RouteContext;
 
-// Registering the OTel hook requires only the following!
+// Manually registering the OTel hook requires only the following!
 // The rest of the work is simply using OpenFeature as you normally would
 // The current context span will be used to emit trace events.
 OpenTelemetryHook::register();

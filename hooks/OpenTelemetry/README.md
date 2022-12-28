@@ -14,7 +14,7 @@ This package also builds on various PSRs (PHP Standards Recommendations) such as
 
 ### Autoloading
 
-For version of PHP 8 and higher, this package supports Composer autoloading. Thus, simply installing the package is all you need in order to immediately get started with OpenTracing for OpenFeature!
+This package supports Composer autoloading. Thus, simply installing the package is all you need in order to immediately get started with OpenTracing for OpenFeature! Examples are provided that showcase the simple setup as well. Check out the Usage section for more info.
 
 ### OpenTelemetry Package Status
 
@@ -40,6 +40,8 @@ OpenTelemetryHook::register();
 ```
 
 For more information on OpenTelemetry, check out [their documentation](https://opentelemetry.io/docs/instrumentation/php/).
+
+For more examples, see the [examples](./examples/).
 
 ## Development
 
