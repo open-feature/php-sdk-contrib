@@ -1,0 +1,16 @@
+{
+    "name": "open-feature/dd-trace-manual-instrumentation-example",
+    "description": "An example of using the DDTrace hook for OpenFeature with manual instrumentation",
+    "type": "project",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Tom Carrio",
+            "email": "tom@carrio.dev"
+        }
+    ],
+    "require": {
+        "open-feature/sdk": "^1.2.0",
+        "datadog/dd-trace": "^0.82.0"
+    }
+}
