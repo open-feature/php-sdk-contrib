@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace OpenFeature\Hooks\DDTrace;
 
+use DDTrace\Contracts\Span;
 use DDTrace\GlobalTracer;
-use DDTrace\Span;
 use DDTrace\Tag;
 use DateTimeImmutable;
 use OpenFeature\OpenFeatureAPI;
@@ -121,17 +121,12 @@ class DDTraceHook implements Hook
         return false;
     }
 
-    private static function getCurrentSpan(): Span | null
+    private static function getCurrentSpan(): ?Span
     {
         if (!class_exists(GlobalTracer::class)) {
             return null;
         }
 
-        $tracer = GlobalTracer::get();
-        if (!$tracer) {
-            return null;
-        }
-
-        return $tracer->getActiveSpan();
+        return GlobalTracer::get()->getActiveSpan();
     }
 }
