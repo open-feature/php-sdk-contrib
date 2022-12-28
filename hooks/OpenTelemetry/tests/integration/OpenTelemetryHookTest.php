@@ -25,7 +25,7 @@ class OpenTelemetryHookTest extends TestCase
 
         // Then
 
-        $this->assertCount($this->isAutoloadSupported() ? 1 : 0, $api->getHooks());
+        $this->assertCount(1, $api->getHooks());
         $this->assertInstanceOf(Hook::class, $api->getHooks()[0]);
     }
 
@@ -39,23 +39,12 @@ class OpenTelemetryHookTest extends TestCase
         OpenTelemetryHook::register();
 
         // Then
-        $this->assertNotEmpty($api->getHooks());
+        $this->assertCount(1, $api->getHooks());
         $this->assertInstanceOf(Hook::class, $api->getHooks()[0]);
     }
 
     private function simulateAutoload(): void
     {
         require __DIR__ . '/../../src/_autoload.php';
-    }
-
-    private function isAutoloadSupported(): bool
-    {
-        $version = phpversion();
-
-        if (!$version) {
-            return false;
-        }
-
-        return preg_match('/8\..+/', $version) === 1;
     }
 }
