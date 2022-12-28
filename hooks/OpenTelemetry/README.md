@@ -12,6 +12,10 @@ OpenTelemetry is an open specification for distributed tracing, metrics, and log
 
 This package also builds on various PSRs (PHP Standards Recommendations) such as the Logger interfaces (PSR-3) and the Basic and Extended Coding Standards (PSR-1 and PSR-12).
 
+### Autoloading
+
+For version of PHP 8 and higher, this package supports Composer autoloading. Thus, simply installing the package is all you need in order to immediately get started with OpenTracing for OpenFeature!
+
 ### OpenTelemetry Package Status
 
 The OpenTelemetry package for PHP is still in beta, so there could be changes required. However, it exposes global primitives for span retrieval that should not require any configuration upfront for the provider to just work.
