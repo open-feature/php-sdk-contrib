@@ -14,7 +14,7 @@ This package also builds on various PSRs (PHP Standards Recommendations) such as
 
 ### Design
 
-OpenTracing is now an archived project of the CNCF, with suggestions to move towards DDTrace. Feel free to check out our [DDTrace hook for OpenFeature](../DDTrace/README.md) as well. DDTrace defines a semantic convention for feature flagging which is utilized in this hook to report flag evaluations, which is the basis for the log events being performed in this library for `dd-trace`.
+OpenTracing is now an archived project of the CNCF, with suggestions to move towards OpenTelemetry. Feel free to check out our [OpenTelemetry hook for OpenFeature](../OpenTelemetry/README.md) as well. OpenTelemetry defines a semantic convention for feature flagging which is utilized in this hook to report flag evaluations, which is the basis for the log events being performed in this library for `dd-trace`.
 
 ### Autoloading
 
