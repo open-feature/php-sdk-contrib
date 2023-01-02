@@ -14,8 +14,8 @@ This package also builds on various PSRs (PHP Standards Recommendations) such as
 
 ## Installation
 
-```
-$ composer require open-feature/flagd-provider   // installs the latest version
+```sh
+composer require open-feature/flagd-provider
 ```
 
 ## Usage
