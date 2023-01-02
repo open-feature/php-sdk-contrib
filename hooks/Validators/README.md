@@ -14,15 +14,15 @@ This package also builds on various PSRs (PHP Standards Recommendations) such as
 
 ## Installation
 
-```
-$ composer require open-feature/validators-hook   // installs the latest version
+```sh
+composer require open-feature/validators-hook
 ```
 
 ## Usage
 
 The following validator hook constructs are available, but more are being worked on over time:
 
-- `RegexpValidatorHoook`
+- `RegexpValidatorHook`
 
 
 ```php
