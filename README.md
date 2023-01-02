@@ -16,6 +16,7 @@ The `php-contrib-sdk` repository is a monorepository containing various provider
 - Hooks
   - [OpenTelemetry](./hooks/OpenTelemetry/README.md)
   - [Datadog](./hooks/DDTrace/README.md)
+  - [Validators](./hooks/Validators/README.md)
 
 ### Status
 
