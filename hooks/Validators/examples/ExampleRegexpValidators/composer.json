@@ -1,0 +1,27 @@
+{
+    "name": "open-feature/validators-hook-example",
+    "description": "An example of using the validator hooks for OpenFeature",
+    "type": "project",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Tom Carrio",
+            "email": "tom@carrio.dev"
+        }
+    ],
+    "require": {
+        "open-feature/sdk": "^1.2.0",
+        "open-feature/validators-hook": "dev-main"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../../",
+            "options": {
+                "versions": {
+                    "open-feature/validators-hook": "dev-main"
+                }
+            }
+        }
+    ]
+}
