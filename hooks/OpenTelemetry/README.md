@@ -23,7 +23,7 @@ The OpenTelemetry package for PHP is still in beta, so there could be changes re
 ## Installation
 
 ```sh
-composer require open-feature/otel-hook   // installs the latest version
+composer require open-feature/otel-hook
 ```
 
 ## Usage
