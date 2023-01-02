@@ -18,8 +18,8 @@ There is [an open issue](https://github.com/rollout/rox-php/issues/37) with obje
 
 ## Installation
 
-```
-$ composer require open-feature/cloudbees-provider   // installs the latest version
+```sh
+composer require open-feature/cloudbees-provider
 ```
 
 ## Usage
