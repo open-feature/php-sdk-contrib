@@ -14,8 +14,8 @@ This package also builds on various PSRs (PHP Standards Recommendations) such as
 
 ## Installation
 
-```
-$ composer require open-feature/split-provider   // installs the latest version
+```sh
+composer require open-feature/split-provider
 ```
 
 ## Usage
