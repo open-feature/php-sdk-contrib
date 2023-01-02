@@ -23,7 +23,7 @@ This package supports Composer autoloading. Thus, simply installing the package 
 ## Installation
 
 ```sh
-composer require open-feature/dd-trace-hook   // installs the latest version
+composer require open-feature/dd-trace-hook
 ```
 
 ## Usage
