@@ -32,18 +32,8 @@ $alphanumericValidator = new RegexpValidatorHook('/^[A-Za-z0-9]+$/');
 $hexadecimalValidator = new RegexpValidatorHook('/^[0-9a-f]+$/');
 $asciiValidator = new RegexpValidatorHook('/^[ -~]$/');
 
-// hooks can be applied to the global API, clients, providers, and resolution invocations
-
-// all feature flag resolutions will use this validator
-$api = OpenFeatureAPI::getInstance();
-$api->addHooks($asciiValidator);
-
-// invocations from this client will use this validator also
-$client = $api->getClient('example');
-$client->setHooks([$alphanumericValidator]);
-
-// this specific invocation will use this validator also
-$client->resolveBooleanValue('test-flag', 'deadbeef', null, new EvaluationOptions([$hexadecimalValidator]));
+// this specific invocation will use this validator
+$client->resolveStringValue('test-flag', 'deadbeef', null, new EvaluationOptions([$hexadecimalValidator]));
 ```
 
 For more examples, see the [examples](./examples/).
