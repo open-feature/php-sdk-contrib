@@ -82,20 +82,18 @@ jobs:
       working-directory: ${{ matrix.project-dir }}
       run: |
         composer run dev:test:unit:setup
-        vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover --testsuite unit
+        vendor/bin/phpunit --coverage-text --coverage-clover=coverage.unit.xml --testsuite unit
         composer run dev:test:unit:teardown
 
     - name: Run PHPUnit (integration tests)
       working-directory: ${{ matrix.project-dir }}
       run: |
         composer run dev:test:integration:setup
-        vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover --testsuite integration
+        vendor/bin/phpunit --coverage-text --coverage-clover=coverage.integration.xml --testsuite integration
         composer run dev:test:integration:teardown
 
-    ### TODO: Enable codecov support
-    # - name: Code Coverage
-    #   working-directory: ${{ matrix.project-dir }}
-    #   run: bash <(curl -s https://codecov.io/bash) -F ${{ matrix.php-version }}
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
 
   ### TODO: Replicate any necessary package checks
   # packages:
