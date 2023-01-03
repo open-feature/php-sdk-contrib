@@ -45,7 +45,7 @@ OpenFeatureAPI::setProvider(new FlagdProvider([
 ]));
 ```
 
-- **protocol**: "http" | "grpc" _(defaults to http)_
+- **protocol**: "http" _(defaults to http)_
 - **host**: string _(defaults to "localhost")_
 - **port**: number _(defaults to 8013)_
 - **secure**: true | false _(defaults to false)_
@@ -53,6 +53,10 @@ OpenFeatureAPI::setProvider(new FlagdProvider([
     - **client**: a `ClientInterface` implementation
     - **requestFactory**: a `RequestFactoryInterface` implementation
     - **streamFactory**: a `StreamFactoryInterface` implementation
+
+### gRPC vs HTTP
+
+The Flagd server is gRPC but offers gRPC Web endpoints that can be accessed over HTTP. The latter is used by the current implementation of the Flagd provider, with future development planned to implement a gRPC native provider option. There are certain flexibilities around HTTP with PHP available, whereas gRPC is an opinionated code-generation strategy, but they are both useful and gRPC native may provide better performance over certain sync/async scenarios. An additional goal will be to provide benchmarking of the Flagd provider's protocol for various scenarios so this decision can be made more easily by consumers of the provider.
 
 ## Development
 
