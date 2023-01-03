@@ -6,7 +6,7 @@ namespace OpenFeature\Providers\Flagd\config;
 
 class ConfigFactory
 {
-    public static function fromOptions(?string $host = null, ?int $port = null, ?string $protocol = null, ?bool $secure = null, ?IHttpConfig $httpConfig): IConfig
+    public static function fromOptions(?string $host = null, ?int $port = null, ?string $protocol = null, ?bool $secure = null, ?IHttpConfig $httpConfig = null): IConfig
     {
         return Validator::validate(new Config($host, $port, $protocol, $secure, $httpConfig));
     }

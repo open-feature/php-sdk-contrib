@@ -12,7 +12,7 @@ class Config implements IConfig
     private bool $secure;
     private ?IHttpConfig $httpConfig;
 
-    public function __construct(?string $host = null, ?int $port = null, ?string $protocol = null, ?bool $secure = null, ?IHttpConfig $httpConfig)
+    public function __construct(?string $host = null, ?int $port = null, ?string $protocol = null, ?bool $secure = null, ?IHttpConfig $httpConfig = null)
     {
         $this->host = $host ?? Defaults::DEFAULT_HOST;
         $this->port = $port ?? Defaults::DEFAULT_PORT;

@@ -11,8 +11,6 @@
         <ignoreFiles>
             <directory name="./tests"/>
             <directory name="./vendor"/>
-            <!-- TODO: Implement gRPC Completely -->
-            <directory name="./src/grpc" />
         </ignoreFiles>
     </projectFiles>
 
