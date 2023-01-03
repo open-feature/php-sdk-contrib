@@ -1,6 +1,7 @@
 # OpenFeature PHP SDK Contrib Library
 
 [![a](https://img.shields.io/badge/slack-%40cncf%2Fopenfeature-brightgreen?style=flat&logo=slack)](https://cloud-native.slack.com/archives/C0344AANLA1)
+[![codecov](https://codecov.io/gh/open-feature/php-sdk-contrib/branch/main/graph/badge.svg?token=3DC5XOEHMY)](https://codecov.io/gh/open-feature/php-sdk-contrib)
 ![PHP 7.4+](https://img.shields.io/badge/php->=7.4-blue.svg)
 ![License](https://img.shields.io/github/license/open-feature/php-sdk-contrib)
 ![Experimental](https://img.shields.io/badge/Status-Experimental-yellow)
