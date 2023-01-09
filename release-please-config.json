@@ -7,22 +7,28 @@
   "include-v-in-tag": false,
   "packages": {
     "hooks/DDTrace": {
-      "package-name": "open-feature/dd-trace-hook"
+      "package-name": "open-feature/dd-trace-hook",
+      "release-as": "0.2.0"
     },
     "hooks/OpenTelemetry": {
-      "package-name": "open-feature/otel-hook"
+      "package-name": "open-feature/otel-hook",
+      "release-as": "0.2.0"
     },
     "hooks/Validators": {
-      "package-name": "open-feature/validators-hook"
+      "package-name": "open-feature/validators-hook",
+      "release-as": "0.2.0"
     },
     "providers/CloudBees": {
-      "package-name": "open-feature/cloudbees-provider"
+      "package-name": "open-feature/cloudbees-provider",
+      "release-as": "0.3.0"
     },
     "providers/Flagd": {
-      "package-name": "open-feature/flagd-provider"
+      "package-name": "open-feature/flagd-provider",
+      "release-as": "0.4.0"
     },
     "providers/Split": {
-      "package-name": "open-feature/split-provider"
+      "package-name": "open-feature/split-provider",
+      "release-as": "0.3.0"
     }
   }
 }
