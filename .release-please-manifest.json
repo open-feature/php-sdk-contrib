@@ -1,0 +1,28 @@
+{
+  "packages": {
+    "hooks/DDTrace": {
+      "release-as": "0.2.0"
+      "package-name": "open-feature/dd-trace-hook"
+    },
+    "hooks/OpenTelemetry": {
+      "release-as": "0.2.0"
+      "package-name": "open-feature/otel-hook"
+    },
+    "hooks/Validators": {
+      "release-as": "0.2.0
+      "package-name": "open-feature/validators-hook"
+    },
+    "providers/CloudBees": {
+      "release-as": "0.3.0"
+      "package-name": "open-feature/cloudbees-provider"
+    },
+    "providers/Flagd": {
+      "release-as": "0.4.0"
+      "package-name": "open-feature/flagd-provider"
+    },
+    "providers/Split": {
+      "release-as": "0.3.0"
+      "package-name": "open-feature/split-provider"
+    },
+  }
+}
