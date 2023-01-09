@@ -1,0 +1,28 @@
+{
+  "bootstrap-sha": "91dbcca98f4a56ec37ce1b03bc0f39aeaba6dbd3",
+  "separate-pull-requests": false,
+  "prerelease": false,
+  "bump-minor-pre-major": true,
+  "bump-patch-for-minor-pre-major": true,
+  "include-v-in-tag": false,
+  "packages": {
+    "hooks/DDTrace": {
+      "package-name": "open-feature/dd-trace-hook"
+    },
+    "hooks/OpenTelemetry": {
+      "package-name": "open-feature/otel-hook"
+    },
+    "hooks/Validators": {
+      "package-name": "open-feature/validators-hook"
+    },
+    "providers/CloudBees": {
+      "package-name": "open-feature/cloudbees-provider"
+    },
+    "providers/Flagd": {
+      "package-name": "open-feature/flagd-provider"
+    },
+    "providers/Split": {
+      "package-name": "open-feature/split-provider"
+    }
+  }
+}
