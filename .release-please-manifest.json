@@ -9,7 +9,7 @@
       "package-name": "open-feature/otel-hook"
     },
     "hooks/Validators": {
-      "release-as": "0.2.0
+      "release-as": "0.2.0",
       "package-name": "open-feature/validators-hook"
     },
     "providers/CloudBees": {
