@@ -33,7 +33,9 @@ class SplitProvider extends AbstractProvider implements Provider
 {
     protected const NAME = 'SplitProvider';
 
-    /** The Split factory will only be created one time */
+    /**
+     * The Split factory will only be created one time 
+     */
     private static SplitFactoryInterface $factory;
 
     private ClientInterface $client;
@@ -47,17 +49,19 @@ class SplitProvider extends AbstractProvider implements Provider
      *
      * @see https://help.split.io/hc/en-us/articles/360020350372-PHP-SDK#configuration
      *
-     * @param string $apiKey The API key for Split
+     * @param string  $apiKey  The API key for Split
      * @param mixed[] $options The configuration options for the client
      *
      * @throws SplitFactoryCreationException
      */
-    public function __construct(?string $apiKey = '', $options = [])
+    public function __construct(?string $apiKey = '', mixed $options = [])
     {
         if (isset(self::$factory)) {
             $factory = self::$factory;
         } else {
-            /** @var SplitFactoryInterface|null $factory */
+            /**
+ * @var SplitFactoryInterface|null $factory 
+*/
             $factory = Sdk::factory($apiKey, $options);
             if (is_null($factory)) {
                 throw new SplitFactoryCreationException();
@@ -104,7 +108,7 @@ class SplitProvider extends AbstractProvider implements Provider
     /**
      * @param mixed[] $defaultValue
      */
-    public function resolveObjectValue(string $flagKey, $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
+    public function resolveObjectValue(string $flagKey, array $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
     {
         return $this->resolveValue($flagKey, FlagValueType::OBJECT, $defaultValue, $context);
     }
@@ -112,7 +116,7 @@ class SplitProvider extends AbstractProvider implements Provider
     /**
      * @param bool|string|int|float|mixed[] $defaultValue
      */
-    private function resolveValue(string $flagKey, string $flagType, $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
+    private function resolveValue(string $flagKey, string $flagType, mixed $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
     {
         try {
             if (is_null($context)) {

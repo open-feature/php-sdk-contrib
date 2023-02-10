@@ -13,5 +13,5 @@ interface ServiceInterface
     /**
      * @param mixed[]|bool|DateTime|float|int|string|null $defaultValue
      */
-    public function resolveValue(string $flagKey, string $flagType, $defaultValue, ?EvaluationContext $context): ResolutionDetails;
+    public function resolveValue(string $flagKey, string $flagType, mixed $defaultValue, ?EvaluationContext $context): ResolutionDetails;
 }

@@ -3,7 +3,7 @@
 [![a](https://img.shields.io/badge/slack-%40cncf%2Fopenfeature-brightgreen?style=flat&logo=slack)](https://cloud-native.slack.com/archives/C0344AANLA1)
 [![Latest Stable Version](http://poser.pugx.org/open-feature/otel-hook/v)](https://packagist.org/packages/open-feature/otel-hook)
 [![Total Downloads](http://poser.pugx.org/open-feature/otel-hook/downloads)](https://packagist.org/packages/open-feature/otel-hook)
-![PHP 7.4+](https://img.shields.io/badge/php->=7.4-blue.svg)
+![PHP 8.0+](https://img.shields.io/badge/php->=8.0-blue.svg)
 [![License](http://poser.pugx.org/open-feature/otel-hook/license)](https://packagist.org/packages/open-feature/otel-hook)
 
 ## Overview
@@ -47,7 +47,7 @@ For more examples, see the [examples](./examples/).
 
 ### PHP Versioning
 
-This library targets PHP version 7.4 and newer. As long as you have any compatible version of PHP on your system you should be able to utilize the OpenFeature SDK.
+This library targets PHP version 8.0 and newer. As long as you have any compatible version of PHP on your system you should be able to utilize the OpenFeature SDK.
 
 This package also has a `.tool-versions` file for use with PHP version managers like `asdf`.
 
