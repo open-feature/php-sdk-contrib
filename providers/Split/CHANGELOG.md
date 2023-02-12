@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/open-feature/php-sdk-contrib/compare/open-feature/split-provider-0.3.0...open-feature/split-provider-0.3.0) (2023-02-12)
+
+
+### Features
+
+* deprecate php 7 ([#59](https://github.com/open-feature/php-sdk-contrib/issues/59)) ([d028e6d](https://github.com/open-feature/php-sdk-contrib/commit/d028e6d7741d07b7edef21b43b249fdb2d18d8f2))
+
 ## 0.3.0 (2023-01-09)
 
 
