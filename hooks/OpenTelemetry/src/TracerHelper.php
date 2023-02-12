@@ -13,10 +13,8 @@ class TracerHelper
     /**
      * Determines a non-null Tracer to return based on a given input, allowing
      * multiple types including a PSR-11 container, Tracer, or null
-     *
-     * @param ContainerInterface|TracerInterface|null $maybeTracerOrContainer
      */
-    public static function determineTracer($maybeTracerOrContainer = null): TracerInterface
+    public static function determineTracer(ContainerInterface | TracerInterface | null $maybeTracerOrContainer = null): TracerInterface
     {
         if ($maybeTracerOrContainer instanceof TracerInterface) {
             return $maybeTracerOrContainer;

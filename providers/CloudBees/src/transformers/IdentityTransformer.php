@@ -11,7 +11,7 @@ class IdentityTransformer
      *
      * @return bool|string|int|float|mixed[]
      */
-    public function __invoke($x)
+    public function __invoke(mixed $x): mixed
     {
         return $x;
     }

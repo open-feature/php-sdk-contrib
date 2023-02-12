@@ -1,5 +1,5 @@
 /captainhook.config.json
-/composer.lock
+composer.lock
 /phpcs.xml
 /phpunit.xml
 /vendor/
@@ -7,3 +7,5 @@
 /build/
 
 /proto/
+
+/.devenv*

@@ -22,10 +22,7 @@ class FlagdProvider extends AbstractProvider implements Provider
 
     private ServiceInterface $service;
 
-    /**
-     * @param mixed|IConfig|mixed[] $config
-     */
-    public function __construct($config = null)
+    public function __construct(mixed $config = null)
     {
         $this->config = Validator::validate($config);
 
@@ -52,10 +49,7 @@ class FlagdProvider extends AbstractProvider implements Provider
         return $this->service->resolveValue($flagKey, FlagValueType::FLOAT, $defaultValue, $context);
     }
 
-    /**
-     * @param mixed[] $defaultValue
-     */
-    public function resolveObjectValue(string $flagKey, $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
+    public function resolveObjectValue(string $flagKey, mixed $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
     {
         return $this->service->resolveValue($flagKey, FlagValueType::OBJECT, $defaultValue, $context);
     }

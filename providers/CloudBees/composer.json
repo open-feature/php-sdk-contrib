@@ -23,8 +23,8 @@
     }
   ],
   "require": {
-    "php": "^7.4 || ^8",
-    "open-feature/sdk": "^1.2.0",
+    "php": "^8",
+    "open-feature/sdk": "^2.0",
     "rollout/rox": "^5.0"
   },
   "require-dev": {

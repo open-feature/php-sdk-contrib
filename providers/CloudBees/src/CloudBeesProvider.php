@@ -96,7 +96,7 @@ class CloudBeesProvider extends AbstractProvider implements Provider
     /**
      * @param mixed[] $defaultValue
      */
-    public function resolveObjectValue(string $flagKey, $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
+    public function resolveObjectValue(string $flagKey, array $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
     {
         return $this->resolve(
             $defaultValue,
@@ -108,22 +108,26 @@ class CloudBeesProvider extends AbstractProvider implements Provider
     /**
      * @param bool|string|int|float|mixed[] $defaultValue
      */
-    private function resolve($defaultValue, callable $fn, ?callable $transformer = null): ResolutionDetails
+    private function resolve(mixed $defaultValue, callable $fn, ?callable $transformer = null): ResolutionDetails
     {
         if (is_null($transformer)) {
             $transformer = new IdentityTransformer();
         }
 
         try {
-            /** @var bool|string|int|float $value */
+            /**
+ * @var bool|string|int|float $value
+*/
             $value = call_user_func($fn);
 
-            /** @var bool|string|int|float|mixed[] $transformed */
+            /**
+ * @var bool|string|int|float|mixed[] $transformed
+*/
             $transformed = call_user_func($transformer, $value);
 
             return (new ResolutionDetailsBuilder())
-                        ->withValue($transformed)
-                        ->build();
+                ->withValue($transformed)
+                ->build();
         } catch (Throwable $err) {
             $detailsBuilder = new ResolutionDetailsBuilder();
 

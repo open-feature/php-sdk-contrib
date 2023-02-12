@@ -16,7 +16,7 @@ class FlagdResponseResolutionDetailsAdapter
     /**
      * @param mixed[]|bool|DateTime|float|int|string|null $defaultValue
      */
-    public static function forTypeMismatch($defaultValue): ResolutionDetails
+    public static function forTypeMismatch(mixed $defaultValue): ResolutionDetails
     {
         return (new ResolutionDetailsBuilder())
             ->withValue($defaultValue)
@@ -28,11 +28,13 @@ class FlagdResponseResolutionDetailsAdapter
      * @param string[] $response
      * @param mixed[]|bool|DateTime|float|int|string|null $defaultValue
      */
-    public static function forError(array $response, $defaultValue): ResolutionDetails
+    public static function forError(array $response, mixed $defaultValue): ResolutionDetails
     {
         $responseCode = $response['code'];
         if ($responseCode && ResponseCodeErrorCodeMap::has($responseCode)) {
-            /** @var ErrorCode $responseErrorCode */
+            /**
+             * @var ErrorCode $responseErrorCode
+            */
             $responseErrorCode = ResponseCodeErrorCodeMap::get($responseCode);
 
             $resolutionError = new ResolutionError(

@@ -20,9 +20,6 @@
 
         <exclude name="Generic.Files.LineLength.TooLong"/>
         <exclude name="Generic.Commenting.Todo.TaskFound"/>
-
-        <!-- Ignore this for PHP 7.4 -->
-        <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint"/>
     </rule>
 
 </ruleset>

@@ -22,10 +22,7 @@ class Validator
     private const VALID_PORT_RANGE = [1, 65535];
     private const VALID_PROTOCOLS = ['grpc', 'http'];
 
-    /**
-     * @param mixed $config
-     */
-    public static function validate($config = null): IConfig
+    public static function validate(mixed $config = null): IConfig
     {
         if ($config instanceof IConfig) {
             return self::validateConfig($config);
@@ -63,10 +60,7 @@ class Validator
         return new Config($host, $port, $protocol, $secure, $httpConfig);
     }
 
-    /**
-     * @param mixed $secure
-     */
-    private static function validateSecure($secure): bool
+    private static function validateSecure(mixed $secure): bool
     {
         if (is_bool($secure)) {
             return $secure;
@@ -75,10 +69,7 @@ class Validator
         return Defaults::DEFAULT_SECURE;
     }
 
-    /**
-     * @param mixed $host
-     */
-    private static function validateHost($host): string
+    private static function validateHost(mixed $host): string
     {
         if (is_string($host) && preg_match(self::VALID_HOST_REGEXP, $host)) {
             return $host;
@@ -87,10 +78,7 @@ class Validator
         return Defaults::DEFAULT_HOST;
     }
 
-    /**
-     * @param mixed $port
-     */
-    private static function validatePort($port): int
+    private static function validatePort(mixed $port): int
     {
         [$minPort, $maxPort] = self::VALID_PORT_RANGE;
 
@@ -101,10 +89,7 @@ class Validator
         return Defaults::DEFAULT_PORT;
     }
 
-    /**
-     * @param mixed $protocol
-     */
-    private static function validateProtocol($protocol): string
+    private static function validateProtocol(mixed $protocol): string
     {
         if (is_string($protocol) && in_array($protocol, self::VALID_PROTOCOLS)) {
             return $protocol;
@@ -113,10 +98,7 @@ class Validator
         return Defaults::DEFAULT_PROTOCOL;
     }
 
-    /**
-     * @param mixed $httpConfig
-     */
-    private static function validateHttpConfig($httpConfig): ?IHttpConfig
+    private static function validateHttpConfig(mixed $httpConfig): ?IHttpConfig
     {
         if (is_null($httpConfig)) {
             return null;
@@ -131,9 +113,9 @@ class Validator
             $streamFactory = $httpConfig['streamFactory'];
 
             if (
-                $client instanceof ClientInterface &&
-                $requestFactory instanceof RequestFactoryInterface &&
-                $streamFactory instanceof StreamFactoryInterface
+                $client instanceof ClientInterface
+                && $requestFactory instanceof RequestFactoryInterface
+                && $streamFactory instanceof StreamFactoryInterface
             ) {
                 return new HttpConfig($client, $requestFactory, $streamFactory);
             }

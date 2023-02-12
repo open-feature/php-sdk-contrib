@@ -22,8 +22,8 @@
     }
   ],
   "require": {
-    "php": "^7.4 || ^8",
-    "open-feature/sdk": "^1.2.0",
+    "php": "^8",
+    "open-feature/sdk": "^2.0",
     "open-telemetry/api": "^0.0.17"
   },
   "require-dev": {
