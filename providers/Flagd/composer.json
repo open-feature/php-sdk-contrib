@@ -22,7 +22,7 @@
   ],
   "require": {
     "php": "^8",
-    "open-feature/sdk": "^1.4.0",
+    "open-feature/sdk": "^2.0",
     "php-http/httplug": "^2.3.0",
     "psr/http-client": "^1.0",
     "psr/http-factory": "^1.0",

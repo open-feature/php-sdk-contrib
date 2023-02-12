@@ -116,12 +116,12 @@ class CloudBeesProvider extends AbstractProvider implements Provider
 
         try {
             /**
- * @var bool|string|int|float $value 
+ * @var bool|string|int|float $value
 */
             $value = call_user_func($fn);
 
             /**
- * @var bool|string|int|float|mixed[] $transformed 
+ * @var bool|string|int|float|mixed[] $transformed
 */
             $transformed = call_user_func($transformer, $value);
 
