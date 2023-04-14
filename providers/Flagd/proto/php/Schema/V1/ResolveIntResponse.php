@@ -22,7 +22,7 @@ class ResolveIntResponse extends \Google\Protobuf\Internal\Message
      */
     protected $value = 0;
     /**
-     * The reason for the given return value, see https://docs.openfeature.dev/docs/specification/types#resolution-details
+     * The reason for the given return value, see https://openfeature.dev/docs/specification/types#resolution-details
      *
      * Generated from protobuf field <code>string reason = 2 [json_name = "reason"];</code>
      */
@@ -43,7 +43,7 @@ class ResolveIntResponse extends \Google\Protobuf\Internal\Message
      *     @type int|string $value
      *           The response value of the int flag evaluation, will be unset in the case of error.
      *     @type string $reason
-     *           The reason for the given return value, see https://docs.openfeature.dev/docs/specification/types#resolution-details
+     *           The reason for the given return value, see https://openfeature.dev/docs/specification/types#resolution-details
      *     @type string $variant
      *           The variant name of the returned flag value.
      * }
@@ -80,7 +80,7 @@ class ResolveIntResponse extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The reason for the given return value, see https://docs.openfeature.dev/docs/specification/types#resolution-details
+     * The reason for the given return value, see https://openfeature.dev/docs/specification/types#resolution-details
      *
      * Generated from protobuf field <code>string reason = 2 [json_name = "reason"];</code>
      * @return string
@@ -91,7 +91,7 @@ class ResolveIntResponse extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The reason for the given return value, see https://docs.openfeature.dev/docs/specification/types#resolution-details
+     * The reason for the given return value, see https://openfeature.dev/docs/specification/types#resolution-details
      *
      * Generated from protobuf field <code>string reason = 2 [json_name = "reason"];</code>
      * @param string $var

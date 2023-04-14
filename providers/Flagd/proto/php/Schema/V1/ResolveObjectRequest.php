@@ -22,7 +22,7 @@ class ResolveObjectRequest extends \Google\Protobuf\Internal\Message
      */
     protected $flag_key = '';
     /**
-     * Object structure describing the EvaluationContext used in the flag evaluation, see https://docs.openfeature.dev/docs/reference/concepts/evaluation-context
+     * Object structure describing the EvaluationContext used in the flag evaluation, see https://openfeature.dev/docs/reference/concepts/evaluation-context
      *
      * Generated from protobuf field <code>.google.protobuf.Struct context = 2 [json_name = "context"];</code>
      */
@@ -37,7 +37,7 @@ class ResolveObjectRequest extends \Google\Protobuf\Internal\Message
      *     @type string $flag_key
      *           Flag key of the requested flag.
      *     @type \Google\Protobuf\Struct $context
-     *           Object structure describing the EvaluationContext used in the flag evaluation, see https://docs.openfeature.dev/docs/reference/concepts/evaluation-context
+     *           Object structure describing the EvaluationContext used in the flag evaluation, see https://openfeature.dev/docs/reference/concepts/evaluation-context
      * }
      */
     public function __construct($data = NULL) {
@@ -72,7 +72,7 @@ class ResolveObjectRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Object structure describing the EvaluationContext used in the flag evaluation, see https://docs.openfeature.dev/docs/reference/concepts/evaluation-context
+     * Object structure describing the EvaluationContext used in the flag evaluation, see https://openfeature.dev/docs/reference/concepts/evaluation-context
      *
      * Generated from protobuf field <code>.google.protobuf.Struct context = 2 [json_name = "context"];</code>
      * @return \Google\Protobuf\Struct|null
@@ -93,7 +93,7 @@ class ResolveObjectRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Object structure describing the EvaluationContext used in the flag evaluation, see https://docs.openfeature.dev/docs/reference/concepts/evaluation-context
+     * Object structure describing the EvaluationContext used in the flag evaluation, see https://openfeature.dev/docs/reference/concepts/evaluation-context
      *
      * Generated from protobuf field <code>.google.protobuf.Struct context = 2 [json_name = "context"];</code>
      * @param \Google\Protobuf\Struct $var

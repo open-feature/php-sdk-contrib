@@ -23,7 +23,7 @@ class ResolveObjectResponse extends \Google\Protobuf\Internal\Message
      */
     protected $value = null;
     /**
-     * The reason for the given return value, see https://docs.openfeature.dev/docs/specification/types#resolution-details
+     * The reason for the given return value, see https://openfeature.dev/docs/specification/types#resolution-details
      *
      * Generated from protobuf field <code>string reason = 2 [json_name = "reason"];</code>
      */
@@ -45,7 +45,7 @@ class ResolveObjectResponse extends \Google\Protobuf\Internal\Message
      *           The response value of the object flag evaluation, will be unset in the case of error.
      *           NOTE: This structure will need to be decoded from google/protobuf/struct.proto before it is returned to the SDK
      *     @type string $reason
-     *           The reason for the given return value, see https://docs.openfeature.dev/docs/specification/types#resolution-details
+     *           The reason for the given return value, see https://openfeature.dev/docs/specification/types#resolution-details
      *     @type string $variant
      *           The variant name of the returned flag value.
      * }
@@ -94,7 +94,7 @@ class ResolveObjectResponse extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The reason for the given return value, see https://docs.openfeature.dev/docs/specification/types#resolution-details
+     * The reason for the given return value, see https://openfeature.dev/docs/specification/types#resolution-details
      *
      * Generated from protobuf field <code>string reason = 2 [json_name = "reason"];</code>
      * @return string
@@ -105,7 +105,7 @@ class ResolveObjectResponse extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The reason for the given return value, see https://docs.openfeature.dev/docs/specification/types#resolution-details
+     * The reason for the given return value, see https://openfeature.dev/docs/specification/types#resolution-details
      *
      * Generated from protobuf field <code>string reason = 2 [json_name = "reason"];</code>
      * @param string $var
