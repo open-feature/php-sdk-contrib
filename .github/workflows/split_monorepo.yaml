@@ -14,10 +14,61 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        run: git clone "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout $GITHUB_SHA
-      - name: Split repositories
-        uses: docker://jderusse/gitsplit:latest
+        run: git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout "$GITHUB_SHA"
+
+      # TODO: configurable targets in a shared file like git-split, but with support for tagging.
+      # for now, this just lives under multiple actions always taken for mainline merges or releases
+
+      - name: push-hook-dd-trace
+        uses: wmde/git-filter-repo-docker-action@v1
         with:
-          args: gitsplit
-        env:
-          GH_TOKEN: ${{ secrets.GITSPLIT_TOKEN }}
+          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
+          targetOrg: open-feature-php
+          targetRepo: dd-trace-hook
+          targetBranch: main
+          filterArguments: '--subdirectory-filter hooks/DDTrace/'
+
+      - name: push-hook-otel
+        uses: wmde/git-filter-repo-docker-action@v1
+        with:
+          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
+          targetOrg: open-feature-php
+          targetRepo: otel-hook
+          targetBranch: main
+          filterArguments: '--subdirectory-filter hooks/OpenTelemetry/'
+
+      - name: push-hook-validator
+        uses: wmde/git-filter-repo-docker-action@v1
+        with:
+          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
+          targetOrg: open-feature-php
+          targetRepo: validators-hook
+          targetBranch: main
+          filterArguments: '--subdirectory-filter hooks/Validators/'
+
+      - name: push-provider-cloudbees
+        uses: wmde/git-filter-repo-docker-action@v1
+        with:
+          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
+          targetOrg: open-feature-php
+          targetRepo: cloudbees-provider
+          targetBranch: main
+          filterArguments: '--subdirectory-filter providers/CloudBees/'
+
+      - name: push-provider-flagd
+        uses: wmde/git-filter-repo-docker-action@v1
+        with:
+          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
+          targetOrg: open-feature-php
+          targetRepo: flagd-provider
+          targetBranch: main
+          filterArguments: '--subdirectory-filter providers/Flagd/'
+
+      - name: push-provider-split
+        uses: wmde/git-filter-repo-docker-action@v1
+        with:
+          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
+          targetOrg: open-feature-php
+          targetRepo: split-provider
+          targetBranch: main
+          filterArguments: '--subdirectory-filter providers/Split/'
