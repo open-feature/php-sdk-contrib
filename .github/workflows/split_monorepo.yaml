@@ -1,74 +1,131 @@
 name: gitsplit
 on:
-  push:
-    branches:
-      - main
-      - split
   release:
     types: [published]
-  create:
-  workflow_dispatch:
 
 jobs:
-  gitsplit:
+  split-hook-dd-trace:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
         run: git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout "$GITHUB_SHA"
-
-      # TODO: configurable targets in a shared file like git-split, but with support for tagging.
-      # for now, this just lives under multiple actions always taken for mainline merges or releases
-
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            src:
+              - 'hooks/DDTrace/**'
       - name: push-hook-dd-trace
         uses: wmde/git-filter-repo-docker-action@v1
+        if: steps.filter.outputs.workflows == 'true'
         with:
           privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           targetOrg: open-feature-php
           targetRepo: dd-trace-hook
-          targetBranch: main
+          targetBranch: ${{ github.event.release.tag_name }}
           filterArguments: '--subdirectory-filter hooks/DDTrace/'
 
+  split-hook-otel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        run: git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout "$GITHUB_SHA"
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            src:
+              - 'hooks/OpenTelemetry/**'
       - name: push-hook-otel
         uses: wmde/git-filter-repo-docker-action@v1
+        if: steps.filter.outputs.workflows == 'true'
         with:
           privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           targetOrg: open-feature-php
           targetRepo: otel-hook
-          targetBranch: main
+          targetBranch: ${{ github.event.release.tag_name }}
           filterArguments: '--subdirectory-filter hooks/OpenTelemetry/'
 
+  split-hook-validator:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        run: git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout "$GITHUB_SHA"
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            src:
+              - 'hooks/Validators/**'
       - name: push-hook-validator
         uses: wmde/git-filter-repo-docker-action@v1
+        if: steps.filter.outputs.workflows == 'true'
         with:
           privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           targetOrg: open-feature-php
           targetRepo: validators-hook
-          targetBranch: main
+          targetBranch: ${{ github.event.release.tag_name }}
           filterArguments: '--subdirectory-filter hooks/Validators/'
 
+  split-provider-cloudbees:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        run: git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout "$GITHUB_SHA"
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            src:
+              - 'providers/CloudBees/**'
       - name: push-provider-cloudbees
         uses: wmde/git-filter-repo-docker-action@v1
+        if: steps.filter.outputs.workflows == 'true'
         with:
           privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           targetOrg: open-feature-php
           targetRepo: cloudbees-provider
-          targetBranch: main
+          targetBranch: ${{ github.event.release.tag_name }}
           filterArguments: '--subdirectory-filter providers/CloudBees/'
 
+  split-provider-flagd:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        run: git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout "$GITHUB_SHA"
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            src:
+              - 'providers/Flagd/**'
       - name: push-provider-flagd
         uses: wmde/git-filter-repo-docker-action@v1
+        if: steps.filter.outputs.workflows == 'true'
         with:
           privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           targetOrg: open-feature-php
           targetRepo: flagd-provider
-          targetBranch: main
+          targetBranch: ${{ github.event.release.tag_name }}
           filterArguments: '--subdirectory-filter providers/Flagd/'
 
+  split-provider-split:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        run: git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout "$GITHUB_SHA"
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            src:
+              - 'providers/Split/**'
       - name: push-provider-split
         uses: wmde/git-filter-repo-docker-action@v1
+        if: steps.filter.outputs.workflows == 'true'
         with:
           privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           targetOrg: open-feature-php
           targetRepo: split-provider
-          targetBranch: main
+          targetBranch: ${{ github.event.release.tag_name }}
           filterArguments: '--subdirectory-filter providers/Split/'
