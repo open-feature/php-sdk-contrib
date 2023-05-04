@@ -12,7 +12,7 @@ jobs:
       - name: push-hook-dd-trace
         uses: wmde/git-filter-repo-docker-action@v1
         with:
-          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
+          privateKey: ${{ secrets.GITSPLIT_TOKEN }}
           targetOrg: open-feature-php
           targetRepo: dd-trace-hook
           targetBranch: ${{ github.event.release.tag_name }}
@@ -26,7 +26,7 @@ jobs:
       - name: push-hook-otel
         uses: wmde/git-filter-repo-docker-action@v1
         with:
-          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
+          privateKey: ${{ secrets.GITSPLIT_TOKEN }}
           targetOrg: open-feature-php
           targetRepo: otel-hook
           targetBranch: ${{ github.event.release.tag_name }}
@@ -40,7 +40,7 @@ jobs:
       - name: push-hook-validator
         uses: wmde/git-filter-repo-docker-action@v1
         with:
-          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
+          privateKey: ${{ secrets.GITSPLIT_TOKEN }}
           targetOrg: open-feature-php
           targetRepo: validators-hook
           targetBranch: ${{ github.event.release.tag_name }}
@@ -54,7 +54,7 @@ jobs:
       - name: push-provider-cloudbees
         uses: wmde/git-filter-repo-docker-action@v1
         with:
-          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
+          privateKey: ${{ secrets.GITSPLIT_TOKEN }}
           targetOrg: open-feature-php
           targetRepo: cloudbees-provider
           targetBranch: ${{ github.event.release.tag_name }}
@@ -68,7 +68,7 @@ jobs:
       - name: push-provider-flagd
         uses: wmde/git-filter-repo-docker-action@v1
         with:
-          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
+          privateKey: ${{ secrets.GITSPLIT_TOKEN }}
           targetOrg: open-feature-php
           targetRepo: flagd-provider
           targetBranch: ${{ github.event.release.tag_name }}
@@ -82,7 +82,7 @@ jobs:
       - name: push-provider-split
         uses: wmde/git-filter-repo-docker-action@v1
         with:
-          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
+          privateKey: ${{ secrets.GITSPLIT_TOKEN }}
           targetOrg: open-feature-php
           targetRepo: split-provider
           targetBranch: ${{ github.event.release.tag_name }}
