@@ -10,9 +10,9 @@ jobs:
       - name: checkout
         run: git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout "$GITHUB_SHA"
       - name: push-hook-dd-trace
-        uses: wmde/git-filter-repo-docker-action@v1
+        uses: tcarrio/git-filter-repo-docker-action@v1
         with:
-          privateKey: ${{ secrets.GITSPLIT_TOKEN }}
+          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           targetOrg: open-feature-php
           targetRepo: dd-trace-hook
           targetBranch: ${{ github.event.release.tag_name }}
@@ -24,9 +24,9 @@ jobs:
       - name: checkout
         run: git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout "$GITHUB_SHA"
       - name: push-hook-otel
-        uses: wmde/git-filter-repo-docker-action@v1
+        uses: tcarrio/git-filter-repo-docker-action@v1
         with:
-          privateKey: ${{ secrets.GITSPLIT_TOKEN }}
+          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           targetOrg: open-feature-php
           targetRepo: otel-hook
           targetBranch: ${{ github.event.release.tag_name }}
@@ -38,9 +38,9 @@ jobs:
       - name: checkout
         run: git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout "$GITHUB_SHA"
       - name: push-hook-validator
-        uses: wmde/git-filter-repo-docker-action@v1
+        uses: tcarrio/git-filter-repo-docker-action@v1
         with:
-          privateKey: ${{ secrets.GITSPLIT_TOKEN }}
+          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           targetOrg: open-feature-php
           targetRepo: validators-hook
           targetBranch: ${{ github.event.release.tag_name }}
@@ -52,9 +52,9 @@ jobs:
       - name: checkout
         run: git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout "$GITHUB_SHA"
       - name: push-provider-cloudbees
-        uses: wmde/git-filter-repo-docker-action@v1
+        uses: tcarrio/git-filter-repo-docker-action@v1
         with:
-          privateKey: ${{ secrets.GITSPLIT_TOKEN }}
+          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           targetOrg: open-feature-php
           targetRepo: cloudbees-provider
           targetBranch: ${{ github.event.release.tag_name }}
@@ -66,9 +66,9 @@ jobs:
       - name: checkout
         run: git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout "$GITHUB_SHA"
       - name: push-provider-flagd
-        uses: wmde/git-filter-repo-docker-action@v1
+        uses: tcarrio/git-filter-repo-docker-action@v1
         with:
-          privateKey: ${{ secrets.GITSPLIT_TOKEN }}
+          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           targetOrg: open-feature-php
           targetRepo: flagd-provider
           targetBranch: ${{ github.event.release.tag_name }}
@@ -80,9 +80,9 @@ jobs:
       - name: checkout
         run: git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout "$GITHUB_SHA"
       - name: push-provider-split
-        uses: wmde/git-filter-repo-docker-action@v1
+        uses: tcarrio/git-filter-repo-docker-action@v1
         with:
-          privateKey: ${{ secrets.GITSPLIT_TOKEN }}
+          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           targetOrg: open-feature-php
           targetRepo: split-provider
           targetBranch: ${{ github.event.release.tag_name }}
