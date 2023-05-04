@@ -16,7 +16,7 @@ jobs:
           targetOrg: open-feature-php
           targetRepo: dd-trace-hook
           targetBranch: ${{ github.event.release.tag_name }}
-          filterArguments: '--subdirectory-filter hooks/DDTrace/'
+          filterArguments: '--subdirectory-filter hooks/DDTrace/ --force'
 
   split-hook-otel:
     runs-on: ubuntu-latest
@@ -30,7 +30,7 @@ jobs:
           targetOrg: open-feature-php
           targetRepo: otel-hook
           targetBranch: ${{ github.event.release.tag_name }}
-          filterArguments: '--subdirectory-filter hooks/OpenTelemetry/'
+          filterArguments: '--subdirectory-filter hooks/OpenTelemetry/ --force'
 
   split-hook-validator:
     runs-on: ubuntu-latest
@@ -44,7 +44,7 @@ jobs:
           targetOrg: open-feature-php
           targetRepo: validators-hook
           targetBranch: ${{ github.event.release.tag_name }}
-          filterArguments: '--subdirectory-filter hooks/Validators/'
+          filterArguments: '--subdirectory-filter hooks/Validators/ --force'
 
   split-provider-cloudbees:
     runs-on: ubuntu-latest
@@ -58,7 +58,7 @@ jobs:
           targetOrg: open-feature-php
           targetRepo: cloudbees-provider
           targetBranch: ${{ github.event.release.tag_name }}
-          filterArguments: '--subdirectory-filter providers/CloudBees/'
+          filterArguments: '--subdirectory-filter providers/CloudBees/ --force'
 
   split-provider-flagd:
     runs-on: ubuntu-latest
@@ -72,7 +72,7 @@ jobs:
           targetOrg: open-feature-php
           targetRepo: flagd-provider
           targetBranch: ${{ github.event.release.tag_name }}
-          filterArguments: '--subdirectory-filter providers/Flagd/'
+          filterArguments: '--subdirectory-filter providers/Flagd/ --force'
 
   split-provider-split:
     runs-on: ubuntu-latest
@@ -86,4 +86,4 @@ jobs:
           targetOrg: open-feature-php
           targetRepo: split-provider
           targetBranch: ${{ github.event.release.tag_name }}
-          filterArguments: '--subdirectory-filter providers/Split/'
+          filterArguments: '--subdirectory-filter providers/Split/ --force'
