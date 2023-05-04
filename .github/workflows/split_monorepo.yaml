@@ -15,7 +15,7 @@ jobs:
           privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           targetOrg: open-feature-php
           targetRepo: dd-trace-hook
-          targetBranch: ${{ github.event.release.tag_name }}
+          targetBranch: refs/tags/${{ github.event.release.tag_name }}
           filterArguments: '--subdirectory-filter hooks/DDTrace/ --force'
 
   split-hook-otel:
@@ -29,7 +29,7 @@ jobs:
           privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           targetOrg: open-feature-php
           targetRepo: otel-hook
-          targetBranch: ${{ github.event.release.tag_name }}
+          targetBranch: refs/tags/${{ github.event.release.tag_name }}
           filterArguments: '--subdirectory-filter hooks/OpenTelemetry/ --force'
 
   split-hook-validator:
@@ -43,7 +43,7 @@ jobs:
           privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           targetOrg: open-feature-php
           targetRepo: validators-hook
-          targetBranch: ${{ github.event.release.tag_name }}
+          targetBranch: refs/tags/${{ github.event.release.tag_name }}
           filterArguments: '--subdirectory-filter hooks/Validators/ --force'
 
   split-provider-cloudbees:
@@ -57,7 +57,7 @@ jobs:
           privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           targetOrg: open-feature-php
           targetRepo: cloudbees-provider
-          targetBranch: ${{ github.event.release.tag_name }}
+          targetBranch: refs/tags/${{ github.event.release.tag_name }}
           filterArguments: '--subdirectory-filter providers/CloudBees/ --force'
 
   split-provider-flagd:
@@ -71,7 +71,7 @@ jobs:
           privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           targetOrg: open-feature-php
           targetRepo: flagd-provider
-          targetBranch: ${{ github.event.release.tag_name }}
+          targetBranch: refs/tags/${{ github.event.release.tag_name }}
           filterArguments: '--subdirectory-filter providers/Flagd/ --force'
 
   split-provider-split:
@@ -85,5 +85,5 @@ jobs:
           privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           targetOrg: open-feature-php
           targetRepo: split-provider
-          targetBranch: ${{ github.event.release.tag_name }}
+          targetBranch: refs/tags/${{ github.event.release.tag_name }}
           filterArguments: '--subdirectory-filter providers/Split/ --force'
