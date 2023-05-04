@@ -1,4 +1,4 @@
-name: gitsplit
+name: split-monorepo
 on:
   release:
     types: [published]
@@ -9,15 +9,8 @@ jobs:
     steps:
       - name: checkout
         run: git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout "$GITHUB_SHA"
-      - uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          filters: |
-            src:
-              - 'hooks/DDTrace/**'
       - name: push-hook-dd-trace
         uses: wmde/git-filter-repo-docker-action@v1
-        if: steps.filter.outputs.workflows == 'true'
         with:
           privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           targetOrg: open-feature-php
@@ -30,15 +23,8 @@ jobs:
     steps:
       - name: checkout
         run: git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout "$GITHUB_SHA"
-      - uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          filters: |
-            src:
-              - 'hooks/OpenTelemetry/**'
       - name: push-hook-otel
         uses: wmde/git-filter-repo-docker-action@v1
-        if: steps.filter.outputs.workflows == 'true'
         with:
           privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           targetOrg: open-feature-php
@@ -51,15 +37,8 @@ jobs:
     steps:
       - name: checkout
         run: git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout "$GITHUB_SHA"
-      - uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          filters: |
-            src:
-              - 'hooks/Validators/**'
       - name: push-hook-validator
         uses: wmde/git-filter-repo-docker-action@v1
-        if: steps.filter.outputs.workflows == 'true'
         with:
           privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           targetOrg: open-feature-php
@@ -72,15 +51,8 @@ jobs:
     steps:
       - name: checkout
         run: git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout "$GITHUB_SHA"
-      - uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          filters: |
-            src:
-              - 'providers/CloudBees/**'
       - name: push-provider-cloudbees
         uses: wmde/git-filter-repo-docker-action@v1
-        if: steps.filter.outputs.workflows == 'true'
         with:
           privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           targetOrg: open-feature-php
@@ -93,15 +65,8 @@ jobs:
     steps:
       - name: checkout
         run: git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout "$GITHUB_SHA"
-      - uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          filters: |
-            src:
-              - 'providers/Flagd/**'
       - name: push-provider-flagd
         uses: wmde/git-filter-repo-docker-action@v1
-        if: steps.filter.outputs.workflows == 'true'
         with:
           privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           targetOrg: open-feature-php
@@ -114,15 +79,8 @@ jobs:
     steps:
       - name: checkout
         run: git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout "$GITHUB_SHA"
-      - uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          filters: |
-            src:
-              - 'providers/Split/**'
       - name: push-provider-split
         uses: wmde/git-filter-repo-docker-action@v1
-        if: steps.filter.outputs.workflows == 'true'
         with:
           privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           targetOrg: open-feature-php
