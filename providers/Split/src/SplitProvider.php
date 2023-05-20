@@ -70,7 +70,7 @@ class SplitProvider extends AbstractProvider implements Provider
         $this->client = $factory->client();
     }
 
-    public function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger): void
     {
         Di::setLogger($logger);
     }
