@@ -57,7 +57,7 @@ class FlagdProviderTest extends TestCase
         $mockStreamFactory->shouldReceive('createStream')->andReturn($mockStream);
 
         $mockResponse = $this->mockery(ResponseInterface::class);
-        $mockResponse->shouldReceive('getBody')->andReturn("{
+        $mockResponse->shouldReceive('getBody->__toString')->andReturn("{
             \"value\":\"{$expectedValue}\",
             \"variant\":\"{$expectedVariant}\",
             \"reason\":\"{$expectedReason}\"
@@ -111,7 +111,7 @@ class FlagdProviderTest extends TestCase
         $mockStreamFactory->shouldReceive('createStream')->andReturn($mockStream);
 
         $mockResponse = $this->mockery(ResponseInterface::class);
-        $mockResponse->shouldReceive('getBody')->andReturn("{
+        $mockResponse->shouldReceive('getBody->__toString')->andReturn("{
             \"value\":\"{$expectedValue}\",
             \"variant\":\"{$expectedVariant}\",
             \"reason\":\"{$expectedReason}\"
