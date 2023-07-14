@@ -37,7 +37,7 @@ OpenFeatureAPI::setProvider(new FlagdProvider([
     'host' => 'localhost',
     'port' => 8013,
     'secure' => true,
-    'http' => [
+    'httpConfig' => [
       'client' => $client,
       'requestFactory' => $requestFactory,
       'streamFactory' => $streamFactory,
@@ -49,7 +49,7 @@ OpenFeatureAPI::setProvider(new FlagdProvider([
 - **host**: string _(defaults to "localhost")_
 - **port**: number _(defaults to 8013)_
 - **secure**: true | false _(defaults to false)_
-- **http**: An array or `HttpConfig` object, providing implementations for PSR interfaces
+- **httpConfig**: An array or `HttpConfig` object, providing implementations for PSR interfaces
     - **client**: a `ClientInterface` implementation
     - **requestFactory**: a `RequestFactoryInterface` implementation
     - **streamFactory**: a `StreamFactoryInterface` implementation
