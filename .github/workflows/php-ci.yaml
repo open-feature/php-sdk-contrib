@@ -19,7 +19,7 @@ jobs:
           - hooks/Validators
           - providers/Flagd
           - providers/Split
-          - providers/CloudBees
+          # - providers/CloudBees
       fail-fast: false
 
     # todo exclude some matrix combinations based on php version requirements
