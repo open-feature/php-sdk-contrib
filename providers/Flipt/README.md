@@ -36,11 +36,11 @@ $provider = new FliptProvider($host, $apiToken, $namespace);
 OpenFeature::setProvider($provider);
 
 // Now you can evaluate your feature flags as follows
-$booleanFlagValue = OpenFeature::getBooleanValue('your-boolean-flag-key', false);
-$stringFlagValue = OpenFeature::getStringValue('your-string-flag-key', 'default-value');
-$integerFlagValue = OpenFeature::getIntegerValue('your-integer-flag-key', 0);
-$floatFlagValue = OpenFeature::getFloatValue('your-float-flag-key', 0.0);
-$objectFlagValue = OpenFeature::getObjectValue('your-object-flag-key', ['default' => 'value']);
+$booleanFlagValue = OpenFeatureAPI::getInstance()->getClient()->getBooleanValue('your-boolean-flag-key', false);
+$stringFlagValue = OpenFeatureAPI::getInstance()->getClient()->getStringValue('your-string-flag-key', 'default-value');
+$integerFlagValue = OpenFeatureAPI::getInstance()->getClient()->getIntegerValue('your-integer-flag-key', 0);
+$floatFlagValue = OpenFeatureAPI::getInstance()->getClient()->getFloatValue('your-float-flag-key', 0.0);
+$objectFlagValue = OpenFeatureAPI::getInstance()->getClient()->getObjectValue('your-object-flag-key', ['default' => 'value']);
 ```
 
 ### Caching
