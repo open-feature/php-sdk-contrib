@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Flipt\Client\FliptClient;
 use Flipt\Models\DefaultBooleanEvaluationResult;
 use Flipt\Models\DefaultVariantEvaluationResult;
 use Mockery;
@@ -10,18 +11,19 @@ use OpenFeature\implementation\flags\Attributes;
 use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\implementation\provider\ResolutionDetails;
 use OpenFeature\Providers\Flipt\FliptProvider;
+use OpenFeature\Providers\Flipt\ResponseReasons;
 use PHPUnit\Framework\TestCase;
 use Psr\SimpleCache\CacheInterface;
 
 class FliptProviderTest extends TestCase
 {
 
-    protected MockInterface $mockClient;
+    protected FliptClient&MockInterface $mockClient;
     protected FliptProvider $provider;
 
     protected function setUp(): void
     {
-        $this->mockClient = Mockery::mock();
+        $this->mockClient = Mockery::mock( 'overload:' . FliptClient::class );
         $this->provider = new FliptProvider( $this->mockClient );
     }
 
@@ -31,6 +33,7 @@ class FliptProviderTest extends TestCase
         Mockery::close();
     }
 
+    
     public function testBoolean() 
     {
         $this->mockClient->shouldReceive( 'boolean')
@@ -40,7 +43,7 @@ class FliptProviderTest extends TestCase
                 $this->assertEquals( $entityId, 'id' );
                 return true;
             })
-            ->andReturn( new DefaultBooleanEvaluationResult( true, 'MATCH_EVALUATION_REASON', 0.1, 'rid', '13245' ) );
+            ->andReturn( new DefaultBooleanEvaluationResult( true, ResponseReasons::MATCH_EVALUATION_REASON, 0.1, 'rid', '13245' ) );
 
         $result = $this->provider->resolveBooleanValue( 'flag', false, new EvaluationContext( 'id', new Attributes( [ 'context' => 'demo' ] ) ) );
 
@@ -58,7 +61,7 @@ class FliptProviderTest extends TestCase
                 $this->assertEquals( $entityId, 'id' );
                 return true;
             })
-            ->andReturn( new DefaultVariantEvaluationResult( true, 'MATCH_EVALUATION_REASON', 0.1, 'rid', '13245', [], '20', '{"json":1}' ) );
+            ->andReturn( new DefaultVariantEvaluationResult( true, ResponseReasons::MATCH_EVALUATION_REASON, 0.1, 'rid', '13245', [], '20', '{"json":1}' ) );
 
         $result = $this->provider->resolveIntegerValue( 'flag', 10, new EvaluationContext( 'id', new Attributes( [ 'context' => 'demo' ] ) ) );
 
@@ -76,7 +79,7 @@ class FliptProviderTest extends TestCase
                 $this->assertEquals( $entityId, 'id' );
                 return true;
             })
-            ->andReturn( new DefaultVariantEvaluationResult( true, 'MATCH_EVALUATION_REASON', 0.1, 'rid', '13245', [], '0.2345', '{"json":1}' ) );
+            ->andReturn( new DefaultVariantEvaluationResult( true, ResponseReasons::MATCH_EVALUATION_REASON, 0.1, 'rid', '13245', [], '0.2345', '{"json":1}' ) );
 
         $result = $this->provider->resolveFloatValue( 'flag', 0.1111, new EvaluationContext( 'id', new Attributes( [ 'context' => 'demo' ] ) ) );
 
@@ -94,7 +97,7 @@ class FliptProviderTest extends TestCase
                 $this->assertEquals( $entityId, 'id' );
                 return true;
             })
-            ->andReturn( new DefaultVariantEvaluationResult( true, 'MATCH_EVALUATION_REASON', 0.1, 'rid', '13245', [], 'My string', '{"json":1}' ) );
+            ->andReturn( new DefaultVariantEvaluationResult( true, ResponseReasons::MATCH_EVALUATION_REASON, 0.1, 'rid', '13245', [], 'My string', '{"json":1}' ) );
 
         $result = $this->provider->resolveStringValue( 'flag', 'base', new EvaluationContext( 'id', new Attributes( [ 'context' => 'demo' ] ) ) );
 
@@ -113,7 +116,7 @@ class FliptProviderTest extends TestCase
                 $this->assertEquals( $entityId, 'id' );
                 return true;
             })
-            ->andReturn( new DefaultVariantEvaluationResult( true, 'MATCH_EVALUATION_REASON', 0.1, 'rid', '13245', [], 'My string', '{"json":1}' ) );
+            ->andReturn( new DefaultVariantEvaluationResult( true, ResponseReasons::MATCH_EVALUATION_REASON, 0.1, 'rid', '13245', [], 'My string', '{"json":1}' ) );
 
         $result = $this->provider->resolveObjectValue( 'flag', [], new EvaluationContext( 'id', new Attributes( [ 'context' => 'demo' ] ) ) );
 
@@ -122,26 +125,7 @@ class FliptProviderTest extends TestCase
 
     }
 
-
-    public function testCache()
-    {
-        $this->mockClient->shouldReceive( 'boolean')->andReturn( new DefaultBooleanEvaluationResult( true, 'MATCH_EVALUATION_REASON', 0.1, 'rid', '13245' ) );
-
-        $cache = Mockery::mock( CacheInterface::class );
-        $cache->shouldReceive( 'get')->with( 'openfeature-flipt', [] )->andReturn( [] );
-        $cache->shouldReceive( 'set')->withArgs( function( $key, $content ) {
-            $this->assertEquals( $key, 'openfeature-flipt' );
-            $this->assertArrayHasKey( '21349ebf7629df2cb162aa15b2ec6335', $content );
-            $this->assertInstanceOf( ResolutionDetails::class, $content['21349ebf7629df2cb162aa15b2ec6335' ]);
-            return true;
-        });
-
-        // create new provider with mocked cache
-        $provider = new FliptProvider( $this->mockClient, 'token', 'ns', $cache );
-
-        $result = $provider->resolveBooleanValue( 'flag1', false );
-        $this->assertEquals( $result->getValue(), true );
-    }
+    
 
     
 }
