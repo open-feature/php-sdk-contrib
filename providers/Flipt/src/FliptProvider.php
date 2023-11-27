@@ -14,18 +14,15 @@ use OpenFeature\interfaces\flags\FlagValueType;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Provider;
 use OpenFeature\interfaces\provider\ResolutionDetails;
-use Psr\SimpleCache\CacheInterface;
 
 class FliptProvider extends AbstractProvider implements Provider
 {
     protected const NAME = 'FliptProvider';
 
     protected $client;
-    protected Cache $cache;
 
-    public function __construct( mixed $hostOrClient, string $apiToken = '', string $namespace = '', CacheInterface $cache = null ) {
+    public function __construct( string|FliptClient $hostOrClient, string $apiToken = '', string $namespace = '' ) {
         $this->client = ( is_string( $hostOrClient ) ) ? new FliptClient( $hostOrClient, $apiToken, $namespace ) : $hostOrClient;
-        $this->cache = new Cache( $cache );
     }
 
 
@@ -58,12 +55,6 @@ class FliptProvider extends AbstractProvider implements Provider
     }
 
 
-    /**
-     * Clears the cache of all requests
-     */
-    public function clearCache() {
-        $this->cache->clear();
-    }
 
     /**
      * @param bool|string|int|float|mixed[] $defaultValue
@@ -80,13 +71,6 @@ class FliptProvider extends AbstractProvider implements Provider
             $id = $context->getTargetingKey();
         }
 
-
-        // check if cache has already result
-        $cacheKey = $this->cache->key( [ 'flag' => $flagKey, 'type' => $flagType, 'default' => $defaultValue, 'context' => $attributes, 'key' => $id ] );
-        $cached = $this->cache->get( $cacheKey );
-        if( isset( $cached ) ) return $cached;
-
-
         // booleans need a dedicated function
         if( $flagType == FlagValueType::BOOLEAN ) {
             $result = $this->client->boolean( $flagKey, $attributes, $id );
@@ -97,7 +81,7 @@ class FliptProvider extends AbstractProvider implements Provider
         
         // there is a match
         // not sure yet as the variant result has a getMatch() but not the boolean result.
-        if( $result->getReason() == 'MATCH_EVALUATION_REASON' || $result->getReason() == "DEFAULT_EVALUATION_REASON" ) {
+        if( $result->getReason() == ResponseReasons::MATCH_EVALUATION_REASON || $result->getReason() == ResponseReasons::DEFAULT_EVALUATION_REASON ) {
             $result = ResolutionDetailsFactory::fromSuccess( $this->castResult( $result, $flagType ) );
         } else {
             $result = (new ResolutionDetailsBuilder())
@@ -108,9 +92,6 @@ class FliptProvider extends AbstractProvider implements Provider
                     )
                     ->build();
         }
-
-        // write result into cache
-        $this->cache->set( $cacheKey, $result ); 
 
         return $result;
     }
