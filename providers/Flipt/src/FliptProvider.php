@@ -4,6 +4,7 @@ namespace OpenFeature\Providers\Flipt;
 
 use Flipt\Client\FliptClient;
 use Flipt\Models\BooleanEvaluationResult;
+use Flipt\Models\ResponseReasons;
 use Flipt\Models\VariantEvaluationResult;
 use OpenFeature\implementation\provider\AbstractProvider;
 use OpenFeature\implementation\provider\ResolutionDetailsBuilder;

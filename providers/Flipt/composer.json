@@ -10,7 +10,7 @@
     "require": {
         "php": ">=8.0",
         "open-feature/sdk": "^2.0",
-        "flipt-io/flipt": "^0.0.1",
+        "flipt-io/flipt": "^0.2.0",
         "psr/simple-cache": "^3.0.0"
     },
     "require-dev": {
