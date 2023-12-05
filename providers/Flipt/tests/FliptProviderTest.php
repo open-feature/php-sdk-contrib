@@ -5,15 +5,14 @@ namespace Tests;
 use Flipt\Client\FliptClient;
 use Flipt\Models\DefaultBooleanEvaluationResult;
 use Flipt\Models\DefaultVariantEvaluationResult;
+use Flipt\Models\ResponseReasons as ModelsResponseReasons;
 use Mockery;
 use Mockery\MockInterface;
 use OpenFeature\implementation\flags\Attributes;
 use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\implementation\provider\ResolutionDetails;
 use OpenFeature\Providers\Flipt\FliptProvider;
-use OpenFeature\Providers\Flipt\ResponseReasons;
 use PHPUnit\Framework\TestCase;
-use Psr\SimpleCache\CacheInterface;
 
 class FliptProviderTest extends TestCase
 {
@@ -43,7 +42,7 @@ class FliptProviderTest extends TestCase
                 $this->assertEquals( $entityId, 'id' );
                 return true;
             })
-            ->andReturn( new DefaultBooleanEvaluationResult( true, ResponseReasons::MATCH_EVALUATION_REASON, 0.1, 'rid', '13245' ) );
+            ->andReturn( new DefaultBooleanEvaluationResult( true, ModelsResponseReasons::MATCH_EVALUATION_REASON, 0.1, 'rid', '13245' ) );
 
         $result = $this->provider->resolveBooleanValue( 'flag', false, new EvaluationContext( 'id', new Attributes( [ 'context' => 'demo' ] ) ) );
 
@@ -61,7 +60,7 @@ class FliptProviderTest extends TestCase
                 $this->assertEquals( $entityId, 'id' );
                 return true;
             })
-            ->andReturn( new DefaultVariantEvaluationResult( true, ResponseReasons::MATCH_EVALUATION_REASON, 0.1, 'rid', '13245', [], '20', '{"json":1}' ) );
+            ->andReturn( new DefaultVariantEvaluationResult( true, ModelsResponseReasons::MATCH_EVALUATION_REASON, 0.1, 'rid', '13245', [], '20', '{"json":1}' ) );
 
         $result = $this->provider->resolveIntegerValue( 'flag', 10, new EvaluationContext( 'id', new Attributes( [ 'context' => 'demo' ] ) ) );
 
@@ -79,7 +78,7 @@ class FliptProviderTest extends TestCase
                 $this->assertEquals( $entityId, 'id' );
                 return true;
             })
-            ->andReturn( new DefaultVariantEvaluationResult( true, ResponseReasons::MATCH_EVALUATION_REASON, 0.1, 'rid', '13245', [], '0.2345', '{"json":1}' ) );
+            ->andReturn( new DefaultVariantEvaluationResult( true, ModelsResponseReasons::MATCH_EVALUATION_REASON, 0.1, 'rid', '13245', [], '0.2345', '{"json":1}' ) );
 
         $result = $this->provider->resolveFloatValue( 'flag', 0.1111, new EvaluationContext( 'id', new Attributes( [ 'context' => 'demo' ] ) ) );
 
@@ -97,7 +96,7 @@ class FliptProviderTest extends TestCase
                 $this->assertEquals( $entityId, 'id' );
                 return true;
             })
-            ->andReturn( new DefaultVariantEvaluationResult( true, ResponseReasons::MATCH_EVALUATION_REASON, 0.1, 'rid', '13245', [], 'My string', '{"json":1}' ) );
+            ->andReturn( new DefaultVariantEvaluationResult( true, ModelsResponseReasons::MATCH_EVALUATION_REASON, 0.1, 'rid', '13245', [], 'My string', '{"json":1}' ) );
 
         $result = $this->provider->resolveStringValue( 'flag', 'base', new EvaluationContext( 'id', new Attributes( [ 'context' => 'demo' ] ) ) );
 
@@ -116,7 +115,7 @@ class FliptProviderTest extends TestCase
                 $this->assertEquals( $entityId, 'id' );
                 return true;
             })
-            ->andReturn( new DefaultVariantEvaluationResult( true, ResponseReasons::MATCH_EVALUATION_REASON, 0.1, 'rid', '13245', [], 'My string', '{"json":1}' ) );
+            ->andReturn( new DefaultVariantEvaluationResult( true, ModelsResponseReasons::MATCH_EVALUATION_REASON, 0.1, 'rid', '13245', [], 'My string', '{"json":1}' ) );
 
         $result = $this->provider->resolveObjectValue( 'flag', [], new EvaluationContext( 'id', new Attributes( [ 'context' => 'demo' ] ) ) );
 
