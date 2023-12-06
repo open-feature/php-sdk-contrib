@@ -45,16 +45,20 @@ $objectFlagValue = OpenFeatureAPI::getInstance()->getClient()->getObjectValue('y
 
 ### Caching
 
-If you like to cache the feature flag results you can pass a [PSR-16](https://www.php-fig.org/psr/psr-16/) compatible cache storage into the provider constructor like this:
+If you like to cache the feature flag results you need a [PSR-16](https://www.php-fig.org/psr/psr-16/) compatible cache storage.
+Then you simple wrap the FliptProvider (or any other provider) with a new CacheProvider instance as the following example shows.
+This way all the feature flag requests are cached to optimize performance.
 
 ```php
+use OpenFeature\Providers\Flipt\FliptProvider;
+use OpenFeature\Providers\Flipt\CacheProvider;
 
-$cache = '<your psr-16 compatible cache storage>';
-$provider = new FliptProvider($host, $apiToken, $namespace, $cache);
+$fliptProvider = new FliptProvider($host, $apiToken, $namespace);
+$cache = new CacheProvider( $fliptProvider,'<your psr-16 compatible cache storage>' );
 
-OpenFeature::setProvider($provider);
+OpenFeatureAPI::getInstance()->setProvider($cache);
 
 
 // to clear the cache you can call
-$provider->cacheClear();
+$cache->clear();
 ```
