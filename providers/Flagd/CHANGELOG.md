@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.0](https://github.com/open-feature/php-sdk-contrib/compare/open-feature/flagd-provider-0.4.0...open-feature/flagd-provider-0.4.0) (2024-01-17)
+
+
+### Features
+
+* deprecate php 7 ([#59](https://github.com/open-feature/php-sdk-contrib/issues/59)) ([d028e6d](https://github.com/open-feature/php-sdk-contrib/commit/d028e6d7741d07b7edef21b43b249fdb2d18d8f2))
+* **flagd:** support newer psr/log ([bf6f449](https://github.com/open-feature/php-sdk-contrib/commit/bf6f449ea790c0021698d33ebb59fab576e23341))
+
+
+### Bug Fixes
+
+* **deps:** update dependency psr/http-message to v2 ([#72](https://github.com/open-feature/php-sdk-contrib/issues/72)) ([bb18c04](https://github.com/open-feature/php-sdk-contrib/commit/bb18c04af7280c71c013d5a2e11903506b815f8b))
+* flagd documentation ([#83](https://github.com/open-feature/php-sdk-contrib/issues/83)) ([684367c](https://github.com/open-feature/php-sdk-contrib/commit/684367cd14b6b55cded5accdc5b92eb00986404c))
+
 ## [0.4.0](https://github.com/open-feature/php-sdk-contrib/compare/open-feature/flagd-provider-0.4.0...open-feature/flagd-provider-0.4.0) (2023-02-12)
 
 
