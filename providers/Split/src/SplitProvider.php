@@ -31,7 +31,7 @@ use function is_null;
 
 class SplitProvider extends AbstractProvider implements Provider
 {
-    protected const NAME = 'SplitProvider';
+    protected static string $NAME = 'SplitProvider';
 
     /**
      * The Split factory will only be created one time
