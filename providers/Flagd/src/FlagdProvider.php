@@ -16,7 +16,7 @@ use OpenFeature\interfaces\provider\ResolutionDetails;
 
 class FlagdProvider extends AbstractProvider implements Provider
 {
-    protected const NAME = 'FlagdProvider';
+    protected static string $NAME = 'FlagdProvider';
 
     private IConfig $config;
 

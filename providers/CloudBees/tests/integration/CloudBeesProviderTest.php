@@ -42,6 +42,7 @@ class CloudBeesProviderTest extends TestCase
         $this->assertNotNull($instance);
         $this->assertInstanceOf(CloudBeesProvider::class, $instance);
         $this->assertInstanceOf(Provider::class, $instance);
+        $this->assertEquals('CloudBeesProvider', $instance->getMetadata()->getName());
     }
 
     public function testCanResolveBool(): void

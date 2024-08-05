@@ -35,6 +35,7 @@ class FlagdProviderTest extends TestCase
         // Then
         $this->assertNotNull($instance);
         $this->assertInstanceOf(Provider::class, $instance);
+        $this->assertEquals('FlagdProvider', $instance->getMetadata()->getName());
     }
 
     public function testCanInstantiateHttpWithConfigObject(): void

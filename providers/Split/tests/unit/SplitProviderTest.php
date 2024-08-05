@@ -27,6 +27,7 @@ class SplitProviderTest extends TestCase
         // Then
         $this->assertNotNull($instance);
         $this->assertInstanceOf(Provider::class, $instance);
+        $this->assertEquals('SplitProvider', $instance->getMetadata()->getName());
     }
 
     private function getPathToValidSplitFile(): string

@@ -26,7 +26,7 @@ use function is_null;
 
 class CloudBeesProvider extends AbstractProvider implements Provider
 {
-    protected const NAME = 'CloudBeesProvider';
+    protected static string $NAME = 'CloudBeesProvider';
 
     private static ?CloudBeesProvider $instance = null;
 
