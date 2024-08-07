@@ -1,0 +1,107 @@
+{
+  "name": "open-feature/go-feature-flag-provider",
+  "description": "The GO Feature Flag provider package for open-feature",
+  "license": "Apache-2.0",
+  "type": "library",
+  "keywords": [
+    "featureflags",
+    "featureflagging",
+    "openfeature",
+    "gofeatureflag",
+    "provider"
+  ],
+  "authors": [
+    {
+      "name": "Thomas Poignant",
+      "homepage": "https://github.com/thomaspoignant/go-feature-flag"
+    }
+  ],
+  "require": {
+    "php": "^8",
+    "open-feature/sdk": "^2.0",
+    "guzzlehttp/guzzle": "^7.9"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9",
+    "mockery/mockery": "^1.6",
+    "spatie/phpunit-snapshot-assertions": "^4.2"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "autoload": {
+    "psr-4": {
+      "OpenFeature\\Providers\\GoFeatureFlag\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "OpenFeature\\Providers\\GoFeatureFlag\\Test\\": "tests/"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "phpstan/extension-installer": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "ergebnis/composer-normalize": true,
+      "captainhook/plugin-composer": true,
+      "ramsey/composer-repl": true
+    },
+    "sort-packages": true
+  },
+  "scripts": {
+    "dev:analyze": [
+      "@dev:analyze:phpstan",
+      "@dev:analyze:psalm"
+    ],
+    "dev:analyze:phpstan": "phpstan analyse --ansi --debug --memory-limit=512M",
+    "dev:analyze:psalm": "psalm",
+    "dev:build:clean": "git clean -fX build/",
+    "dev:lint": [
+      "@dev:lint:syntax",
+      "@dev:lint:style"
+    ],
+    "dev:lint:fix": "phpcbf",
+    "dev:lint:style": "phpcs --colors",
+    "dev:lint:syntax": "parallel-lint --colors src/ tests/",
+    "dev:test": [
+      "@dev:lint",
+      "@dev:analyze",
+      "@dev:test:unit",
+      "@dev:test:integration"
+    ],
+    "dev:test:coverage:ci": "phpunit --colors=always --coverage-text --coverage-clover build/coverage/clover.xml --coverage-cobertura build/coverage/cobertura.xml --coverage-crap4j build/coverage/crap4j.xml --coverage-xml build/coverage/coverage-xml --log-junit build/junit.xml",
+    "dev:test:coverage:html": "phpunit --colors=always --coverage-html build/coverage/coverage-html/",
+    "dev:test:unit": [
+      "@dev:test:unit:setup",
+      "phpunit --colors=always --testdox --testsuite=unit",
+      "@dev:test:unit:teardown"
+    ],
+    "dev:test:unit:debug": "phpunit --colors=always --testdox -d xdebug.profiler_enable=on",
+    "dev:test:unit:setup": "echo 'Setup for unit tests...'",
+    "dev:test:unit:teardown": "echo 'Tore down for unit tests...'",
+    "dev:test:integration": [
+      "@dev:test:integration:setup",
+      "phpunit --colors=always --testdox --testsuite=integration",
+      "@dev:test:integration:teardown"
+    ],
+    "dev:test:integration:debug": "phpunit --colors=always --testdox -d xdebug.profiler_enable=on",
+    "dev:test:integration:setup": "echo 'Setup for integration tests...'",
+    "dev:test:integration:teardown": "echo 'Tore down integration tests...'",
+    "test": "@dev:test"
+  },
+  "scripts-descriptions": {
+    "dev:analyze": "Runs all static analysis checks.",
+    "dev:analyze:phpstan": "Runs the PHPStan static analyzer.",
+    "dev:analyze:psalm": "Runs the Psalm static analyzer.",
+    "dev:build:clean": "Cleans the build/ directory.",
+    "dev:lint": "Runs all linting checks.",
+    "dev:lint:fix": "Auto-fixes coding standards issues, if possible.",
+    "dev:lint:style": "Checks for coding standards issues.",
+    "dev:lint:syntax": "Checks for syntax errors.",
+    "dev:test": "Runs linting, static analysis, and unit tests.",
+    "dev:test:coverage:ci": "Runs unit tests and generates CI coverage reports.",
+    "dev:test:coverage:html": "Runs unit tests and generates HTML coverage report.",
+    "dev:test:unit": "Runs unit tests.",
+    "test": "Runs linting, static analysis, and unit tests."
+  }
+}

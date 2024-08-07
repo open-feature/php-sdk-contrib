@@ -19,6 +19,7 @@ jobs:
           - hooks/Validators
           - providers/Flagd
           - providers/Split
+          - providers/GoFeatureFlag
           # - providers/CloudBees
       fail-fast: false
 

@@ -29,6 +29,10 @@
     "providers/Split": {
       "package-name": "open-feature/split-provider",
       "release-as": "0.3.0"
+    },
+    "providers/GoFeatureFlag": {
+      "package-name": "open-feature/go-feature-flag-provider",
+      "release-as": "0.1.0"
     }
   }
 }
