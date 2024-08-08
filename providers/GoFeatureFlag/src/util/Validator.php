@@ -18,8 +18,11 @@ class Validator
      * @return void
      * @throws InvalidConfigException - if the config is invalid we return an error
      */
-    public static function validateConfig(Config $config): void
+    public static function validateConfig(?Config $config): void
     {
+        if ($config === null) {
+            throw new InvalidConfigException('Config is null');
+        }
         self::validateEndpoint($config->getEndpoint());
     }
 

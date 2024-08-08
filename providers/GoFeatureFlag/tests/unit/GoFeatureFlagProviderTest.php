@@ -22,7 +22,7 @@ class GoFeatureFlagProviderTest extends TestCase
 {
     private EvaluationContext $defaultEvaluationContext;
 
-    public function test_should_throw_if_invalid_endpoint()
+    public function test_should_throw_if_invalid_endpoint(): void
     {
         $this->expectException(InvalidConfigException::class);
         new GoFeatureFlagProvider(
@@ -32,7 +32,7 @@ class GoFeatureFlagProviderTest extends TestCase
 
     // Configuration validation tests
 
-    public function test_should_not_throw_if_valid_endpoint()
+    public function test_should_not_throw_if_valid_endpoint(): void
     {
         $provider = new GoFeatureFlagProvider(
             new Config('https://gofeatureflag.org')
@@ -40,7 +40,7 @@ class GoFeatureFlagProviderTest extends TestCase
         $this->assertInstanceOf(GoFeatureFlagProvider::class, $provider);
     }
 
-    public function test_should_raise_if_endpoint_is_not_http()
+    public function test_should_raise_if_endpoint_is_not_http(): void
     {
         $this->expectException(InvalidConfigException::class);
         $provider = new GoFeatureFlagProvider(
@@ -49,7 +49,7 @@ class GoFeatureFlagProviderTest extends TestCase
         $this->assertInstanceOf(GoFeatureFlagProvider::class, $provider);
     }
 
-    public function test_empty_endpoint_should_throw()
+    public function test_empty_endpoint_should_throw(): void
     {
         $this->expectException(InvalidConfigException::class);
         new GoFeatureFlagProvider(
@@ -57,7 +57,7 @@ class GoFeatureFlagProviderTest extends TestCase
         );
     }
 
-    public function test_metadata_name_is_defined()
+    public function test_metadata_name_is_defined(): void
     {
         $config = new Config('http://localhost:1031');
         $provider = new GoFeatureFlagProvider($config);
@@ -68,7 +68,7 @@ class GoFeatureFlagProviderTest extends TestCase
 
     // Metadata tests
 
-    public function test_should_return_the_value_of_the_flag_as_int()
+    public function test_should_return_the_value_of_the_flag_as_int(): void
     {
         $mockClient = $this->createMock(Client::class);
         $mockResponse = new Response(200, [], json_encode([
@@ -98,7 +98,7 @@ class GoFeatureFlagProviderTest extends TestCase
         assertEquals('integer_key', $got->getFlagKey());
     }
 
-    private function mockHttpClient($provider, $mockClient)
+    private function mockHttpClient($provider, $mockClient): void
     {
         $providerReflection = new \ReflectionClass($provider);
         $ofrepApiProperty = $providerReflection->getProperty('ofrepApi');
@@ -111,7 +111,7 @@ class GoFeatureFlagProviderTest extends TestCase
         $clientProperty->setValue($ofrepApi, $mockClient);
     }
 
-    public function test_should_return_the_value_of_the_flag_as_float()
+    public function test_should_return_the_value_of_the_flag_as_float(): void
     {
         $mockClient = $this->createMock(Client::class);
         $mockResponse = new Response(200, [], json_encode([
@@ -141,7 +141,7 @@ class GoFeatureFlagProviderTest extends TestCase
         assertEquals('flag-key', $got->getFlagKey());
     }
 
-    public function test_should_return_the_value_of_the_flag_as_string()
+    public function test_should_return_the_value_of_the_flag_as_string(): void
     {
         $mockClient = $this->createMock(Client::class);
         $mockResponse = new Response(200, [], json_encode([
@@ -171,7 +171,7 @@ class GoFeatureFlagProviderTest extends TestCase
         assertEquals('flag-key', $got->getFlagKey());
     }
 
-    public function test_should_return_the_value_of_the_flag_as_bool()
+    public function test_should_return_the_value_of_the_flag_as_bool(): void
     {
         $mockClient = $this->createMock(Client::class);
         $mockResponse = new Response(200, [], json_encode([
@@ -201,7 +201,7 @@ class GoFeatureFlagProviderTest extends TestCase
         assertEquals('flag-key', $got->getFlagKey());
     }
 
-    public function test_should_return_the_value_of_the_flag_as_object()
+    public function test_should_return_the_value_of_the_flag_as_object(): void
     {
         $mockClient = $this->createMock(Client::class);
         $mockResponse = new Response(200, [], json_encode([
@@ -231,7 +231,7 @@ class GoFeatureFlagProviderTest extends TestCase
         assertEquals('flag-key', $got->getFlagKey());
     }
 
-    public function test_should_return_the_default_value_if_flag_is_not_the_right_type()
+    public function test_should_return_the_default_value_if_flag_is_not_the_right_type(): void
     {
         $mockClient = $this->createMock(Client::class);
         $mockResponse = new Response(200, [], json_encode([
@@ -262,7 +262,7 @@ class GoFeatureFlagProviderTest extends TestCase
         assertEquals('integer_key', $got->getFlagKey());
     }
 
-    public function test_should_return_the_default_value_of_the_flag_if_error_send_by_the_API_http_code_403()
+    public function test_should_return_the_default_value_of_the_flag_if_error_send_by_the_API_http_code_403(): void
     {
         $mockClient = $this->createMock(Client::class);
         $mockResponse = new Response(403, [], json_encode([]));
@@ -288,7 +288,7 @@ class GoFeatureFlagProviderTest extends TestCase
         assertEquals('boolean_key', $got->getFlagKey());
     }
 
-    public function test_should_return_the_default_value_of_the_flag_if_error_send_by_the_API__http_code_400__()
+    public function test_should_return_the_default_value_of_the_flag_if_error_send_by_the_API__http_code_400(): void
     {
         $mockClient = $this->createMock(Client::class);
         $mockResponse = new Response(400, [], json_encode([
@@ -319,7 +319,7 @@ class GoFeatureFlagProviderTest extends TestCase
         assertEquals('boolean_key', $got->getFlagKey());
     }
 
-    public function test_should_return_default_value_if_no_evaluation_context()
+    public function test_should_return_default_value_if_no_evaluation_context(): void
     {
         $mockClient = $this->createMock(Client::class);
         $mockResponse = new Response(200, [], json_encode([
@@ -349,7 +349,7 @@ class GoFeatureFlagProviderTest extends TestCase
         assertEquals('boolean_key', $got->getFlagKey());
     }
 
-    public function test_should_return_default_value_if_evaluation_context_has_empty_string_targetingKey()
+    public function test_should_return_default_value_if_evaluation_context_has_empty_string_targetingKey(): void
     {
         $mockClient = $this->createMock(Client::class);
         $mockResponse = new Response(200, [], json_encode([
@@ -379,7 +379,7 @@ class GoFeatureFlagProviderTest extends TestCase
         assertEquals('boolean_key', $got->getFlagKey());
     }
 
-    public function test_should_return_default_value_if_evaluation_context_has_null_targetingKey()
+    public function test_should_return_default_value_if_evaluation_context_has_null_targetingKey(): void
     {
         $mockClient = $this->createMock(Client::class);
         $mockResponse = new Response(200, [], json_encode([
@@ -409,7 +409,7 @@ class GoFeatureFlagProviderTest extends TestCase
         assertEquals('boolean_key', $got->getFlagKey());
     }
 
-    public function test_should_return_default_value_if_flag_key_empty_string()
+    public function test_should_return_default_value_if_flag_key_empty_string(): void
     {
         $mockClient = $this->createMock(Client::class);
         $mockResponse = new Response(200, [], json_encode([
@@ -439,7 +439,7 @@ class GoFeatureFlagProviderTest extends TestCase
         assertEquals('', $got->getFlagKey());
     }
 
-    public function test_return_an_error_API_response_if_500()
+    public function test_return_an_error_API_response_if_500(): void
     {
         $mockClient = $this->createMock(Client::class);
         $mockResponse = new Response(500, [], json_encode([]));
@@ -472,7 +472,7 @@ class GoFeatureFlagProviderTest extends TestCase
         $this->defaultEvaluationContext = new MutableEvaluationContext("214b796a-807b-4697-b3a3-42de0ec10a37", new Attributes(["email" => "contact@gofeatureflag.org"]));
     }
 
-    private function mockClient($provider, $mockClient)
+    private function mockClient($provider, $mockClient): void
     {
         $providerReflection = new \ReflectionClass($provider);
         $ofrepApiProperty = $providerReflection->getProperty('ofrepApi');

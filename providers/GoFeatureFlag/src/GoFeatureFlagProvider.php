@@ -13,6 +13,7 @@ use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Provider;
 use OpenFeature\interfaces\provider\Reason;
 use OpenFeature\interfaces\provider\ResolutionDetails;
+use OpenFeature\Providers\GoFeatureFlag\config\Config;
 use OpenFeature\Providers\GoFeatureFlag\controller\OfrepApi;
 use OpenFeature\Providers\GoFeatureFlag\exception\BaseOfrepException;
 use OpenFeature\Providers\GoFeatureFlag\exception\InvalidConfigException;
@@ -26,7 +27,7 @@ class GoFeatureFlagProvider extends AbstractProvider implements Provider
     /**
      * @throws InvalidConfigException
      */
-    public function __construct($config = null)
+    public function __construct(Config $config)
     {
         Validator::validateConfig($config);
         if (is_array($config->getCustomHeaders()) && !array_key_exists("Content-Type", $config->getCustomHeaders())) {
@@ -45,15 +46,22 @@ class GoFeatureFlagProvider extends AbstractProvider implements Provider
         return $this->evaluate($flagKey, $defaultValue, ['boolean'], $context);
     }
 
-    private function evaluate(string $flagKey, mixed $defaultValue, array $allowedClasses, ?EvaluationContext $evaluationContext = null): ResolutionDetails
+    /**
+     * @param array<string> $allowedClasses
+     */
+    private function evaluate(string $flagKey, mixed $defaultValue, array $allowedClasses, EvaluationContext $evaluationContext = null): ResolutionDetails
     {
         try {
             Validator::validateEvaluationContext($evaluationContext);
             Validator::validateFlagKey($flagKey);
+
             $apiResp = $this->ofrepApi->evaluate($flagKey, $evaluationContext);
 
             if ($apiResp->isError()) {
-                $err = new ResolutionError($apiResp->getErrorCode(), $apiResp->getErrorDetails());
+                $err = new ResolutionError(
+                    $apiResp->getErrorCode() ?? ErrorCode::GENERAL(),
+                    $apiResp->getErrorDetails()
+                );
                 return (new ResolutionDetailsBuilder())
                     ->withValue($defaultValue)
                     ->withError($err)
