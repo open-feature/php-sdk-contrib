@@ -4,18 +4,26 @@ declare(strict_types=1);
 
 namespace OpenFeature\Providers\GoFeatureFlag\util;
 
-
-use OpenFeature\interfaces\flags\EvaluationContext;
 use OpenFeature\Providers\GoFeatureFlag\config\Config;
 use OpenFeature\Providers\GoFeatureFlag\exception\InvalidConfigException;
-use OpenFeature\Providers\GoFeatureFlag\exception\InvalidContextException;
 use OpenFeature\Providers\GoFeatureFlag\exception\ParseException;
+
+use function array_diff;
+use function array_keys;
+use function count;
+use function filter_var;
+use function implode;
+use function is_array;
+use function is_string;
+use function key_exists;
+
+use const FILTER_VALIDATE_URL;
 
 class Validator
 {
     /**
-     * @param Config $config - The configuration object to validate
-     * @return void
+     * @param ?Config $config - The configuration object to validate
+     *
      * @throws InvalidConfigException - if the config is invalid we return an error
      */
     public static function validateConfig(?Config $config): void
@@ -27,8 +35,8 @@ class Validator
     }
 
     /**
-     * @param string $endpoint
-     * @return void
+     * @param string $endpoint - The endpoint to validate
+     *
      * @throws InvalidConfigException
      */
     private static function validateEndpoint(string $endpoint): void
@@ -39,15 +47,23 @@ class Validator
     }
 
     /**
+     * @param mixed $data - The data to validate
+     *
+     * @return array{key: string, reason: string, variant: string}
+     *
      * @throws ParseException
      */
-    public static function validateSuccessApiResponse(array $data): void
+    public static function validateSuccessApiResponse(mixed $data): array
     {
+        if (!is_array($data)) {
+            throw new ParseException('invalid json object, expected associative array');
+        }
+
         $requiredKeys = ['key', 'value', 'reason', 'variant'];
         $missingKeys = array_diff($requiredKeys, array_keys($data));
-        if (!empty($missingKeys)) {
+        if (count($missingKeys) > 0) {
             throw new ParseException(
-                "missing keys in the success response: " . implode(', ', $missingKeys)
+                'missing keys in the success response: ' . implode(', ', $missingKeys),
             );
         }
 
@@ -66,18 +82,28 @@ class Validator
         if (key_exists('metadata', $data) && !is_array($data['metadata'])) {
             throw new ParseException('metadata is not an array');
         }
+
+        return $data;
     }
 
     /**
+     * @param mixed $data - The data to validate
+     *
+     * @return array{errorCode: string}
+     *
      * @throws ParseException
      */
-    public static function validateErrorApiResponse(array $data): void
+    public static function validateErrorApiResponse(mixed $data): array
     {
+        if (!is_array($data)) {
+            throw new ParseException('invalid json object, expected associative array');
+        }
+
         $requiredKeys = ['key', 'errorCode'];
         $missingKeys = array_diff($requiredKeys, array_keys($data));
-        if (!empty($missingKeys)) {
+        if (count($missingKeys) > 0) {
             throw new ParseException(
-                "missing keys in the error response: " . implode(', ', $missingKeys)
+                'missing keys in the error response: ' . implode(', ', $missingKeys),
             );
         }
 
@@ -88,22 +114,18 @@ class Validator
         if (key_exists('errorDetails', $data) && !is_string($data['errorDetails'])) {
             throw new ParseException('errorDetails is not a string', null);
         }
+
+        return $data;
     }
 
-    public static function validateEvaluationContext(?EvaluationContext $context): void
-    {
-        if ($context === null) {
-            throw new InvalidContextException('Evaluation context is null');
-        }
-
-        if ($context->getTargetingKey() === null || $context->getTargetingKey() === '') {
-            throw new InvalidContextException('Missing targetingKey in evaluation context');
-        }
-    }
-
+    /**
+     * @param string $flagKey - The flag key to validate
+     *
+     * @throws InvalidConfigException
+     */
     public static function validateFlagKey(string $flagKey): void
     {
-        if ($flagKey === null || $flagKey === '') {
+        if ($flagKey === '') {
             throw new InvalidConfigException('Flag key is null or empty');
         }
     }

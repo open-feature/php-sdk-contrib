@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace OpenFeature\Providers\GoFeatureFlag\exception;
 
 use OpenFeature\interfaces\provider\ErrorCode;

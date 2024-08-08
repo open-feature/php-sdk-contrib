@@ -18,8 +18,9 @@
   ],
   "require": {
     "php": "^8",
+    "guzzlehttp/guzzle": "^7.9",
     "open-feature/sdk": "^2.0",
-    "guzzlehttp/guzzle": "^7.9"
+    "psr/http-message": "^2.0"
   },
   "require-dev": {
     "phpunit/phpunit": "^9",
@@ -68,7 +69,7 @@
       "@dev:analyze:phpstan",
       "@dev:analyze:psalm"
     ],
-    "dev:analyze:phpstan": "phpstan analyse --ansi --debug --memory-limit=512M",
+    "dev:analyze:phpstan": "phpstan   --ansi --debug --memory-limit=512M",
     "dev:analyze:psalm": "psalm",
     "dev:build:clean": "git clean -fX build/",
     "dev:lint": [

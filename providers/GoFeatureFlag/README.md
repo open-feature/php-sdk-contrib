@@ -44,6 +44,7 @@ The constructor of the config object has the following options:
 | `endpoint`      | **(mandatory)** The URL to access to the relay-proxy.<br />*(example: `https://relay.proxy.gofeatureflag.org/`)* |
 | `apiKey`        | The token used to call the relay proxy.                                                                          |
 | `customHeaders` | Any headers you want to add to call the relay-proxy.                                                             |
+| `httpclient`    | The HTTP Client to use (if you want to use a custom one). _It has to be a `PSR-7` compliant implementation._     |
 
 The only required option to create a `GoFeatureFlagProvider` is the URL _(`endpoint`)_ to your GO Feature Flag relay-proxy instance.
 
@@ -62,7 +63,7 @@ $api->setProvider($provider);
 $client = $api->getClient();
 $evaluationContext = new MutableEvaluationContext(
       "214b796a-807b-4697-b3a3-42de0ec10a37", 
-      new Attributes(["email" => "contact@gofeatureflag.org"])
+      new Attributes(["email" => 'contact@gofeatureflag.org'])
   );
 
 $value = $client->getBooleanDetails('integer_key', false, $evaluationContext);
