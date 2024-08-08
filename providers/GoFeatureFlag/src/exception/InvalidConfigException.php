@@ -1,12 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace OpenFeature\Providers\GoFeatureFlag\exception;
 
-class InvalidConfigException extends \Exception
+use Exception;
+use Throwable;
+
+class InvalidConfigException extends Exception
 {
     private string $customMessage;
 
-    public function __construct(string $message, int $code = 0, \Exception $previous = null)
+    public function __construct(string $message, int $code = 0, ?Throwable $previous = null)
     {
         $this->customMessage = $message;
         parent::__construct($message, $code, $previous);

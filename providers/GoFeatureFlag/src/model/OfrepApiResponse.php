@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace OpenFeature\Providers\GoFeatureFlag\model;
 
+use OpenFeature\Providers\GoFeatureFlag\exception\ParseException;
+use OpenFeature\Providers\GoFeatureFlag\util\Validator;
 use OpenFeature\interfaces\common\Metadata;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Reason;
-use OpenFeature\Providers\GoFeatureFlag\exception\ParseException;
-use OpenFeature\Providers\GoFeatureFlag\util\Validator;
 
 class OfrepApiResponse
 {
@@ -19,10 +21,18 @@ class OfrepApiResponse
     /** @var Metadata[] */
     private ?array $metadata;
 
+    /**
+     * @param array<string, mixed> $metadata
+     */
     private function __construct(
-        $value, string $key, string $reason, ?string $variant, ?ErrorCode $errorCode,
-        ?string $errorDetails, array $metadata = [])
-    {
+        mixed $value,
+        string $key,
+        string $reason,
+        ?string $variant,
+        ?ErrorCode $errorCode,
+        ?string $errorDetails,
+        array $metadata = [],
+    ) {
         $this->value = $value;
         $this->key = $key;
         $this->reason = $reason;
@@ -33,19 +43,22 @@ class OfrepApiResponse
     }
 
     /**
+     * @param array<string, mixed> $apiData
+     *
      * @throws ParseException
      */
     public static function createErrorResponse(array $apiData): OfrepApiResponse
     {
         Validator::validateErrorApiResponse($apiData);
+
         return new OfrepApiResponse(
             null,
-            $apiData["key"],
+            $apiData['key'],
             Reason::ERROR,
             null,
-            OfrepApiResponse::errorCodeMapper($apiData["errorCode"]),
-            $apiData["errorDetails"],
-            []
+            self::errorCodeMapper($apiData['errorCode']),
+            $apiData['errorDetails'],
+            [],
         );
     }
 
@@ -63,6 +76,8 @@ class OfrepApiResponse
     }
 
     /**
+     * @param array<string, mixed> $apiData
+     *
      * @throws ParseException
      */
     public static function createSuccessResponse(array $apiData): OfrepApiResponse
@@ -71,8 +86,9 @@ class OfrepApiResponse
         $value = $apiData['value'];
         $key = $apiData['key'];
         $variant = $apiData['variant'];
-        $reason = OfrepApiResponse::reasonMapper($apiData['reason']);
+        $reason = self::reasonMapper($apiData['reason']);
         $metadata = $apiData['metadata'] ?? [];
+
         return new OfrepApiResponse($value, $key, $reason, $variant, null, null, $metadata);
     }
 
@@ -93,56 +109,38 @@ class OfrepApiResponse
         return $this->errorCode !== null;
     }
 
-    /**
-     * @return mixed
-     */
     public function getValue(): mixed
     {
         return $this->value;
     }
 
-    /**
-     * @return string
-     */
     public function getKey(): string
     {
         return $this->key;
     }
 
-    /**
-     * @return string
-     */
     public function getReason(): string
     {
         return $this->reason;
     }
 
-    /**
-     * @return ?string
-     */
     public function getVariant(): ?string
     {
         return $this->variant;
     }
 
-    /**
-     * @return ?ErrorCode
-     */
     public function getErrorCode(): ?ErrorCode
     {
         return $this->errorCode;
     }
 
-    /**
-     * @return ?string
-     */
     public function getErrorDetails(): ?string
     {
         return $this->errorDetails;
     }
 
     /**
-     * @return ?array
+     * @return ?array<string, mixed>
      */
     public function getMetadata(): ?array
     {

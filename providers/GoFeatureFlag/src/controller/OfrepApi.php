@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace OpenFeature\Providers\GoFeatureFlag\controller;
 
-use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use OpenFeature\interfaces\flags\EvaluationContext;
 use OpenFeature\Providers\GoFeatureFlag\config\Config;
 use OpenFeature\Providers\GoFeatureFlag\exception\BaseOfrepException;
 use OpenFeature\Providers\GoFeatureFlag\exception\FlagNotFoundException;
@@ -16,7 +14,17 @@ use OpenFeature\Providers\GoFeatureFlag\exception\RateLimitedException;
 use OpenFeature\Providers\GoFeatureFlag\exception\UnauthorizedException;
 use OpenFeature\Providers\GoFeatureFlag\exception\UnknownOfrepException;
 use OpenFeature\Providers\GoFeatureFlag\model\OfrepApiResponse;
+use OpenFeature\interfaces\flags\EvaluationContext;
 use Psr\Http\Message\ResponseInterface;
+use Throwable;
+
+use function array_merge;
+use function is_numeric;
+use function json_decode;
+use function json_encode;
+use function rtrim;
+use function strtotime;
+use function time;
 
 class OfrepApi
 {
@@ -51,10 +59,10 @@ class OfrepApi
                 }
             }
 
-            $base_uri = $this->options->getEndpoint();
-            $evaluateApiPath = rtrim($base_uri, '/') . "/ofrep/v1/evaluate/flags/{$flagKey}";
+            $baseUri = $this->options->getEndpoint();
+            $evaluateApiPath = rtrim($baseUri, '/') . "/ofrep/v1/evaluate/flags/{$flagKey}";
             $headers = [
-                'Content-Type' => 'application/json'
+                'Content-Type' => 'application/json',
             ];
 
             if ($this->options->getCustomHeaders() !== null) {
@@ -63,13 +71,13 @@ class OfrepApi
 
             $fields = array_merge(
                 $evaluationContext->getAttributes()->toArray(),
-                ['targetingKey' => $evaluationContext->getTargetingKey()]
+                ['targetingKey' => $evaluationContext->getTargetingKey()],
             );
 
             $requestBody = json_encode(['context' => $fields]);
             $response = $this->client->post($evaluateApiPath, [
                 'headers' => $headers,
-                'body' => $requestBody
+                'body' => $requestBody,
             ]);
 
             switch ($response->getStatusCode()) {
@@ -84,13 +92,14 @@ class OfrepApi
                     throw new FlagNotFoundException($flagKey, $response);
                 case 429:
                     $this->parseRetryLaterHeader($response);
+
                     throw new RateLimitedException($response);
                 default:
                     throw new UnknownOfrepException($response);
             }
         } catch (BaseOfrepException $e) {
             throw $e;
-        } catch (GuzzleException|Exception $e) {
+        } catch (GuzzleException | Throwable $e) {
             throw new UnknownOfrepException(null, $e);
         }
     }
@@ -101,6 +110,7 @@ class OfrepApi
     private function parseSuccessResponse(ResponseInterface $response): OfrepApiResponse
     {
         $parsed = json_decode($response->getBody()->getContents(), true);
+
         return OfrepApiResponse::createSuccessResponse($parsed);
     }
 
@@ -110,6 +120,7 @@ class OfrepApi
     private function parseErrorResponse(ResponseInterface $response): OfrepApiResponse
     {
         $parsed = json_decode($response->getBody()->getContents(), true);
+
         return OfrepApiResponse::createErrorResponse($parsed);
     }
 
@@ -119,7 +130,7 @@ class OfrepApi
         if ($retryAfterHeader) {
             if (is_numeric($retryAfterHeader)) {
                 // Retry-After is in seconds
-                $this->retryAfter = time() + (int)$retryAfterHeader;
+                $this->retryAfter = time() + (int) $retryAfterHeader;
             } else {
                 // Retry-After is in HTTP-date format
                 $this->retryAfter = strtotime($retryAfterHeader);

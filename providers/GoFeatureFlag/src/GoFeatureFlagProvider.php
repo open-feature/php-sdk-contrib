@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace OpenFeature\Providers\GoFeatureFlag;
 
+use OpenFeature\Providers\GoFeatureFlag\config\Config;
+use OpenFeature\Providers\GoFeatureFlag\controller\OfrepApi;
+use OpenFeature\Providers\GoFeatureFlag\exception\BaseOfrepException;
+use OpenFeature\Providers\GoFeatureFlag\exception\InvalidConfigException;
+use OpenFeature\Providers\GoFeatureFlag\util\Validator;
 use OpenFeature\implementation\common\Metadata;
 use OpenFeature\implementation\provider\AbstractProvider;
 use OpenFeature\implementation\provider\ResolutionDetailsBuilder;
@@ -13,15 +18,16 @@ use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Provider;
 use OpenFeature\interfaces\provider\Reason;
 use OpenFeature\interfaces\provider\ResolutionDetails;
-use OpenFeature\Providers\GoFeatureFlag\config\Config;
-use OpenFeature\Providers\GoFeatureFlag\controller\OfrepApi;
-use OpenFeature\Providers\GoFeatureFlag\exception\BaseOfrepException;
-use OpenFeature\Providers\GoFeatureFlag\exception\InvalidConfigException;
-use OpenFeature\Providers\GoFeatureFlag\util\Validator;
+use Throwable;
+
+use function array_key_exists;
+use function gettype;
+use function implode;
+use function is_array;
 
 class GoFeatureFlagProvider extends AbstractProvider implements Provider
 {
-    protected static string $CLIENT_NAME = 'GO Feature Flag Provider';
+    protected static string $NAME = 'GO Feature Flag Provider';
     private OfrepApi $ofrepApi;
 
     /**
@@ -30,15 +36,15 @@ class GoFeatureFlagProvider extends AbstractProvider implements Provider
     public function __construct(Config $config)
     {
         Validator::validateConfig($config);
-        if (is_array($config->getCustomHeaders()) && !array_key_exists("Content-Type", $config->getCustomHeaders())) {
-            $config->getCustomHeaders()["Content-Type"] = "application/json";
+        if (is_array($config->getCustomHeaders()) && !array_key_exists('Content-Type', $config->getCustomHeaders())) {
+            $config->getCustomHeaders()['Content-Type'] = 'application/json';
         }
         $this->ofrepApi = new OfrepApi($config);
     }
 
     public function getMetadata(): Metadata
     {
-        return new Metadata(self::$CLIENT_NAME);
+        return new Metadata(static::$NAME);
     }
 
     public function resolveBooleanValue(string $flagKey, bool $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
@@ -49,7 +55,7 @@ class GoFeatureFlagProvider extends AbstractProvider implements Provider
     /**
      * @param array<string> $allowedClasses
      */
-    private function evaluate(string $flagKey, mixed $defaultValue, array $allowedClasses, EvaluationContext $evaluationContext = null): ResolutionDetails
+    private function evaluate(string $flagKey, mixed $defaultValue, array $allowedClasses, ?EvaluationContext $evaluationContext = null): ResolutionDetails
     {
         try {
             Validator::validateEvaluationContext($evaluationContext);
@@ -60,8 +66,9 @@ class GoFeatureFlagProvider extends AbstractProvider implements Provider
             if ($apiResp->isError()) {
                 $err = new ResolutionError(
                     $apiResp->getErrorCode() ?? ErrorCode::GENERAL(),
-                    $apiResp->getErrorDetails()
+                    $apiResp->getErrorDetails(),
                 );
+
                 return (new ResolutionDetailsBuilder())
                     ->withValue($defaultValue)
                     ->withError($err)
@@ -74,32 +81,37 @@ class GoFeatureFlagProvider extends AbstractProvider implements Provider
                     ->withReason(Reason::ERROR)
                     ->withError(new ResolutionError(
                         ErrorCode::TYPE_MISMATCH(),
-                        "Invalid type for $flagKey, got " . gettype($apiResp->getValue()) . " expected " . implode(", ", $allowedClasses)))
+                        "Invalid type for $flagKey, got " . gettype($apiResp->getValue()) . ' expected ' . implode(', ', $allowedClasses),
+                    ))
                     ->withValue($defaultValue)
                     ->build();
             }
+
             return (new ResolutionDetailsBuilder())
                 ->withValue($apiResp->getValue())
                 ->withReason($apiResp->getReason())
                 ->withVariant($apiResp->getVariant())
                 ->build();
-
         } catch (BaseOfrepException $e) {
             $err = new ResolutionError($e->getErrorCode(), $e->getMessage());
+
             return (new ResolutionDetailsBuilder())
                 ->withValue($defaultValue)
                 ->withError($err)
                 ->withReason(Reason::ERROR)
                 ->build();
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
             return (new ResolutionDetailsBuilder())
                 ->withValue($defaultValue)
-                ->withError(new ResolutionError(ErrorCode::GENERAL(), "An error occurred while evaluating the flag: " . $e->getMessage()))
+                ->withError(new ResolutionError(ErrorCode::GENERAL(), 'An error occurred while evaluating the flag: ' . $e->getMessage()))
                 ->withReason(Reason::ERROR)
                 ->build();
         }
     }
 
+    /**
+     * @param array<string> $allowedClasses
+     */
     private function isValidType(mixed $value, array $allowedClasses): bool
     {
         foreach ($allowedClasses as $class) {
@@ -107,6 +119,7 @@ class GoFeatureFlagProvider extends AbstractProvider implements Provider
                 return true;
             }
         }
+
         return false;
     }
 

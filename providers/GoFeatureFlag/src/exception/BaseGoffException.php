@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace OpenFeature\Providers\GoFeatureFlag\exception;
 
+use Exception;
 use OpenFeature\interfaces\provider\ErrorCode;
 use Psr\Http\Message\ResponseInterface;
+use Throwable;
 
-abstract class BaseGoffException extends \Exception
+abstract class BaseGoffException extends Exception
 {
     private string $customMessage;
     private ?ResponseInterface $response;
     private ErrorCode $errorCode;
 
-    public function __construct(string $message, ErrorCode $errorCode, ?ResponseInterface $response, int $code = 0, \Exception $previous = null)
+    public function __construct(string $message, ErrorCode $errorCode, ?ResponseInterface $response, int $code = 0, ?Throwable $previous = null)
     {
         $this->customMessage = $message;
         $this->response = $response;

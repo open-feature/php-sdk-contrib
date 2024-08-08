@@ -62,7 +62,7 @@ $api->setProvider($provider);
 $client = $api->getClient();
 $evaluationContext = new MutableEvaluationContext(
       "214b796a-807b-4697-b3a3-42de0ec10a37", 
-      new Attributes(["email" => "contact@gofeatureflag.org"])
+      new Attributes(["email" => 'contact@gofeatureflag.org'])
   );
 
 $value = $client->getBooleanDetails('integer_key', false, $evaluationContext);
