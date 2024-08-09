@@ -9,3 +9,5 @@ composer.lock
 /proto/
 
 /.devenv*
+
+.idea/
