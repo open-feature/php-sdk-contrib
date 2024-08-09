@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/open-feature/php-sdk-contrib/compare/open-feature/cloudbees-provider-0.3.0...open-feature/cloudbees-provider-0.3.0) (2024-08-05)
+
+
+### Features
+
+* deprecate php 7 ([#59](https://github.com/open-feature/php-sdk-contrib/issues/59)) ([d028e6d](https://github.com/open-feature/php-sdk-contrib/commit/d028e6d7741d07b7edef21b43b249fdb2d18d8f2))
+
+
+### Bug Fixes
+
+* declaration for provider name ([#105](https://github.com/open-feature/php-sdk-contrib/issues/105)) ([42919fd](https://github.com/open-feature/php-sdk-contrib/commit/42919fdb8a2d3992ac529ddd7e90d6b99b340732))
+
 ## 0.3.0 (2023-01-09)
 
 
