@@ -55,7 +55,7 @@ use OpenFeature\implementation\flags\MutableEvaluationContext;
 use OpenFeature\implementation\flags\Attributes;
 use OpenFeature\OpenFeatureAPI;
 
-$config = new Config('http://gofeatureflag.org', 'my-api-key);
+$config = new Config('http://gofeatureflag.org', 'my-api-key');
 $provider = new GoFeatureFlagProvider($config);
 
 $api = OpenFeatureAPI::getInstance();
