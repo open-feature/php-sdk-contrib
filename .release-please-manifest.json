@@ -4,5 +4,6 @@
   "hooks/Validators": "0.2.0",
   "providers/CloudBees": "0.3.0",
   "providers/Flagd": "0.4.0",
-  "providers/Split": "0.3.0"
+  "providers/Split": "0.3.0",
+  "providers/GoFeatureFlag": "0.1.0"
 }
