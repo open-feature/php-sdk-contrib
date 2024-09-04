@@ -2,102 +2,72 @@ name: split-monorepo
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Package tag'
+        type: string
+        required: true
 
 jobs:
-  split-hook-dd-trace:
+  split-repositories:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # Structure of the config tuple is:
+        # 0: Type of package (e.g. open-feature/flagd-*provider*)
+        # 1: Name of package (sans-org-prefix e.g. open-feature/*flagd*-provider)
+        # 2: Name of subdirectory (e.g. providers/*Flagd*)
+        config:
+          - [hook, dd-trace, DDTrace]
+          - [hook, otel, OpenTelemetry]
+          - [hook, validator, Validators]
+          - [provider, cloudbees, CloudBees]
+          - [provider, flagd, Flagd]
+          - [provider, split, Split]
+          - [provider, go-feature-flag, GoFeatureFlag]
     steps:
+      - name: Detect run requirement
+        id: shouldRun
+        run: |
+          input_ref="${{ github.event.release.tag_name }}"
+          if [ -z "$input_ref" ]; then
+            input_ref="${{ inputs.tag }}"
+          fi
+          result=0
+          if [[ "$inputRef" == open-feature/${{ matrix.config[1] }}-${{ matrix.config[0] }}-* ]]; then
+            result=1
+          fi
+          echo "::set-output name=result::${result}"
       - name: checkout
-        run: git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout "$GITHUB_SHA"
-      - name: push-hook-dd-trace
-        uses: tcarrio/git-filter-repo-docker-action@v1
+        if: ${{ steps.shouldRun.outputs.result == '1' }}
+        run: |
+          git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE"
+          cd "$GITHUB_WORKSPACE"
+          git checkout "$GITHUB_SHA"
+      - name: Replace string in GitHub Actions
+        if: ${{ steps.shouldRun.outputs.result == '1' }}
+        id: targetRef
+        run: |
+          input_ref="${{ github.event.release.tag_name }}"
+          if [ -z "$input_ref" ]; then
+            input_ref="${{ inputs.tag }}"
+          fi
+          if [ -n "$input_ref" ]; then
+            input_ref="refs/tags/$input_ref"
+            target_ref="$(echo -n "$input_ref"|sed 's#open-feature/${{ matrix.config[1] }}-${{ matrix.config[0] }}-##')"
+          fi
+          echo "::set-output name=result::${target_ref}"
+      - name: Filter and push package ${{ matrix.config[1] }}-${{ matrix.config[0] }}
+        if: ${{ steps.shouldRun.outputs.result == '1' }}
+        uses: tcarrio/git-filter-repo-docker-action@v1.5.0
         with:
           privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           targetOrg: open-feature-php
-          targetRepo: dd-trace-hook
-          targetBranch: refs/tags/${{ github.event.release.tag_name }}
-          filterArguments: '--subdirectory-filter hooks/DDTrace/ --force'
-
-  split-hook-otel:
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout
-        run: git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout "$GITHUB_SHA"
-      - name: push-hook-otel
-        uses: tcarrio/git-filter-repo-docker-action@v1
-        with:
-          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
-          targetOrg: open-feature-php
-          targetRepo: otel-hook
-          targetBranch: refs/tags/${{ github.event.release.tag_name }}
-          filterArguments: '--subdirectory-filter hooks/OpenTelemetry/ --force'
-
-  split-hook-validator:
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout
-        run: git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout "$GITHUB_SHA"
-      - name: push-hook-validator
-        uses: tcarrio/git-filter-repo-docker-action@v1
-        with:
-          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
-          targetOrg: open-feature-php
-          targetRepo: validators-hook
-          targetBranch: refs/tags/${{ github.event.release.tag_name }}
-          filterArguments: '--subdirectory-filter hooks/Validators/ --force'
-
-  split-provider-cloudbees:
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout
-        run: git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout "$GITHUB_SHA"
-      - name: push-provider-cloudbees
-        uses: tcarrio/git-filter-repo-docker-action@v1
-        with:
-          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
-          targetOrg: open-feature-php
-          targetRepo: cloudbees-provider
-          targetBranch: refs/tags/${{ github.event.release.tag_name }}
-          filterArguments: '--subdirectory-filter providers/CloudBees/ --force'
-
-  split-provider-flagd:
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout
-        run: git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout "$GITHUB_SHA"
-      - name: push-provider-flagd
-        uses: tcarrio/git-filter-repo-docker-action@v1
-        with:
-          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
-          targetOrg: open-feature-php
-          targetRepo: flagd-provider
-          targetBranch: refs/tags/${{ github.event.release.tag_name }}
-          filterArguments: '--subdirectory-filter providers/Flagd/ --force'
-
-  split-provider-split:
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout
-        run: git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout "$GITHUB_SHA"
-      - name: push-provider-split
-        uses: tcarrio/git-filter-repo-docker-action@v1
-        with:
-          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
-          targetOrg: open-feature-php
-          targetRepo: split-provider
-          targetBranch: refs/tags/${{ github.event.release.tag_name }}
-          filterArguments: '--subdirectory-filter providers/Split/ --force'
-
-  split-provider-go-feature-flag:
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout
-        run: git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE" && cd "$GITHUB_WORKSPACE" && git checkout "$GITHUB_SHA"
-      - name: push-provider-split
-        uses: tcarrio/git-filter-repo-docker-action@v1
-        with:
-          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
-          targetOrg: open-feature-php
-          targetRepo: go-feature-flag-provider
-          targetBranch: refs/tags/${{ github.event.release.tag_name }}
-          filterArguments: '--subdirectory-filter providers/GoFeatureFlag/ --force'
+          targetRepo: ${{ matrix.config[1] }}-${{ matrix.config[0] }}
+          targetBranch: ${{ steps.targetRef.outputs.result }}
+          tagFilter: ^open-feature/${{ matrix.config[1] }}-
+          filterArguments: |
+            --subdirectory-filter "${{matrix.config[0] }}s/${{ matrix.config[2] }}/" \
+            --tag-rename "open-feature/${{ matrix.config[1] }}-${{ matrix.config[0] }}-:" \
+            --force
