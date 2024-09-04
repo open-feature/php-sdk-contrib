@@ -2,6 +2,12 @@ name: split-monorepo
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Package tag'
+        type: string
+        required: true
 
 jobs:
   split-repositories:
@@ -21,21 +27,39 @@ jobs:
           - [provider, split, Split]
           - [provider, go-feature-flag, GoFeatureFlag]
     steps:
+      - name: Detect run requirement
+        id: shouldRun
+        run: |
+          input_ref="${{ github.event.release.tag_name }}"
+          if [ -z "$input_ref" ]; then
+            input_ref="${{ inputs.tag }}"
+          fi
+          result=0
+          if [[ "$inputRef" == open-feature/${{ matrix.config[1] }}-${{ matrix.config[0] }}-* ]]; then
+            result=1
+          fi
+          echo "::set-output name=result::${result}"
       - name: checkout
+        if: ${{ steps.shouldRun.outputs.result == '1' }}
         run: |
           git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE"
           cd "$GITHUB_WORKSPACE"
           git checkout "$GITHUB_SHA"
       - name: Replace string in GitHub Actions
+        if: ${{ steps.shouldRun.outputs.result == '1' }}
         id: targetRef
         run: |
           input_ref="${{ github.event.release.tag_name }}"
+          if [ -z "$input_ref" ]; then
+            input_ref="${{ inputs.tag }}"
+          fi
           if [ -n "$input_ref" ]; then
             input_ref="refs/tags/$input_ref"
             target_ref="$(echo -n "$input_ref"|sed 's#open-feature/${{ matrix.config[1] }}-${{ matrix.config[0] }}-##')"
           fi
           echo "::set-output name=result::${target_ref}"
-      - name: filter-and-push-package-${{ matrix.config[1] }}-${{ matrix.config[0] }}
+      - name: Filter and push package ${{ matrix.config[1] }}-${{ matrix.config[0] }}
+        if: ${{ steps.shouldRun.outputs.result == '1' }}
         uses: tcarrio/git-filter-repo-docker-action@v1.5.0
         with:
           privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
