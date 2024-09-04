@@ -21,7 +21,7 @@ jobs:
         config:
           - [hook, dd-trace, DDTrace]
           - [hook, otel, OpenTelemetry]
-          - [hook, validator, Validators]
+          - [hook, validators, Validators]
           - [provider, cloudbees, CloudBees]
           - [provider, flagd, Flagd]
           - [provider, split, Split]
