@@ -14,7 +14,7 @@ The `php-contrib-sdk` repository is a monorepository containing various provider
   - [Flagd](./providers/Flagd/README.md)
   - [Split](./providers/Split/README.md)
   - [CloudBees](./providers/CloudBees/README.md)
-  - [GO Feature Flag](./providers/GOFeatureFlag/README.md)
+  - [GO Feature Flag](./providers/GoFeatureFlag/README.md)
 - Hooks
   - [OpenTelemetry](./hooks/OpenTelemetry/README.md)
   - [Datadog](./hooks/DDTrace/README.md)
