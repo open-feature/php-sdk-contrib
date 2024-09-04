@@ -35,7 +35,7 @@ jobs:
             input_ref="${{ inputs.tag }}"
           fi
           result=0
-          if [[ "$inputRef" == open-feature/${{ matrix.config[1] }}-${{ matrix.config[0] }}-* ]]; then
+          if [[ "$input_ref" == open-feature/${{ matrix.config[1] }}-${{ matrix.config[0] }}-* ]]; then
             result=1
           fi
           echo "::set-output name=result::${result}"
