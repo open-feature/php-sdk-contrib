@@ -5,8 +5,8 @@
 
 # GO Feature Flag - OpenFeature PHP provider
 <p align="center">
-  <a href="https://packagist.org/packages/open-feature/go-feature-flag"><img src="https://img.shields.io/packagist/v/open-feature/go-feature-flag-provider?color=blue&logo=php" /></a>
-  <a href="https://packagist.org/packages/open-feature/go-feature-flag"><img src="https://img.shields.io/packagist/dt/open-feature/go-feature-flag-provider?logo=php" /></a>
+  <a href="https://packagist.org/packages/open-feature/go-feature-flag-provider"><img src="https://img.shields.io/packagist/v/open-feature/go-feature-flag-provider?color=blue&logo=php" /></a>
+  <a href="https://packagist.org/packages/open-feature/go-feature-flag-provider"><img src="https://img.shields.io/packagist/dt/open-feature/go-feature-flag-provider?logo=php" /></a>
   <img alt="Packagist Version" src="https://img.shields.io/packagist/v/open-feature/go-feature-flag-provider?logo=php&color=blue">
   <a href="https://gofeatureflag.org/"><img src="https://img.shields.io/badge/%F0%9F%93%92-Website-blue" alt="Documentation"></a>
   <a href="https://github.com/thomaspoignant/go-feature-flag/issues"><img src="https://img.shields.io/badge/%E2%9C%8F%EF%B8%8F-issues-red" alt="Issues"></a>
