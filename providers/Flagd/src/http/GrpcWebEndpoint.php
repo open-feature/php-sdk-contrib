@@ -14,4 +14,5 @@ class GrpcWebEndpoint
     public const FLOAT = 'schema.v1.Service/ResolveFloat';
     public const INTEGER = 'schema.v1.Service/ResolveInt';
     public const OBJECT = 'schema.v1.Service/ResolveObject';
+    public const ALL = 'schema.v1.Service/ResolveAll';
 }
