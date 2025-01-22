@@ -25,7 +25,7 @@
   "require": {
     "php": "^8",
     "open-feature/sdk": "^2.0",
-    "rollout/rox": "^5.0"
+    "rollout/rox": "^6.0"
   },
   "require-dev": {
     "ergebnis/composer-normalize": "^2.25",
