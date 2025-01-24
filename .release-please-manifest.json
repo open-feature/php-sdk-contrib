@@ -2,7 +2,7 @@
   "hooks/DDTrace": "1.0.0",
   "hooks/OpenTelemetry": "1.0.0",
   "hooks/Validators": "1.0.0",
-  "providers/CloudBees": "1.0.0",
+  "providers/CloudBees": "1.1.0",
   "providers/Flagd": "1.0.0",
   "providers/Split": "1.0.0",
   "providers/GoFeatureFlag": "1.0.0"
