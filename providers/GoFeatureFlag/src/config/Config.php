@@ -20,7 +20,7 @@ class Config
     private ?ClientInterface $httpclient;
 
     /**
-     * @var array<string, string|numeric|bool> exporterMetadata - is the metadata we send to the GO Feature Flag relay proxy when we report
+     * @var array<string, bool|float|int|string> exporterMetadata - is the metadata we send to the GO Feature Flag relay proxy when we report
      * the evaluation data usage.
      *
      * ‼️Important: If you are using a GO Feature Flag relay proxy before version v1.41.0, the information of this
@@ -78,6 +78,9 @@ class Config
         return $this->httpclient;
     }
 
+    /**
+     * @return array<string, bool|float|int|string>
+     */
     public function getExporterMetadata(): array
     {
         return $this->exporterMetadata;
