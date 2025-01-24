@@ -474,6 +474,52 @@ class GoFeatureFlagProviderTest extends TestCase
         assertEquals('boolean_flag', $got->getFlagKey());
     }
 
+    public function testShouldSendExporterMetadataInContext(): void
+    {
+        $mockClient = $this->createMock(ClientInterface::class);
+        $mockResponse = new Response(200, [], json_encode([
+            'key' => 'integer_key',
+            'value' => 42,
+            'reason' => 'TARGETING_MATCH',
+            'variant' => 'default',
+        ]));
+
+        $requestBody = '';
+        $mockClient
+            ->expects($this->once())
+            ->method('sendRequest')
+            ->willReturnCallback(function ($request) use ($mockResponse, &$requestBody) {
+                $requestBody = $request->getBody()->getContents();
+
+                return $mockResponse;
+            });
+
+        $config = new Config(
+            'http://gofeatureflag.org',
+            null,
+            [],
+            ['key1' => 'value', 'key2' => 123, 'key3' => 123.45],
+        );
+
+        $provider = new GoFeatureFlagProvider($config);
+        $this->mockHttpClient($provider, $mockClient);
+
+        $api = OpenFeatureAPI::getInstance();
+        $api->setProvider($provider);
+        $client = $api->getClient();
+        $client->getBooleanDetails('boolean_flag', false, $this->defaultEvaluationContext);
+
+        // get the request body of the request received by the mock client
+        $want = ['key1' => 'value',
+            'key2' => 123,
+            'key3' => 123.45,
+            'openfeature' => true,
+            'provider' => 'php',
+        ];
+        $got = json_decode($requestBody, true)['context']['gofeatureflag']['exporterMetadata'];
+        assertEquals($want, $got);
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
