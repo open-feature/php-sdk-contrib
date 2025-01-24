@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/open-feature/php-sdk-contrib/compare/open-feature/cloudbees-provider-1.0.0...open-feature/cloudbees-provider-1.1.0) (2025-01-24)
+
+
+### Features
+
+* upgrade rollout/rox to 6.0.1 ([#119](https://github.com/open-feature/php-sdk-contrib/issues/119)) ([e3aef1a](https://github.com/open-feature/php-sdk-contrib/commit/e3aef1ad277d8fe90d3f4ab6ddb3e509dafb45f8))
+
 ## [1.0.0](https://github.com/open-feature/php-sdk-contrib/compare/open-feature/cloudbees-provider-v1.0.0...open-feature/cloudbees-provider-1.0.0) (2024-09-04)
 
 
