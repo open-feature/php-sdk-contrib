@@ -22,6 +22,7 @@ use ReflectionException;
 
 use function PHPUnit\Framework\assertEquals;
 use function json_encode;
+use function json_decode;
 
 class GoFeatureFlagProviderTest extends TestCase
 {
