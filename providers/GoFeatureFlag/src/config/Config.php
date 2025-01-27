@@ -20,7 +20,7 @@ class Config
     private ?ClientInterface $httpclient;
 
     /**
-     * @var array<string, bool|float|int|string> exporterMetadata - is the metadata we send to the GO Feature Flag relay proxy when we report
+     * @var array<string, mixed> exporterMetadata - is the metadata we send to the GO Feature Flag relay proxy when we report
      * the evaluation data usage.
      *
      * ‼️Important: If you are using a GO Feature Flag relay proxy before version v1.41.0, the information of this
@@ -32,6 +32,7 @@ class Config
      * @param string $endpoint - The endpoint to your GO Feature Flag Instance
      * @param string|null $apiKey - API Key to use to connect to GO Feature Flag
      * @param array<string, string>|null $customHeaders - Custom headers you want to send
+     * @param array<string, mixed>|null $exporterMetadata - Metadata to send to the relay proxy during evaluation data collection
      * @param ClientInterface|null $httpclient - The HTTP Client to use (if you want to use a custom one)
      */
     public function __construct(
@@ -79,7 +80,7 @@ class Config
     }
 
     /**
-     * @return array<string, bool|float|int|string>
+     * @return array<string, mixed>
      */
     public function getExporterMetadata(): array
     {
