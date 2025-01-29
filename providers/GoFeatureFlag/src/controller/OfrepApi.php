@@ -75,6 +75,9 @@ class OfrepApi
                 ['targetingKey' => $evaluationContext->getTargetingKey()],
             );
 
+            // Add exporter metadata to the context
+            $fields['gofeatureflag'] = ['exporterMetadata' => $this->options->getExporterMetadata()];
+
             $requestBody = json_encode(['context' => $fields]);
             if ($requestBody === false) {
                 throw new ParseException('failed to encode request body');
