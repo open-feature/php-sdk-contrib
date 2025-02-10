@@ -96,12 +96,24 @@ class HttpService implements ServiceInterface
         return FlagdResponseResolutionDetailsAdapter::forSuccess($validDetails);
     }
 
+    public function resolveValues(?EvaluationContext $context): array
+    {
+        $response = $this->sendRequest(GrpcWebEndpoint::ALL, null, $context);
+        /** @var string[] $details */
+        $details = json_decode((string) $response->getBody(), true);
+
+        /** @var array{flags: array{array{value: mixed[]|bool|DateTime|float|int|string|null, variant: ?string, reason: ?string}}} $validDetails */
+        $validDetails = $details;
+
+        return FlagdResponseResolutionAllAdapter::forSuccess($validDetails);
+    }
+
     private function buildRoute(string $path): string
     {
         return $this->target . '/' . $path;
     }
 
-    private function sendRequest(string $path, string $flagKey, ?EvaluationContext $context): ResponseInterface
+    private function sendRequest(string $path, ?string $flagKey, ?EvaluationContext $context): ResponseInterface
     {
         /**
          * This method is equivalent to:
