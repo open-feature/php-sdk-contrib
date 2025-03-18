@@ -24,6 +24,7 @@ jobs:
           - [hook, validators, Validators]
           - [provider, cloudbees, CloudBees]
           - [provider, flagd, Flagd]
+          - [provider, flagsmith, Flagsmith]
           - [provider, split, Split]
           - [provider, go-feature-flag, GoFeatureFlag]
     steps:
