@@ -44,56 +44,33 @@ class FlagsmithProvider extends AbstractProvider implements Provider
 
     public function resolveStringValue(string $flagKey, string $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
     {
-        $resolutionDetails = (new ResolutionDetailsBuilder())->build();
-
-        try {
-            $resolutionDetails->setValue(
-                $this->contextualFlagStore($context)->getFlag($flagKey)->getValue(),
-            );
-        } catch (FlagsmithThrowable) {
-            $resolutionDetails->setValue($defaultValue);
-        }
-
-        return $resolutionDetails;
+        return $this->resolve($flagKey, $defaultValue, $context);
     }
 
     public function resolveIntegerValue(string $flagKey, int $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
     {
-        $resolutionDetails = (new ResolutionDetailsBuilder())->build();
-
-        try {
-            $resolutionDetails->setValue(
-                $this->contextualFlagStore($context)->getFlag($flagKey)->getValue(),
-            );
-        } catch (FlagsmithThrowable) {
-            $resolutionDetails->setValue($defaultValue);
-        }
-
-        return $resolutionDetails;
+        return $this->resolve($flagKey, $defaultValue, $context);
     }
 
     public function resolveFloatValue(string $flagKey, float $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
     {
-        $resolutionDetails = (new ResolutionDetailsBuilder())->build();
-
-        try {
-            $resolutionDetails->setValue(
-                $this->contextualFlagStore($context)->getFlag($flagKey)->getValue(),
-            );
-        } catch (FlagsmithThrowable) {
-            $resolutionDetails->setValue($defaultValue);
-        }
-
-        return $resolutionDetails;
+        return $this->resolve($flagKey, $defaultValue, $context);
     }
 
     public function resolveObjectValue(string $flagKey, mixed $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
     {
+        return $this->resolve($flagKey, $defaultValue, $context);
+    }
+
+    protected function resolve(string $flagKey, mixed $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
+    {
         $builder = new ResolutionDetailsBuilder();
 
         try {
+            $flag = $this->contextualFlagStore($context)->getFlag($flagKey);
+
             $builder->withValue(
-                $this->contextualFlagStore($context)->getFlag($flagKey)->getValue(),
+                $flag->getEnabled() ? $flag->getValue() : $defaultValue,
             );
         } catch (FlagsmithThrowable $throwable) {
             $builder->withValue($defaultValue);
@@ -105,6 +82,9 @@ class FlagsmithProvider extends AbstractProvider implements Provider
         return $builder->build();
     }
 
+    /**
+     * @throws FlagsmithThrowable
+     */
     private function contextualFlagStore(?EvaluationContext $context = null): Flags
     {
         if ($context && !is_null($identifier = $context->getTargetingKey())) {
