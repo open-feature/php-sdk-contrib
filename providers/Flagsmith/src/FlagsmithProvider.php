@@ -7,6 +7,8 @@ namespace OpenFeature\Providers\Flagsmith;
 use Flagsmith\Exceptions\FlagsmithThrowable;
 use Flagsmith\Flagsmith;
 use Flagsmith\Models\Flags;
+use InvalidArgumentException;
+use JsonException;
 use OpenFeature\implementation\provider\AbstractProvider;
 use OpenFeature\implementation\provider\ResolutionDetailsBuilder;
 use OpenFeature\implementation\provider\ResolutionDetailsFactory;
@@ -59,7 +61,29 @@ class FlagsmithProvider extends AbstractProvider implements Provider
 
     public function resolveObjectValue(string $flagKey, mixed $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
     {
-        return $this->resolve($flagKey, $defaultValue, $context);
+        $builder = new ResolutionDetailsBuilder();
+
+        try {
+            $value = json_decode(
+                $this->resolve($flagKey, $defaultValue, $context)->getValue(),
+                true,
+                flags: JSON_THROW_ON_ERROR,
+            );
+
+            if (!is_array($value)) {
+                throw new InvalidArgumentException("Flag [$flagKey] value must be a JSON encoded array");
+            }
+
+            $builder->withValue($value);
+        } catch (JsonException|InvalidArgumentException $exception) {
+            $builder
+                ->withValue($defaultValue)
+                ->withError(
+                    new ResolutionError(ErrorCode::PARSE_ERROR(), $exception->getMessage()),
+                );
+        }
+
+        return $builder->build();
     }
 
     protected function resolve(string $flagKey, mixed $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
