@@ -14,13 +14,14 @@ jobs:
         operating-system: [ubuntu-latest]
         php-version: ['8.0', '8.1', '8.2']
         project-dir:
-          - hooks/OpenTelemetry
           - hooks/DDTrace
+          - hooks/OpenTelemetry
           - hooks/Validators
-          - providers/Flagd
-          - providers/Split
-          - providers/GoFeatureFlag
           # - providers/CloudBees
+          - providers/Flagd
+          - providers/Flagsmith
+          - providers/GoFeatureFlag
+          - providers/Split
       fail-fast: false
 
     # todo exclude some matrix combinations based on php version requirements
