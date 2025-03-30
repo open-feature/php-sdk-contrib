@@ -16,6 +16,7 @@ use OpenFeature\implementation\provider\ResolutionError;
 use OpenFeature\interfaces\flags\EvaluationContext;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Provider;
+use OpenFeature\interfaces\provider\Reason;
 use OpenFeature\interfaces\provider\ResolutionDetails;
 
 use function is_null;
@@ -64,12 +65,13 @@ class FlagsmithProvider extends AbstractProvider implements Provider
         $builder = new ResolutionDetailsBuilder();
 
         try {
-            $value = json_decode(
-                $this->resolve($flagKey, $defaultValue, $context)->getValue(),
-                true,
-                flags: JSON_THROW_ON_ERROR,
-            );
+            $value = $this->resolve($flagKey, $defaultValue, $context)->getValue();
 
+            if ($value !== $defaultValue) {
+                $value = json_decode($value, true, flags: JSON_THROW_ON_ERROR);
+            }
+
+            // Valid JSON document might not be an array, so error in this case.
             if (!is_array($value)) {
                 throw new InvalidArgumentException("Flag [$flagKey] value must be a JSON encoded array");
             }
@@ -93,14 +95,20 @@ class FlagsmithProvider extends AbstractProvider implements Provider
         try {
             $flag = $this->contextualFlagStore($context)->getFlag($flagKey);
 
-            $builder->withValue(
-                $flag->getEnabled() ? $flag->getValue() : $defaultValue,
-            );
+            if ($flag->getEnabled()) {
+                $builder->withValue($flag->getValue());
+            } else {
+                $builder
+                    ->withValue($defaultValue)
+                    ->withReason(Reason::DISABLED);
+            }
         } catch (FlagsmithThrowable $throwable) {
-            $builder->withValue($defaultValue);
-            $builder->withError(
-                new ResolutionError(ErrorCode::GENERAL(), $throwable->getMessage()),
-            );
+            $builder
+                ->withValue($defaultValue)
+                ->withReason(Reason::ERROR)
+                ->withError(
+                    new ResolutionError(ErrorCode::GENERAL(), $throwable->getMessage()),
+                );
         }
 
         return $builder->build();
