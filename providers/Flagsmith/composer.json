@@ -24,12 +24,7 @@
     "php": "^8",
     "ext-json": "*",
     "flagsmith/flagsmith-php-client": "^4.1",
-    "open-feature/sdk": "^2.0",
-    "php-http/httplug": "^2.3.0",
-    "psr/http-client": "^1.0",
-    "psr/http-factory": "^1.0",
-    "psr/http-message": "^2.0",
-    "psr/log": "^2.0 || ^3.0"
+    "open-feature/sdk": "^2.0"
   },
   "require-dev": {
     "ergebnis/composer-normalize": "^2.25",
