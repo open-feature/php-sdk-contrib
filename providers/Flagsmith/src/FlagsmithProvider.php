@@ -19,7 +19,11 @@ use OpenFeature\interfaces\provider\Provider;
 use OpenFeature\interfaces\provider\Reason;
 use OpenFeature\interfaces\provider\ResolutionDetails;
 
+use function is_array;
 use function is_null;
+use function json_decode;
+
+use const JSON_THROW_ON_ERROR;
 
 class FlagsmithProvider extends AbstractProvider implements Provider
 {
@@ -77,7 +81,7 @@ class FlagsmithProvider extends AbstractProvider implements Provider
             }
 
             $builder->withValue($value);
-        } catch (JsonException|InvalidArgumentException $exception) {
+        } catch (JsonException | InvalidArgumentException $exception) {
             $builder
                 ->withValue($defaultValue)
                 ->withError(
