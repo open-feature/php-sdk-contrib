@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenFeature\Providers\Flagsmith;
 
+use DateTime;
 use Flagsmith\Exceptions\FlagsmithThrowable;
 use Flagsmith\Flagsmith;
 use Flagsmith\Models\Flags;
@@ -21,6 +22,7 @@ use OpenFeature\interfaces\provider\ResolutionDetails;
 
 use function is_array;
 use function is_null;
+use function is_string;
 use function json_decode;
 
 use const JSON_THROW_ON_ERROR;
@@ -71,7 +73,8 @@ class FlagsmithProvider extends AbstractProvider implements Provider
         try {
             $value = $this->resolve($flagKey, $defaultValue, $context)->getValue();
 
-            if ($value !== $defaultValue) {
+            if ($value !== $defaultValue && is_string($value)) {
+                /** @var array<array-key, mixed>|bool|DateTime|float|int|string|null $value */
                 $value = json_decode($value, true, flags: JSON_THROW_ON_ERROR);
             }
 
@@ -92,15 +95,24 @@ class FlagsmithProvider extends AbstractProvider implements Provider
         return $builder->build();
     }
 
-    protected function resolve(string $flagKey, mixed $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
-    {
+    /**
+     * @param array<array-key, mixed>|bool|DateTime|float|int|string|null $defaultValue
+     */
+    protected function resolve(
+        string $flagKey,
+        array | bool | DateTime | float | int | string | null $defaultValue,
+        ?EvaluationContext $context = null,
+    ): ResolutionDetails {
         $builder = new ResolutionDetailsBuilder();
 
         try {
             $flag = $this->contextualFlagStore($context)->getFlag($flagKey);
 
             if ($flag->getEnabled()) {
-                $builder->withValue($flag->getValue());
+                /** @var array<array-key, mixed>|bool|DateTime|float|int|string|null $value */
+                $value = $flag->getValue();
+
+                $builder->withValue($value);
             } else {
                 $builder
                     ->withValue($defaultValue)
