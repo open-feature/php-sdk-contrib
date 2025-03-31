@@ -117,4 +117,42 @@ class FlagsmithProviderTest extends TestCase
         $this->assertEquals(ErrorCode::GENERAL(), $resolutionDetails->getError()?->getResolutionErrorCode());
         $this->assertEquals(Reason::ERROR, $resolutionDetails->getReason());
     }
+
+    public function testIntegerResolutionWithEnabledFlag(): void
+    {
+        // Given
+        $provider = $this->buildProvider(__DIR__ . '/../Fixtures/environments/integer.json');
+
+        // When
+        $resolutionDetails = $provider->resolveIntegerValue('integer_feature', 1);
+
+        // Then
+        $this->assertEquals(2, $resolutionDetails->getValue());
+    }
+
+    public function testIntegerResolutionWithDisabledFlag(): void
+    {
+        // Given
+        $provider = $this->buildProvider(__DIR__ . '/../Fixtures/environments/integer.json');
+
+        // When
+        $resolutionDetails = $provider->resolveIntegerValue('disabled_integer_feature', 456);
+
+        // Then
+        $this->assertEquals(456, $resolutionDetails->getValue());
+    }
+
+    public function testIntegerResolutionWithMissingFlag(): void
+    {
+        // Given
+        $provider = $this->buildProvider(__DIR__ . '/../Fixtures/environments/integer.json');
+
+        // When
+        $resolutionDetails = $provider->resolveIntegerValue('missing_integer_feature', 123);
+
+        // Then
+        $this->assertEquals(123, $resolutionDetails->getValue());
+        $this->assertEquals(ErrorCode::GENERAL(), $resolutionDetails->getError()?->getResolutionErrorCode());
+        $this->assertEquals(Reason::ERROR, $resolutionDetails->getReason());
+    }
 }
