@@ -21,7 +21,7 @@
     }
   ],
   "require": {
-    "php": "^8",
+    "php": "^8.1",
     "ext-json": "*",
     "flagsmith/flagsmith-php-client": "^4.1",
     "open-feature/sdk": "^2.0"
