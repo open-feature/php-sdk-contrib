@@ -22,7 +22,7 @@ class FlagsmithProviderTest extends TestCase
     {
         /** @var string $encoded */
         $encoded = file_get_contents($environmentModelPath);
-        $modelData = json_decode($encoded,);
+        $modelData = json_decode($encoded);
 
         // @phpstan-ignore-next-line EnvironmentModel::build() type-hint is string but implementation expects object
         $offlineHandler = new TestOfflineHandler(EnvironmentModel::build($modelData));
