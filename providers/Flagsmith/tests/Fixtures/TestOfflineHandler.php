@@ -12,7 +12,6 @@ class TestOfflineHandler implements IOfflineHandler
     public function __construct(
         private ?EnvironmentModel $environmentModel = null,
     ) {
-
     }
 
     public function getEnvironment(): ?EnvironmentModel
