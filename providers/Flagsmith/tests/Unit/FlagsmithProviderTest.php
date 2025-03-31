@@ -11,6 +11,7 @@ use OpenFeature\Providers\Flagsmith\Test\Fixtures\TestOfflineHandler;
 use OpenFeature\Providers\Flagsmith\Test\TestCase;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Provider;
+use OpenFeature\interfaces\provider\Reason;
 
 use function file_get_contents;
 use function json_decode;
@@ -77,5 +78,43 @@ class FlagsmithProviderTest extends TestCase
         // Then
         $this->assertFalse($resolutionDetails->getValue());
         $this->assertEquals(ErrorCode::GENERAL(), $resolutionDetails->getError()?->getResolutionErrorCode());
+    }
+
+    public function testStringResolutionWithEnabledFlag(): void
+    {
+        // Given
+        $provider = $this->buildProvider(__DIR__ . '/../Fixtures/environments/string.json');
+
+        // When
+        $resolutionDetails = $provider->resolveStringValue('string_feature', 'default value');
+
+        // Then
+        $this->assertEquals('flag value', $resolutionDetails->getValue());
+    }
+
+    public function testStringResolutionWithDisabledFlag(): void
+    {
+        // Given
+        $provider = $this->buildProvider(__DIR__ . '/../Fixtures/environments/string.json');
+
+        // When
+        $resolutionDetails = $provider->resolveStringValue('disabled_string_feature', 'default value');
+
+        // Then
+        $this->assertEquals('default value', $resolutionDetails->getValue());
+    }
+
+    public function testStringResolutionWithMissingFlag(): void
+    {
+        // Given
+        $provider = $this->buildProvider(__DIR__ . '/../Fixtures/environments/string.json');
+
+        // When
+        $resolutionDetails = $provider->resolveStringValue('missing_string_feature', 'default value');
+
+        // Then
+        $this->assertEquals('default value', $resolutionDetails->getValue());
+        $this->assertEquals(ErrorCode::GENERAL(), $resolutionDetails->getError()?->getResolutionErrorCode());
+        $this->assertEquals(Reason::ERROR, $resolutionDetails->getReason());
     }
 }
