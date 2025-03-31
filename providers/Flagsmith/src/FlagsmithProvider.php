@@ -20,6 +20,7 @@ use OpenFeature\interfaces\provider\Provider;
 use OpenFeature\interfaces\provider\Reason;
 use OpenFeature\interfaces\provider\ResolutionDetails;
 
+use function array_is_list;
 use function is_array;
 use function is_null;
 use function is_string;
@@ -79,7 +80,7 @@ class FlagsmithProvider extends AbstractProvider implements Provider
             }
 
             // Valid JSON document might not be an array, so error in this case.
-            if (!is_array($value)) {
+            if (!is_array($value) || array_is_list($value)) {
                 throw new InvalidArgumentException("Flag [$flagKey] value must be a JSON encoded array");
             }
 

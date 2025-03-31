@@ -193,4 +193,52 @@ class FlagsmithProviderTest extends TestCase
         $this->assertEquals(ErrorCode::GENERAL(), $resolutionDetails->getError()?->getResolutionErrorCode());
         $this->assertEquals(Reason::ERROR, $resolutionDetails->getReason());
     }
+
+    public function testObjectResolutionWithEnabledFlag(): void
+    {
+        // Given
+        $provider = $this->buildProvider(__DIR__ . '/../Fixtures/environments/object.json');
+
+        // When
+        $resolutionDetails = $provider->resolveObjectValue('object_feature', ['a' => 'b']);
+
+        // Then
+        $this->assertEquals(['key' => 'value'], $resolutionDetails->getValue());
+    }
+
+    public function testObjectResolutionWithDisabledFlag(): void
+    {
+        // Given
+        $provider = $this->buildProvider(__DIR__ . '/../Fixtures/environments/object.json');
+
+        // When
+        $resolutionDetails = $provider->resolveObjectValue('disabled_object_feature', ['a' => 'b']);
+
+        // Then
+        $this->assertEquals(['a' => 'b'], $resolutionDetails->getValue());
+    }
+
+    public function testObjectResolutionWithMissingFlag(): void
+    {
+        // Given
+        $provider = $this->buildProvider(__DIR__ . '/../Fixtures/environments/object.json');
+
+        // When
+        $resolutionDetails = $provider->resolveObjectValue('missing_object_feature', ['c' => 3, 'p' => 'o']);
+
+        // Then
+        $this->assertEquals(['c' => 3, 'p' => 'o'], $resolutionDetails->getValue());
+    }
+
+    public function testObjectResolutionWithEnabledFlagWithInvalidValue(): void
+    {
+        // Given
+        $provider = $this->buildProvider(__DIR__ . '/../Fixtures/environments/object.json');
+
+        // When
+        $resolutionDetails = $provider->resolveObjectValue('invalid_object_feature', ['default' => 'value']);
+
+        // Then
+        $this->assertEquals(['default' => 'value'], $resolutionDetails->getValue());
+    }
 }
