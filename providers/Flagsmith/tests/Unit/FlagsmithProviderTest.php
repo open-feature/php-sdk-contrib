@@ -155,4 +155,42 @@ class FlagsmithProviderTest extends TestCase
         $this->assertEquals(ErrorCode::GENERAL(), $resolutionDetails->getError()?->getResolutionErrorCode());
         $this->assertEquals(Reason::ERROR, $resolutionDetails->getReason());
     }
+
+    public function testFloatResolutionWithEnabledFlag(): void
+    {
+        // Given
+        $provider = $this->buildProvider(__DIR__ . '/../Fixtures/environments/float.json');
+
+        // When
+        $resolutionDetails = $provider->resolveFloatValue('float_feature', 1.0);
+
+        // Then
+        $this->assertEquals(2.345, $resolutionDetails->getValue());
+    }
+
+    public function testFloatResolutionWithDisabledFlag(): void
+    {
+        // Given
+        $provider = $this->buildProvider(__DIR__ . '/../Fixtures/environments/float.json');
+
+        // When
+        $resolutionDetails = $provider->resolveFloatValue('disabled_float_feature', 9.99);
+
+        // Then
+        $this->assertEquals(9.99, $resolutionDetails->getValue());
+    }
+
+    public function testFloatResolutionWithMissingFlag(): void
+    {
+        // Given
+        $provider = $this->buildProvider(__DIR__ . '/../Fixtures/environments/float.json');
+
+        // When
+        $resolutionDetails = $provider->resolveFloatValue('missing_float_feature', 0.123);
+
+        // Then
+        $this->assertEquals(0.123, $resolutionDetails->getValue());
+        $this->assertEquals(ErrorCode::GENERAL(), $resolutionDetails->getError()?->getResolutionErrorCode());
+        $this->assertEquals(Reason::ERROR, $resolutionDetails->getReason());
+    }
 }
