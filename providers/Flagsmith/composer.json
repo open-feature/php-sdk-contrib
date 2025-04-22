@@ -81,8 +81,8 @@
       "@dev:analyze:phpstan",
       "@dev:analyze:psalm"
     ],
-    "dev:analyze:phpstan": "phpstan analyse --ansi --debug --memory-limit=512M",
-    "dev:analyze:psalm": "psalm",
+    "dev:analyze:phpstan": "@php vendor/bin/phpstan analyse --ansi --debug --memory-limit=512M",
+    "dev:analyze:psalm": "@php vendor/bin/psalm",
     "dev:build:clean": "git clean -fX build/",
     "dev:grpc": [
       "@dev:grpc:init",
@@ -96,19 +96,19 @@
       "@dev:lint:syntax",
       "@dev:lint:style"
     ],
-    "dev:lint:fix": "phpcbf",
-    "dev:lint:style": "phpcs --colors",
-    "dev:lint:syntax": "parallel-lint --colors src/ tests/",
+    "dev:lint:fix": "@php vendor/bin/phpcbf",
+    "dev:lint:style": "@php vendor/bin/phpcs --colors",
+    "dev:lint:syntax": "@php vendor/bin/parallel-lint --colors src/ tests/",
     "dev:test": [
       "@dev:lint",
       "@dev:analyze",
       "@dev:test:unit",
       "@dev:test:integration"
     ],
-    "dev:test:coverage:ci": "phpunit --colors=always --coverage-text --coverage-clover build/coverage/clover.xml --coverage-cobertura build/coverage/cobertura.xml --coverage-crap4j build/coverage/crap4j.xml --coverage-xml build/coverage/coverage-xml --log-junit build/junit.xml",
-    "dev:test:coverage:html": "phpunit --colors=always --coverage-html build/coverage/coverage-html/",
-    "dev:test:unit": "phpunit --colors=always --testdox",
-    "dev:test:unit:debug": "phpunit --colors=always --testdox -d xdebug.profiler_enable=on",
+    "dev:test:coverage:ci": "@php vendor/bin/phpunit --colors=always --coverage-text --coverage-clover build/coverage/clover.xml --coverage-cobertura build/coverage/cobertura.xml --coverage-crap4j build/coverage/crap4j.xml --coverage-xml build/coverage/coverage-xml --log-junit build/junit.xml",
+    "dev:test:coverage:html": "@php vendor/bin/phpunit --colors=always --coverage-html build/coverage/coverage-html/",
+    "dev:test:unit": "@php vendor/bin/phpunit --colors=always --testdox",
+    "dev:test:unit:debug": "@php vendor/bin/phpunit --colors=always --testdox -d xdebug.profiler_enable=on",
     "dev:test:unit:setup": "echo 'Setup for unit tests...'",
     "dev:test:unit:teardown": "echo 'Tore down unit tests...'",
     "dev:test:integration:setup": "echo 'Setup for integration tests...'",
