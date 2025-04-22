@@ -30,7 +30,7 @@ use const JSON_THROW_ON_ERROR;
 
 class FlagsmithProvider extends AbstractProvider implements Provider
 {
-    protected static string $NAME = 'FlagsmithProvider';
+    protected static string $NAME = 'Flagsmith';
 
     public function __construct(
         private Flagsmith $flagsmith,
