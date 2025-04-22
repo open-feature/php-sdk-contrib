@@ -32,7 +32,7 @@ OpenFeatureAPI::setProvider(new FlagsmithProvider($flagsmith));
 
 ### PHP Versioning
 
-This library targets PHP version and newer. As long as you have any compatible version of PHP on your system you should be able to utilize the OpenFeature SDK.
+This library targets PHP 8.1 and above. As long as you have a compatible version of PHP on your system, you should be able to utilize the OpenFeature SDK.
 
 This package also has a `.tool-versions` file for use with PHP version managers like `asdf`.
 
