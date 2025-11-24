@@ -17,6 +17,15 @@ class MockFlags
     {
         return [
             // ========================================
+            // DEFAULT FLAG (for FLAG_NOT_FOUND tests)
+            // ========================================
+            'default_flag' => [
+                'value' => null,
+                'enabled' => false,
+                'isDefault' => true,
+            ],
+
+            // ========================================
             // BOOLEAN FLAGS
             // ========================================
             'boolean_enabled_flag' => [
@@ -43,6 +52,11 @@ class MockFlags
                 'enabled' => true,
                 'isDefault' => false,
             ],
+            'string_disabled_flag' => [
+                'value' => 'disabled_string',
+                'enabled' => false,
+                'isDefault' => false,
+            ],
 
             // ========================================
             // INTEGER FLAGS
@@ -60,6 +74,11 @@ class MockFlags
             'integer_negative_flag' => [
                 'value' => -100,
                 'enabled' => true,
+                'isDefault' => false,
+            ],
+            'integer_disabled_flag' => [
+                'value' => 777,
+                'enabled' => false,
                 'isDefault' => false,
             ],
             'float_when_int_expected' => [
@@ -84,6 +103,11 @@ class MockFlags
             'float_negative_flag' => [
                 'value' => -99.99,
                 'enabled' => true,
+                'isDefault' => false,
+            ],
+            'float_disabled_flag' => [
+                'value' => 8.88,
+                'enabled' => false,
                 'isDefault' => false,
             ],
             'int_for_float_flag' => [
@@ -118,6 +142,11 @@ class MockFlags
             'object_empty_flag' => [
                 'value' => '{}',
                 'enabled' => true,
+                'isDefault' => false,
+            ],
+            'object_disabled_flag' => [
+                'value' => ['disabled' => true, 'reason' => 'maintenance'],
+                'enabled' => false,
                 'isDefault' => false,
             ],
             'object_invalid_json_flag' => [

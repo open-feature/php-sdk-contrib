@@ -118,18 +118,21 @@ class FlagEvaluator
 
             // Get flag value and convert to string
             $flagValue = $flag->getValue();
-            if ($flagValue === null) {
+
+            // Only scalar values can be converted to string
+            if (!is_scalar($flagValue) && $flagValue !== null) {
                 return (new ResolutionDetailsBuilder())
                     ->withValue($defaultValue)
                     ->withError(new ResolutionError(
                         ErrorCode::TYPE_MISMATCH(),
-                        'Flag value is null'
+                        'Expected string but received ' . gettype($flagValue)
                     ))
                     ->withReason('ERROR')
                     ->build();
             }
 
-            $stringValue = (string) $flagValue;
+            // Handle null and empty string explicitly
+            $stringValue = ($flagValue === null) ? '' : (string) $flagValue;
 
             // Determine final reason based on flag state
             $reason = $this->determineReason($flag, $baseReason);
@@ -406,22 +409,22 @@ class FlagEvaluator
 
     /**
      * Try to parse a value as an integer.
-     * Accepts integers and numeric strings.
+     * Accepts integers and numeric strings using PHP's native parsing.
      */
     private function tryParseInt(mixed $value): ?int
     {
         if (is_int($value)) {
             return $value;
         }
-        if (is_string($value) && ctype_digit(ltrim($value, '-'))) {
-            return (int) $value;
+        if (is_string($value) && is_numeric($value)) {
+            return intval($value);
         }
         return null;
     }
 
     /**
      * Try to parse a value as a float.
-     * Accepts floats, integers, and numeric strings.
+     * Accepts floats, integers, and numeric strings using PHP's native parsing.
      */
     private function tryParseFloat(mixed $value): ?float
     {
@@ -432,14 +435,14 @@ class FlagEvaluator
             return (float) $value;
         }
         if (is_string($value) && is_numeric($value)) {
-            return (float) $value;
+            return floatval($value);
         }
         return null;
     }
 
     /**
      * Try to parse a value as a boolean.
-     * Accepts booleans and the strings "true"/"false" (case-insensitive).
+     * Accepts booleans and the strings "true"/"false" (case-insensitive, no whitespace trimming).
      */
     private function tryParseBoolean(mixed $value): ?bool
     {
@@ -447,7 +450,7 @@ class FlagEvaluator
             return $value;
         }
         if (is_string($value)) {
-            $lower = strtolower(trim($value));
+            $lower = strtolower($value);
             if ($lower === 'true') {
                 return true;
             }
@@ -468,7 +471,11 @@ class FlagEvaluator
             return $value;
         }
         if (is_object($value)) {
-            return json_decode(json_encode($value), true);
+            $json = json_encode($value);
+            if ($json === false) {
+                return null;  // Circular reference or encoding error
+            }
+            return json_decode($json, true);
         }
         if (is_string($value)) {
             $parsed = json_decode($value, true);
