@@ -147,6 +147,25 @@ class FlagEvaluatorTest extends TestCase
         $this->assertEquals('ERROR', $result->getReason());
     }
 
+    public function testEvaluateBooleanReturnsDefaultWhenFlagNotFound(): void
+    {
+        $this->flagsmithClient->shouldReceive('getEnvironmentFlags')
+            ->once()
+            ->andReturn($this->mockFlags);
+
+        $result = $this->evaluator->evaluateBoolean('default_flag', true, null, null);
+
+        // Should return provided default value
+        $this->assertTrue($result->getValue());
+        // Should have FLAG_NOT_FOUND error
+        $this->assertNotNull($result->getError());
+        $this->assertEquals(ErrorCode::FLAG_NOT_FOUND(), $result->getError()->getResolutionErrorCode());
+        $this->assertStringContainsString('default_flag', $result->getError()->getResolutionErrorMessage());
+        $this->assertStringContainsString('not found', $result->getError()->getResolutionErrorMessage());
+        // Reason should be ERROR
+        $this->assertEquals('ERROR', $result->getReason());
+    }
+
     // String Resolver Tests
     public function testEvaluateStringReturnsValue(): void
     {
@@ -239,6 +258,39 @@ class FlagEvaluatorTest extends TestCase
         $this->assertEquals('ERROR', $result->getReason());
     }
 
+    public function testEvaluateStringReturnsDefaultWhenFlagNotFound(): void
+    {
+        $this->flagsmithClient->shouldReceive('getEnvironmentFlags')
+            ->once()
+            ->andReturn($this->mockFlags);
+
+        $result = $this->evaluator->evaluateString('default_flag', 'fallback', null, null);
+
+        // Should return provided default value
+        $this->assertSame('fallback', $result->getValue());
+        // Should have FLAG_NOT_FOUND error
+        $this->assertNotNull($result->getError());
+        $this->assertEquals(ErrorCode::FLAG_NOT_FOUND(), $result->getError()->getResolutionErrorCode());
+        $this->assertStringContainsString('default_flag', $result->getError()->getResolutionErrorMessage());
+        $this->assertEquals('ERROR', $result->getReason());
+    }
+
+    public function testEvaluateStringWithDisabledFlag(): void
+    {
+        $this->flagsmithClient->shouldReceive('getEnvironmentFlags')
+            ->once()
+            ->andReturn($this->mockFlags);
+
+        $result = $this->evaluator->evaluateString('string_disabled_flag', 'default', null, null);
+
+        // Should return flag's actual value
+        $this->assertSame('disabled_string', $result->getValue());
+        // Should have no error
+        $this->assertNull($result->getError());
+        // Reason should be DISABLED
+        $this->assertEquals('DISABLED', $result->getReason());
+    }
+
     // Integer Resolver Tests
     public function testEvaluateIntegerReturnsValue(): void
     {
@@ -323,6 +375,39 @@ class FlagEvaluatorTest extends TestCase
         $this->assertEquals(ErrorCode::TYPE_MISMATCH(), $result->getError()->getResolutionErrorCode());
         $this->assertStringContainsString('Expected integer', $result->getError()->getResolutionErrorMessage());
         $this->assertEquals('ERROR', $result->getReason());
+    }
+
+    public function testEvaluateIntegerReturnsDefaultWhenFlagNotFound(): void
+    {
+        $this->flagsmithClient->shouldReceive('getEnvironmentFlags')
+            ->once()
+            ->andReturn($this->mockFlags);
+
+        $result = $this->evaluator->evaluateInteger('default_flag', 999, null, null);
+
+        // Should return provided default value
+        $this->assertSame(999, $result->getValue());
+        // Should have FLAG_NOT_FOUND error
+        $this->assertNotNull($result->getError());
+        $this->assertEquals(ErrorCode::FLAG_NOT_FOUND(), $result->getError()->getResolutionErrorCode());
+        $this->assertStringContainsString('default_flag', $result->getError()->getResolutionErrorMessage());
+        $this->assertEquals('ERROR', $result->getReason());
+    }
+
+    public function testEvaluateIntegerWithDisabledFlag(): void
+    {
+        $this->flagsmithClient->shouldReceive('getEnvironmentFlags')
+            ->once()
+            ->andReturn($this->mockFlags);
+
+        $result = $this->evaluator->evaluateInteger('integer_disabled_flag', 0, null, null);
+
+        // Should return flag's actual value
+        $this->assertSame(777, $result->getValue());
+        // Should have no error
+        $this->assertNull($result->getError());
+        // Reason should be DISABLED
+        $this->assertEquals('DISABLED', $result->getReason());
     }
 
     // Float Resolver Tests
@@ -424,6 +509,39 @@ class FlagEvaluatorTest extends TestCase
         $this->assertEquals(ErrorCode::TYPE_MISMATCH(), $result->getError()->getResolutionErrorCode());
         $this->assertStringContainsString('Expected float', $result->getError()->getResolutionErrorMessage());
         $this->assertEquals('ERROR', $result->getReason());
+    }
+
+    public function testEvaluateFloatReturnsDefaultWhenFlagNotFound(): void
+    {
+        $this->flagsmithClient->shouldReceive('getEnvironmentFlags')
+            ->once()
+            ->andReturn($this->mockFlags);
+
+        $result = $this->evaluator->evaluateFloat('default_flag', 3.33, null, null);
+
+        // Should return provided default value
+        $this->assertSame(3.33, $result->getValue());
+        // Should have FLAG_NOT_FOUND error
+        $this->assertNotNull($result->getError());
+        $this->assertEquals(ErrorCode::FLAG_NOT_FOUND(), $result->getError()->getResolutionErrorCode());
+        $this->assertStringContainsString('default_flag', $result->getError()->getResolutionErrorMessage());
+        $this->assertEquals('ERROR', $result->getReason());
+    }
+
+    public function testEvaluateFloatWithDisabledFlag(): void
+    {
+        $this->flagsmithClient->shouldReceive('getEnvironmentFlags')
+            ->once()
+            ->andReturn($this->mockFlags);
+
+        $result = $this->evaluator->evaluateFloat('float_disabled_flag', 0.0, null, null);
+
+        // Should return flag's actual value
+        $this->assertSame(8.88, $result->getValue());
+        // Should have no error
+        $this->assertNull($result->getError());
+        // Reason should be DISABLED
+        $this->assertEquals('DISABLED', $result->getReason());
     }
 
     // Object Resolver Tests
@@ -555,5 +673,41 @@ class FlagEvaluatorTest extends TestCase
         $this->assertEquals(ErrorCode::TYPE_MISMATCH(), $result->getError()->getResolutionErrorCode());
         $this->assertStringContainsString('Expected object', $result->getError()->getResolutionErrorMessage());
         $this->assertEquals('ERROR', $result->getReason());
+    }
+
+    public function testEvaluateObjectReturnsDefaultWhenFlagNotFound(): void
+    {
+        $this->flagsmithClient->shouldReceive('getEnvironmentFlags')
+            ->once()
+            ->andReturn($this->mockFlags);
+
+        $defaultValue = ['fallback' => 'object'];
+        $result = $this->evaluator->evaluateObject('default_flag', $defaultValue, null, null);
+
+        // Should return provided default value
+        $this->assertSame($defaultValue, $result->getValue());
+        // Should have FLAG_NOT_FOUND error
+        $this->assertNotNull($result->getError());
+        $this->assertEquals(ErrorCode::FLAG_NOT_FOUND(), $result->getError()->getResolutionErrorCode());
+        $this->assertStringContainsString('default_flag', $result->getError()->getResolutionErrorMessage());
+        $this->assertEquals('ERROR', $result->getReason());
+    }
+
+    public function testEvaluateObjectWithDisabledFlag(): void
+    {
+        $this->flagsmithClient->shouldReceive('getEnvironmentFlags')
+            ->once()
+            ->andReturn($this->mockFlags);
+
+        $defaultValue = [];
+        $result = $this->evaluator->evaluateObject('object_disabled_flag', $defaultValue, null, null);
+
+        // Should return flag's actual value
+        $expected = ['disabled' => true, 'reason' => 'maintenance'];
+        $this->assertEquals($expected, $result->getValue());
+        // Should have no error
+        $this->assertNull($result->getError());
+        // Reason should be DISABLED
+        $this->assertEquals('DISABLED', $result->getReason());
     }
 }
