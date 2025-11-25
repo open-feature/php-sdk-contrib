@@ -22,6 +22,8 @@
   ],
   "require": {
     "php": "^8",
+    "guzzlehttp/guzzle": "^7.0",
+    "guzzlehttp/psr7": "^2.0",
     "open-feature/sdk": "^2.0",
     "flagsmith/flagsmith-php-client": "^4.5"
   },
