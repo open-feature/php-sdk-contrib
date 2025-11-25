@@ -26,6 +26,9 @@
     },
     "providers/GoFeatureFlag": {
       "package-name": "open-feature/go-feature-flag-provider"
+    },
+    "providers/Flagsmith": {
+      "package-name": "open-feature/flagsmith-provider"
     }
   }
 }
