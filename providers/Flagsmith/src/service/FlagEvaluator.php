@@ -354,26 +354,36 @@ class FlagEvaluator
             $arrayValue = $this->tryParseObject($flagValue);
 
             if ($arrayValue === null) {
-                // Check if it's a JSON parse error or type mismatch
                 if (is_string($flagValue)) {
-                    return (new ResolutionDetailsBuilder())
-                        ->withValue($defaultValue)
-                        ->withError(new ResolutionError(
-                            ErrorCode::PARSE_ERROR(),
-                            'Failed to parse JSON: ' . json_last_error_msg(),
-                        ))
-                        ->withReason('ERROR')
-                        ->build();
-                } else {
+                    if (json_last_error() !== JSON_ERROR_NONE) {
+                        return (new ResolutionDetailsBuilder())
+                            ->withValue($defaultValue)
+                            ->withError(new ResolutionError(
+                                ErrorCode::PARSE_ERROR(),
+                                'Failed to parse JSON: ' . json_last_error_msg(),
+                            ))
+                            ->withReason('ERROR')
+                            ->build();
+                    }
+
                     return (new ResolutionDetailsBuilder())
                         ->withValue($defaultValue)
                         ->withError(new ResolutionError(
                             ErrorCode::TYPE_MISMATCH(),
-                            'Expected object but received ' . gettype($flagValue),
+                            'Expected object but received scalar JSON value',
                         ))
                         ->withReason('ERROR')
                         ->build();
                 }
+
+                return (new ResolutionDetailsBuilder())
+                    ->withValue($defaultValue)
+                    ->withError(new ResolutionError(
+                        ErrorCode::TYPE_MISMATCH(),
+                        'Expected object but received ' . gettype($flagValue),
+                    ))
+                    ->withReason('ERROR')
+                    ->build();
             }
 
             // Determine final reason based on flag state
@@ -423,9 +433,6 @@ class FlagEvaluator
      */
     private function determineReason(BaseFlag $flag, string $baseReason): string
     {
-        if ($flag->getIsDefault()) {
-            return 'DEFAULT';
-        }
         if (!$flag->getEnabled()) {
             return 'DISABLED';
         }

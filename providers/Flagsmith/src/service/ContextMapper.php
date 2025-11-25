@@ -28,9 +28,11 @@ class ContextMapper
         $attributes = $context->getAttributes();
 
         $traits = null;
-        $attributesArray = $attributes->toArray();
-        if (count($attributesArray) > 0) {
-            $traits = (object) $attributesArray;
+        if ($attributes !== null) {
+            $attributesArray = $attributes->toArray();
+            if (count($attributesArray) > 0) {
+                $traits = (object) $attributesArray;
+            }
         }
 
         return [

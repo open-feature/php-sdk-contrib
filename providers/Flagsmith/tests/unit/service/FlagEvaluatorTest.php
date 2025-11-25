@@ -711,4 +711,19 @@ class FlagEvaluatorTest extends TestCase
         // Reason should be DISABLED
         $this->assertEquals('DISABLED', $result->getReason());
     }
+
+    public function testEvaluateObjectReturnsTypeMismatchWhenScalarJsonReceived(): void
+    {
+        $this->flagsmithClient->shouldReceive('getEnvironmentFlags')
+            ->once()
+            ->andReturn($this->mockFlags);
+
+        $defaultValue = ['default' => 'value'];
+        $result = $this->evaluator->evaluateObject('object_scalar_json_string_flag', $defaultValue, null, null);
+
+        $this->assertSame($defaultValue, $result->getValue());
+        $this->assertNotNull($result->getError());
+        $this->assertEquals(ErrorCode::TYPE_MISMATCH(), $result->getError()->getResolutionErrorCode());
+        $this->assertEquals('ERROR', $result->getReason());
+    }
 }

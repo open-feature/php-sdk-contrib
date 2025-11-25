@@ -159,6 +159,11 @@ class MockFlags
                 'enabled' => true,
                 'isDefault' => false,
             ],
+            'object_scalar_json_string_flag' => [
+                'value' => '42',
+                'enabled' => true,
+                'isDefault' => false,
+            ],
         ];
     }
 }
