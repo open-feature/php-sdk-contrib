@@ -6,6 +6,8 @@ namespace OpenFeature\Providers\Flagsmith\config;
 
 use InvalidArgumentException;
 
+use function trim;
+
 class FlagsmithConfig
 {
     private string $apiKey;
@@ -17,7 +19,7 @@ class FlagsmithConfig
         string $apiKey,
         ?string $apiUrl = null,
         ?object $customHeaders = null,
-        ?int $requestTimeout = null
+        ?int $requestTimeout = null,
     ) {
         $this->validateApiKey($apiKey);
         $this->apiKey = $apiKey;

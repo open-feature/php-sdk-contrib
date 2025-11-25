@@ -21,7 +21,7 @@
     }
   ],
   "require": {
-    "php": "^8",
+    "php": "^8.0 <8.4",
     "guzzlehttp/guzzle": "^7.0",
     "guzzlehttp/psr7": "^2.0",
     "open-feature/sdk": "^2.0",
@@ -68,7 +68,8 @@
       "dealerdirect/phpcodesniffer-composer-installer": true,
       "ergebnis/composer-normalize": true,
       "captainhook/plugin-composer": true,
-      "ramsey/composer-repl": true
+      "ramsey/composer-repl": true,
+      "php-http/discovery": true
     },
     "sort-packages": true
   },

@@ -6,6 +6,8 @@ namespace OpenFeature\Providers\Flagsmith\service;
 
 use OpenFeature\interfaces\flags\EvaluationContext;
 
+use function count;
+
 class ContextMapper
 {
     /**
@@ -26,8 +28,9 @@ class ContextMapper
         $attributes = $context->getAttributes();
 
         $traits = null;
-        if ($attributes !== null && count($attributes->toArray()) > 0) {
-            $traits = (object) $attributes->toArray();
+        $attributesArray = $attributes->toArray();
+        if (count($attributesArray) > 0) {
+            $traits = (object) $attributesArray;
         }
 
         return [

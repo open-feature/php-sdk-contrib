@@ -7,13 +7,14 @@ namespace OpenFeature\Providers\Flagsmith\Test\unit;
 use Flagsmith\Flagsmith;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use OpenFeature\Providers\Flagsmith\FlagsmithProvider;
+use OpenFeature\Providers\Flagsmith\config\FlagsmithConfig;
+use OpenFeature\Providers\Flagsmith\service\ContextMapper;
+use OpenFeature\Providers\Flagsmith\service\FlagEvaluator;
 use OpenFeature\implementation\flags\Attributes;
 use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\implementation\provider\ResolutionDetailsBuilder;
-use OpenFeature\Providers\Flagsmith\config\FlagsmithConfig;
-use OpenFeature\Providers\Flagsmith\FlagsmithProvider;
-use OpenFeature\Providers\Flagsmith\service\ContextMapper;
-use OpenFeature\Providers\Flagsmith\service\FlagEvaluator;
+use OpenFeature\interfaces\common\Metadata;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
@@ -40,7 +41,7 @@ class FlagsmithProviderTest extends TestCase
             $this->config,
             $this->mockFlagsmithClient,
             $this->mockContextMapper,
-            $this->mockEvaluator
+            $this->mockEvaluator,
         );
     }
 
@@ -48,7 +49,7 @@ class FlagsmithProviderTest extends TestCase
     {
         $metadata = $this->provider->getMetadata();
 
-        $this->assertInstanceOf(\OpenFeature\interfaces\common\Metadata::class, $metadata);
+        $this->assertInstanceOf(Metadata::class, $metadata);
         $this->assertEquals('FlagsmithProvider', $metadata->getName());
     }
 
@@ -167,7 +168,7 @@ class FlagsmithProviderTest extends TestCase
     {
         $context = new EvaluationContext(
             'user-123',
-            new Attributes(['plan' => 'premium'])
+            new Attributes(['plan' => 'premium']),
         );
 
         $traits = (object) ['plan' => 'premium'];

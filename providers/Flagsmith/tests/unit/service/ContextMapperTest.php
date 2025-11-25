@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace OpenFeature\Providers\Flagsmith\Test\unit\service;
 
+use OpenFeature\Providers\Flagsmith\service\ContextMapper;
 use OpenFeature\implementation\flags\Attributes;
 use OpenFeature\implementation\flags\EvaluationContext;
-use OpenFeature\Providers\Flagsmith\service\ContextMapper;
 use PHPUnit\Framework\TestCase;
 
 class ContextMapperTest extends TestCase
@@ -22,7 +22,7 @@ class ContextMapperTest extends TestCase
     {
         $context = new EvaluationContext(
             'user-123',
-            new Attributes(['email' => 'user@example.com', 'plan' => 'premium'])
+            new Attributes(['email' => 'user@example.com', 'plan' => 'premium']),
         );
 
         $result = $this->mapper->map($context);

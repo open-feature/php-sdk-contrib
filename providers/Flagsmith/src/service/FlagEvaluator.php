@@ -5,11 +5,32 @@ declare(strict_types=1);
 namespace OpenFeature\Providers\Flagsmith\service;
 
 use Flagsmith\Flagsmith;
+use Flagsmith\Models\BaseFlag;
+use Flagsmith\Models\Flags;
 use OpenFeature\implementation\provider\ResolutionDetailsBuilder;
 use OpenFeature\implementation\provider\ResolutionError;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\ResolutionDetails;
 use Throwable;
+
+use function floatval;
+use function gettype;
+use function intval;
+use function is_array;
+use function is_bool;
+use function is_float;
+use function is_int;
+use function is_numeric;
+use function is_object;
+use function is_scalar;
+use function is_string;
+use function json_decode;
+use function json_encode;
+use function json_last_error;
+use function json_last_error_msg;
+use function strtolower;
+
+use const JSON_ERROR_NONE;
 
 class FlagEvaluator
 {
@@ -32,7 +53,7 @@ class FlagEvaluator
         string $flagKey,
         bool $defaultValue,
         ?string $identifier,
-        ?object $traits
+        ?object $traits,
     ): ResolutionDetails {
         try {
             // Get flags and determine base reason
@@ -49,13 +70,14 @@ class FlagEvaluator
                     ->withValue($defaultValue)
                     ->withError(new ResolutionError(
                         ErrorCode::FLAG_NOT_FOUND(),
-                        "Flag '{$flagKey}' was not found"
+                        "Flag '{$flagKey}' was not found",
                     ))
                     ->withReason('ERROR')
                     ->build();
             }
 
             // Special boolean handling: if no boolean value, return enabled state
+            /** @var mixed $flagValue */
             $flagValue = $flag->getValue();
             $boolValue = $this->tryParseBoolean($flagValue);
             if ($boolValue === null) {
@@ -93,7 +115,7 @@ class FlagEvaluator
         string $flagKey,
         string $defaultValue,
         ?string $identifier,
-        ?object $traits
+        ?object $traits,
     ): ResolutionDetails {
         try {
             // Get flags and determine base reason
@@ -110,13 +132,14 @@ class FlagEvaluator
                     ->withValue($defaultValue)
                     ->withError(new ResolutionError(
                         ErrorCode::FLAG_NOT_FOUND(),
-                        "Flag '{$flagKey}' was not found"
+                        "Flag '{$flagKey}' was not found",
                     ))
                     ->withReason('ERROR')
                     ->build();
             }
 
             // Get flag value and convert to string
+            /** @var mixed $flagValue */
             $flagValue = $flag->getValue();
 
             // Only scalar values can be converted to string
@@ -125,14 +148,14 @@ class FlagEvaluator
                     ->withValue($defaultValue)
                     ->withError(new ResolutionError(
                         ErrorCode::TYPE_MISMATCH(),
-                        'Expected string but received ' . gettype($flagValue)
+                        'Expected string but received ' . gettype($flagValue),
                     ))
                     ->withReason('ERROR')
                     ->build();
             }
 
             // Handle null and empty string explicitly
-            $stringValue = ($flagValue === null) ? '' : (string) $flagValue;
+            $stringValue = $flagValue === null ? '' : (string) $flagValue;
 
             // Determine final reason based on flag state
             $reason = $this->determineReason($flag, $baseReason);
@@ -164,7 +187,7 @@ class FlagEvaluator
         string $flagKey,
         int $defaultValue,
         ?string $identifier,
-        ?object $traits
+        ?object $traits,
     ): ResolutionDetails {
         try {
             // Get flags and determine base reason
@@ -181,13 +204,14 @@ class FlagEvaluator
                     ->withValue($defaultValue)
                     ->withError(new ResolutionError(
                         ErrorCode::FLAG_NOT_FOUND(),
-                        "Flag '{$flagKey}' was not found"
+                        "Flag '{$flagKey}' was not found",
                     ))
                     ->withReason('ERROR')
                     ->build();
             }
 
             // Try to parse flag value as integer
+            /** @var mixed $flagValue */
             $flagValue = $flag->getValue();
             $intValue = $this->tryParseInt($flagValue);
 
@@ -196,7 +220,7 @@ class FlagEvaluator
                     ->withValue($defaultValue)
                     ->withError(new ResolutionError(
                         ErrorCode::TYPE_MISMATCH(),
-                        'Expected integer but received ' . gettype($flagValue)
+                        'Expected integer but received ' . gettype($flagValue),
                     ))
                     ->withReason('ERROR')
                     ->build();
@@ -232,7 +256,7 @@ class FlagEvaluator
         string $flagKey,
         float $defaultValue,
         ?string $identifier,
-        ?object $traits
+        ?object $traits,
     ): ResolutionDetails {
         try {
             // Get flags and determine base reason
@@ -249,13 +273,14 @@ class FlagEvaluator
                     ->withValue($defaultValue)
                     ->withError(new ResolutionError(
                         ErrorCode::FLAG_NOT_FOUND(),
-                        "Flag '{$flagKey}' was not found"
+                        "Flag '{$flagKey}' was not found",
                     ))
                     ->withReason('ERROR')
                     ->build();
             }
 
             // Try to parse flag value as float
+            /** @var mixed $flagValue */
             $flagValue = $flag->getValue();
             $floatValue = $this->tryParseFloat($flagValue);
 
@@ -264,7 +289,7 @@ class FlagEvaluator
                     ->withValue($defaultValue)
                     ->withError(new ResolutionError(
                         ErrorCode::TYPE_MISMATCH(),
-                        'Expected float but received ' . gettype($flagValue)
+                        'Expected float but received ' . gettype($flagValue),
                     ))
                     ->withReason('ERROR')
                     ->build();
@@ -295,13 +320,12 @@ class FlagEvaluator
      * @param array<mixed> $defaultValue The default value if evaluation fails
      * @param string|null $identifier The user identifier for targeting
      * @param object|null $traits The user traits for targeting
-     * @return ResolutionDetails
      */
     public function evaluateObject(
         string $flagKey,
         array $defaultValue,
         ?string $identifier,
-        ?object $traits
+        ?object $traits,
     ): ResolutionDetails {
         try {
             // Get flags and determine base reason
@@ -318,13 +342,14 @@ class FlagEvaluator
                     ->withValue($defaultValue)
                     ->withError(new ResolutionError(
                         ErrorCode::FLAG_NOT_FOUND(),
-                        "Flag '{$flagKey}' was not found"
+                        "Flag '{$flagKey}' was not found",
                     ))
                     ->withReason('ERROR')
                     ->build();
             }
 
             // Try to parse flag value as object/array
+            /** @var mixed $flagValue */
             $flagValue = $flag->getValue();
             $arrayValue = $this->tryParseObject($flagValue);
 
@@ -335,7 +360,7 @@ class FlagEvaluator
                         ->withValue($defaultValue)
                         ->withError(new ResolutionError(
                             ErrorCode::PARSE_ERROR(),
-                            'Failed to parse JSON: ' . json_last_error_msg()
+                            'Failed to parse JSON: ' . json_last_error_msg(),
                         ))
                         ->withReason('ERROR')
                         ->build();
@@ -344,7 +369,7 @@ class FlagEvaluator
                         ->withValue($defaultValue)
                         ->withError(new ResolutionError(
                             ErrorCode::TYPE_MISMATCH(),
-                            'Expected object but received ' . gettype($flagValue)
+                            'Expected object but received ' . gettype($flagValue),
                         ))
                         ->withReason('ERROR')
                         ->build();
@@ -372,7 +397,7 @@ class FlagEvaluator
     /**
      * Get flags and determine the base reason code based on whether targeting is used.
      *
-     * @return array{flags: \Flagsmith\Models\Flags, baseReason: string}
+     * @return array{flags: Flags, baseReason: string}
      */
     private function getFlagsAndBaseReason(?string $identifier, ?object $traits): array
     {
@@ -392,11 +417,11 @@ class FlagEvaluator
     /**
      * Determine the appropriate reason code based on flag state.
      *
-     * @param \Flagsmith\Models\BaseFlag $flag
      * @param string $baseReason The base reason (STATIC or TARGETING_MATCH)
+     *
      * @return string The final reason code
      */
-    private function determineReason($flag, string $baseReason): string
+    private function determineReason(BaseFlag $flag, string $baseReason): string
     {
         if ($flag->getIsDefault()) {
             return 'DEFAULT';
@@ -404,6 +429,7 @@ class FlagEvaluator
         if (!$flag->getEnabled()) {
             return 'DISABLED';
         }
+
         return $baseReason;
     }
 
@@ -419,6 +445,7 @@ class FlagEvaluator
         if (is_string($value) && is_numeric($value)) {
             return intval($value);
         }
+
         return null;
     }
 
@@ -437,6 +464,7 @@ class FlagEvaluator
         if (is_string($value) && is_numeric($value)) {
             return floatval($value);
         }
+
         return null;
     }
 
@@ -458,12 +486,15 @@ class FlagEvaluator
                 return false;
             }
         }
+
         return null;
     }
 
     /**
      * Try to parse a value as an object (array in PHP).
      * Accepts arrays, objects, and JSON strings.
+     *
+     * @return array<mixed>|null
      */
     private function tryParseObject(mixed $value): ?array
     {
@@ -473,16 +504,22 @@ class FlagEvaluator
         if (is_object($value)) {
             $json = json_encode($value);
             if ($json === false) {
-                return null;  // Circular reference or encoding error
+                return null; // Circular reference or encoding error
             }
-            return json_decode($json, true);
+
+            /** @var mixed $decoded */
+            $decoded = json_decode($json, true);
+
+            return is_array($decoded) ? $decoded : null;
         }
         if (is_string($value)) {
+            /** @var mixed $parsed */
             $parsed = json_decode($value, true);
-            if (json_last_error() === JSON_ERROR_NONE) {
+            if (json_last_error() === JSON_ERROR_NONE && is_array($parsed)) {
                 return $parsed;
             }
         }
+
         return null;
     }
 }

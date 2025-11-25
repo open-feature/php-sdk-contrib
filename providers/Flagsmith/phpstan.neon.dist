@@ -7,3 +7,16 @@ parameters:
     excludePaths:
         - */tests/fixtures/*
         - */tests/*/fixtures/*
+    ignoreErrors:
+        # Mockery mock objects in tests
+        -
+            message: '#Call to an undefined method .+::shouldReceive\(\)#'
+            path: tests/*
+        # Test assertion parameter types
+        -
+            message: '#Parameter .+ of method .+::assertStringContainsString\(\) expects string, string\|null given#'
+            path: tests/*
+        # Test hooks can use mock arrays
+        -
+            message: '#Parameter \#1 \$hooks of method .+::setHooks\(\) expects array<.+Hook>, array.+ given#'
+            path: tests/*

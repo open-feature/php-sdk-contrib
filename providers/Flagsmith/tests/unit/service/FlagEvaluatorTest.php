@@ -10,9 +10,9 @@ use Flagsmith\Models\BaseFlag;
 use Flagsmith\Models\Flags;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
-use OpenFeature\interfaces\provider\ErrorCode;
-use OpenFeature\Providers\Flagsmith\service\FlagEvaluator;
 use OpenFeature\Providers\Flagsmith\Test\unit\fixtures\MockFlags;
+use OpenFeature\Providers\Flagsmith\service\FlagEvaluator;
+use OpenFeature\interfaces\provider\ErrorCode;
 use PHPUnit\Framework\TestCase;
 
 class FlagEvaluatorTest extends TestCase
@@ -34,6 +34,7 @@ class FlagEvaluatorTest extends TestCase
         $flag->shouldReceive('getValue')->andReturn($config['value']);
         $flag->shouldReceive('getEnabled')->andReturn($config['enabled']);
         $flag->shouldReceive('getIsDefault')->andReturn($config['isDefault']);
+
         return $flag;
     }
 
