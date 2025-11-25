@@ -106,7 +106,7 @@ $featureEnabled = $client->getBooleanValue('premium-feature', false, $context);
 The provider supports all OpenFeature value types:
 
 ```php
-// Boolean
+// Boolean (falls back to flag's enabled state if no explicit value is set)
 $boolValue = $client->getBooleanValue('boolean-flag', false, $context);
 
 // String
