@@ -15,6 +15,7 @@ use OpenFeature\implementation\flags\Attributes;
 use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\implementation\provider\ResolutionDetailsBuilder;
 use OpenFeature\interfaces\common\Metadata;
+use OpenFeature\interfaces\hooks\Hook;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
@@ -202,7 +203,8 @@ class FlagsmithProviderTest extends TestCase
 
     public function testSetHooksStoresHooks(): void
     {
-        $hooks = [['name' => 'test-hook']];
+        $hook = Mockery::mock(Hook::class);
+        $hooks = [$hook];
         $this->provider->setHooks($hooks);
 
         $this->assertEquals($hooks, $this->provider->getHooks());
