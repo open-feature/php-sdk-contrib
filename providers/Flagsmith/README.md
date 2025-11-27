@@ -177,11 +177,10 @@ We value having as few runtime dependencies as possible. The addition of any dep
 
 ### Testing
 
-Run tests with `composer run test`.
+Run tests with `composer run dev:test`.
 
 ```sh
-composer run test
-```
+composer run dev:test
 
 ### Linting and Standards
 
