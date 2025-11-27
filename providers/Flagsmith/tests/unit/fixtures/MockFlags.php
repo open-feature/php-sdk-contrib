@@ -86,6 +86,11 @@ class MockFlags
                 'enabled' => true,
                 'isDefault' => false,
             ],
+            'string_float_when_int_expected' => [
+                'value' => '3.14',
+                'enabled' => true,
+                'isDefault' => false,
+            ],
 
             // ========================================
             // FLOAT FLAGS

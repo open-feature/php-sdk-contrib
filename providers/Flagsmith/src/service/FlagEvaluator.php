@@ -449,7 +449,7 @@ class FlagEvaluator
         if (is_int($value)) {
             return $value;
         }
-        if (is_string($value) && is_numeric($value)) {
+        if (is_string($value) && filter_var($value, FILTER_VALIDATE_INT) !== false) {
             return intval($value);
         }
 

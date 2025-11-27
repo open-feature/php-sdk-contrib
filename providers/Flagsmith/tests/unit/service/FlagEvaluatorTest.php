@@ -378,6 +378,22 @@ class FlagEvaluatorTest extends TestCase
         $this->assertEquals('ERROR', $result->getReason());
     }
 
+    public function testEvaluateIntegerReturnsDefaultWhenStringFloatReceived(): void
+    {
+        $this->flagsmithClient->shouldReceive('getEnvironmentFlags')
+            ->once()
+            ->andReturn($this->mockFlags);
+
+        $result = $this->evaluator->evaluateInteger('string_float_when_int_expected', 100, null, null);
+
+        // Should return default due to type mismatch - string "3.14" should not be truncated to 3
+        $this->assertSame(100, $result->getValue());
+        $this->assertNotNull($result->getError());
+        $this->assertEquals(ErrorCode::TYPE_MISMATCH(), $result->getError()->getResolutionErrorCode());
+        $this->assertStringContainsString('Expected integer', $result->getError()->getResolutionErrorMessage());
+        $this->assertEquals('ERROR', $result->getReason());
+    }
+
     public function testEvaluateIntegerReturnsDefaultWhenFlagNotFound(): void
     {
         $this->flagsmithClient->shouldReceive('getEnvironmentFlags')
