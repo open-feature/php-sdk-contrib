@@ -3,7 +3,7 @@
 [![a](https://img.shields.io/badge/slack-%40cncf%2Fopenfeature-brightgreen?style=flat&logo=slack)](https://cloud-native.slack.com/archives/C0344AANLA1)
 [![Latest Stable Version](http://poser.pugx.org/open-feature/flagsmith-provider/v)](https://packagist.org/packages/open-feature/flagsmith-provider)
 [![Total Downloads](http://poser.pugx.org/open-feature/flagsmith-provider/downloads)](https://packagist.org/packages/open-feature/flagsmith-provider)
-![PHP 8.0+](https://img.shields.io/badge/php->=8.0-blue.svg)
+![PHP 8.1+](https://img.shields.io/badge/php->=8.1-blue.svg)
 [![License](http://poser.pugx.org/open-feature/flagsmith-provider/license)](https://packagist.org/packages/open-feature/flagsmith-provider)
 
 ## Overview
@@ -40,18 +40,23 @@ $api->setProvider($provider);
 
 ### Advanced Configuration
 
-You can optionally configure the API URL, custom headers, and request timeout:
+You can optionally configure the API URL, custom headers, request timeout, and boolean evaluation behavior:
 
 ```php
 $config = new FlagsmithConfig(
     apiKey: 'your-environment-api-key',
     apiUrl: 'https://custom.flagsmith.com/api/v1/',  // Optional: custom API URL
     customHeaders: (object)['X-Custom-Header' => 'value'],  // Optional: custom headers
-    requestTimeout: 5000  // Optional: request timeout in milliseconds
+    requestTimeout: 5000,  // Optional: request timeout in milliseconds
+    useBooleanConfigValue: true  // Optional: fall back to enabled state for boolean flags (default: true)
 );
 
 $provider = new FlagsmithProvider($config);
 ```
+
+#### Boolean Evaluation Behavior
+
+When `useBooleanConfigValue` is `true` (default), boolean flag evaluation will fall back to the flag's enabled/disabled state if no explicit boolean value is configured. Set to `false` to return a type mismatch error instead.
 
 ### Evaluating Feature Flags
 
@@ -160,7 +165,7 @@ FLAGSMITH_API_KEY='your-key' php providers/Flagsmith/examples/Flagsmith/main.php
 
 ### PHP Versioning
 
-This library targets PHP version 8.0 and newer. As long as you have any compatible version of PHP on your system you should be able to utilize the OpenFeature SDK.
+This library targets PHP version 8.1 and newer. As long as you have any compatible version of PHP on your system you should be able to utilize the OpenFeature SDK.
 
 This package also has a `.tool-versions` file for use with PHP version managers like `asdf`.
 

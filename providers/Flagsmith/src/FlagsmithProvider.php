@@ -41,6 +41,7 @@ class FlagsmithProvider extends AbstractProvider
         // Initialize services (or use injected ones for testing)
         $this->contextMapper = $contextMapper ?? new ContextMapper();
         $this->evaluator = $evaluator ?? new FlagEvaluator($this->flagsmithClient);
+        $this->evaluator->useBooleanConfigValue = $config->useBooleanConfigValue;
     }
 
     public function getMetadata(): Metadata

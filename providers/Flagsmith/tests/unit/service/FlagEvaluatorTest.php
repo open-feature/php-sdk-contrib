@@ -167,6 +167,38 @@ class FlagEvaluatorTest extends TestCase
         $this->assertEquals('ERROR', $result->getReason());
     }
 
+    public function testEvaluateBooleanFallsBackToEnabledStateWhenUseBooleanConfigValueIsTrue(): void
+    {
+        $this->flagsmithClient->shouldReceive('getEnvironmentFlags')
+            ->once()
+            ->andReturn($this->mockFlags);
+
+        // useBooleanConfigValue is true by default
+        $result = $this->evaluator->evaluateBoolean('boolean_non_boolean_value_flag', false, null, null);
+
+        // Should fall back to enabled state (true)
+        $this->assertTrue($result->getValue());
+        $this->assertNull($result->getError());
+        $this->assertEquals('STATIC', $result->getReason());
+    }
+
+    public function testEvaluateBooleanReturnsTypeMismatchWhenUseBooleanConfigValueIsFalse(): void
+    {
+        $this->flagsmithClient->shouldReceive('getEnvironmentFlags')
+            ->once()
+            ->andReturn($this->mockFlags);
+
+        $this->evaluator->useBooleanConfigValue = false;
+
+        $result = $this->evaluator->evaluateBoolean('boolean_non_boolean_value_flag', false, null, null);
+
+        // Should return default value with type mismatch error
+        $this->assertFalse($result->getValue());
+        $this->assertNotNull($result->getError());
+        $this->assertEquals(ErrorCode::TYPE_MISMATCH(), $result->getError()->getResolutionErrorCode());
+        $this->assertEquals('ERROR', $result->getReason());
+    }
+
     // String Resolver Tests
     public function testEvaluateStringReturnsValue(): void
     {

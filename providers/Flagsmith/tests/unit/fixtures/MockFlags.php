@@ -38,6 +38,11 @@ class MockFlags
                 'enabled' => false,
                 'isDefault' => false,
             ],
+            'boolean_non_boolean_value_flag' => [
+                'value' => 'not a boolean',
+                'enabled' => true,
+                'isDefault' => false,
+            ],
 
             // ========================================
             // STRING FLAGS

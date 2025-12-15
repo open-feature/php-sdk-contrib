@@ -17,6 +17,7 @@ class FlagsmithConfig
         public readonly ?string $apiUrl = null,
         public readonly ?object $customHeaders = null,
         public readonly ?int $requestTimeout = null,
+        public readonly bool $useBooleanConfigValue = true,
     ) {
         if (trim($apiKey) === '') {
             throw new InvalidArgumentException('API key cannot be empty');

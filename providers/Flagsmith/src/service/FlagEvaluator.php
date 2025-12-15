@@ -37,6 +37,7 @@ class FlagEvaluator
 {
     private Flagsmith $flagsmithClient;
     public ?LoggerInterface $logger = null;
+    public bool $useBooleanConfigValue = true;
 
     public function __construct(Flagsmith $flagsmithClient)
     {
@@ -80,13 +81,25 @@ class FlagEvaluator
                     ->build();
             }
 
-            // Special boolean handling: if no boolean value, return enabled state
             /** @var mixed $flagValue */
             $flagValue = $flag->getValue();
             $boolValue = $this->tryParseBoolean($flagValue);
             if ($boolValue === null) {
-                // No valid boolean value, fall back to enabled state
-                $boolValue = $flag->getEnabled();
+                if ($this->useBooleanConfigValue) {
+                    // Fall back to enabled state when useBooleanConfigValue is true
+                    $boolValue = $flag->getEnabled();
+                } else {
+                    $this->logger?->warning("Type mismatch for flag '{$flagKey}': expected boolean but received " . gettype($flagValue));
+
+                    return (new ResolutionDetailsBuilder())
+                        ->withValue($defaultValue)
+                        ->withError(new ResolutionError(
+                            ErrorCode::TYPE_MISMATCH(),
+                            'Expected boolean but received ' . gettype($flagValue),
+                        ))
+                        ->withReason('ERROR')
+                        ->build();
+                }
             }
 
             // Determine final reason based on flag state
