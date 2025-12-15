@@ -11,6 +11,7 @@ use OpenFeature\implementation\provider\ResolutionDetailsBuilder;
 use OpenFeature\implementation\provider\ResolutionError;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\ResolutionDetails;
+use Psr\Log\LoggerInterface;
 use Throwable;
 
 use function floatval;
@@ -35,6 +36,7 @@ use const JSON_ERROR_NONE;
 class FlagEvaluator
 {
     private Flagsmith $flagsmithClient;
+    public ?LoggerInterface $logger = null;
 
     public function __construct(Flagsmith $flagsmithClient)
     {
@@ -66,6 +68,8 @@ class FlagEvaluator
 
             // Treat default flags as not found
             if ($flag->getIsDefault()) {
+                $this->logger?->warning("Flag '{$flagKey}' was not found");
+
                 return (new ResolutionDetailsBuilder())
                     ->withValue($defaultValue)
                     ->withError(new ResolutionError(
@@ -94,7 +98,8 @@ class FlagEvaluator
                 ->withReason($reason)
                 ->build();
         } catch (Throwable $e) {
-            // On error, return default value with error details
+            $this->logger?->error("Error evaluating boolean flag '{$flagKey}': {$e->getMessage()}");
+
             return (new ResolutionDetailsBuilder())
                 ->withValue($defaultValue)
                 ->withError(new ResolutionError(ErrorCode::GENERAL(), $e->getMessage()))
@@ -128,6 +133,8 @@ class FlagEvaluator
 
             // Treat default flags as not found
             if ($flag->getIsDefault()) {
+                $this->logger?->warning("Flag '{$flagKey}' was not found");
+
                 return (new ResolutionDetailsBuilder())
                     ->withValue($defaultValue)
                     ->withError(new ResolutionError(
@@ -144,6 +151,8 @@ class FlagEvaluator
 
             // Only scalar values can be converted to string
             if (!is_scalar($flagValue) && $flagValue !== null) {
+                $this->logger?->warning("Type mismatch for flag '{$flagKey}': expected string but received " . gettype($flagValue));
+
                 return (new ResolutionDetailsBuilder())
                     ->withValue($defaultValue)
                     ->withError(new ResolutionError(
@@ -166,7 +175,8 @@ class FlagEvaluator
                 ->withReason($reason)
                 ->build();
         } catch (Throwable $e) {
-            // On error, return default value with error details
+            $this->logger?->error("Error evaluating string flag '{$flagKey}': {$e->getMessage()}");
+
             return (new ResolutionDetailsBuilder())
                 ->withValue($defaultValue)
                 ->withError(new ResolutionError(ErrorCode::GENERAL(), $e->getMessage()))
@@ -200,6 +210,8 @@ class FlagEvaluator
 
             // Treat default flags as not found
             if ($flag->getIsDefault()) {
+                $this->logger?->warning("Flag '{$flagKey}' was not found");
+
                 return (new ResolutionDetailsBuilder())
                     ->withValue($defaultValue)
                     ->withError(new ResolutionError(
@@ -216,6 +228,8 @@ class FlagEvaluator
             $intValue = $this->tryParseInt($flagValue);
 
             if ($intValue === null) {
+                $this->logger?->warning("Type mismatch for flag '{$flagKey}': expected integer but received " . gettype($flagValue));
+
                 return (new ResolutionDetailsBuilder())
                     ->withValue($defaultValue)
                     ->withError(new ResolutionError(
@@ -235,7 +249,8 @@ class FlagEvaluator
                 ->withReason($reason)
                 ->build();
         } catch (Throwable $e) {
-            // On error, return default value with error details
+            $this->logger?->error("Error evaluating integer flag '{$flagKey}': {$e->getMessage()}");
+
             return (new ResolutionDetailsBuilder())
                 ->withValue($defaultValue)
                 ->withError(new ResolutionError(ErrorCode::GENERAL(), $e->getMessage()))
@@ -269,6 +284,8 @@ class FlagEvaluator
 
             // Treat default flags as not found
             if ($flag->getIsDefault()) {
+                $this->logger?->warning("Flag '{$flagKey}' was not found");
+
                 return (new ResolutionDetailsBuilder())
                     ->withValue($defaultValue)
                     ->withError(new ResolutionError(
@@ -285,6 +302,8 @@ class FlagEvaluator
             $floatValue = $this->tryParseFloat($flagValue);
 
             if ($floatValue === null) {
+                $this->logger?->warning("Type mismatch for flag '{$flagKey}': expected float but received " . gettype($flagValue));
+
                 return (new ResolutionDetailsBuilder())
                     ->withValue($defaultValue)
                     ->withError(new ResolutionError(
@@ -304,7 +323,8 @@ class FlagEvaluator
                 ->withReason($reason)
                 ->build();
         } catch (Throwable $e) {
-            // On error, return default value with error details
+            $this->logger?->error("Error evaluating float flag '{$flagKey}': {$e->getMessage()}");
+
             return (new ResolutionDetailsBuilder())
                 ->withValue($defaultValue)
                 ->withError(new ResolutionError(ErrorCode::GENERAL(), $e->getMessage()))
@@ -338,6 +358,8 @@ class FlagEvaluator
 
             // Treat default flags as not found
             if ($flag->getIsDefault()) {
+                $this->logger?->warning("Flag '{$flagKey}' was not found");
+
                 return (new ResolutionDetailsBuilder())
                     ->withValue($defaultValue)
                     ->withError(new ResolutionError(
@@ -356,6 +378,8 @@ class FlagEvaluator
             if ($arrayValue === null) {
                 if (is_string($flagValue)) {
                     if (json_last_error() !== JSON_ERROR_NONE) {
+                        $this->logger?->warning("Parse error for flag '{$flagKey}': " . json_last_error_msg());
+
                         return (new ResolutionDetailsBuilder())
                             ->withValue($defaultValue)
                             ->withError(new ResolutionError(
@@ -366,6 +390,8 @@ class FlagEvaluator
                             ->build();
                     }
 
+                    $this->logger?->warning("Type mismatch for flag '{$flagKey}': expected object but received scalar JSON value");
+
                     return (new ResolutionDetailsBuilder())
                         ->withValue($defaultValue)
                         ->withError(new ResolutionError(
@@ -375,6 +401,8 @@ class FlagEvaluator
                         ->withReason('ERROR')
                         ->build();
                 }
+
+                $this->logger?->warning("Type mismatch for flag '{$flagKey}': expected object but received " . gettype($flagValue));
 
                 return (new ResolutionDetailsBuilder())
                     ->withValue($defaultValue)
@@ -395,7 +423,8 @@ class FlagEvaluator
                 ->withReason($reason)
                 ->build();
         } catch (Throwable $e) {
-            // On error, return default value with error details
+            $this->logger?->error("Error evaluating object flag '{$flagKey}': {$e->getMessage()}");
+
             return (new ResolutionDetailsBuilder())
                 ->withValue($defaultValue)
                 ->withError(new ResolutionError(ErrorCode::GENERAL(), $e->getMessage()))

@@ -17,7 +17,7 @@ class FlagsmithConfigTest extends TestCase
         $config = new FlagsmithConfig($apiKey);
 
         $this->assertInstanceOf(FlagsmithConfig::class, $config);
-        $this->assertSame($apiKey, $config->getApiKey());
+        $this->assertSame($apiKey, $config->apiKey);
     }
 
     public function testConstructorThrowsExceptionWhenApiKeyIsEmpty(): void

@@ -210,14 +210,15 @@ class FlagsmithProviderTest extends TestCase
         $this->assertEquals($hooks, $this->provider->getHooks());
     }
 
-    public function testSetLoggerDoesNotThrowException(): void
+    public function testSetLoggerPassesLoggerToEvaluator(): void
     {
         $logger = Mockery::mock(LoggerInterface::class);
+        $this->mockEvaluator->logger = null;
 
-        // Should not throw exception
         $this->provider->setLogger($logger);
 
-        $this->assertTrue(true); // If we get here, no exception was thrown
+        // Verify logger was passed to evaluator
+        $this->assertSame($logger, $this->mockEvaluator->logger);
     }
 
     public function testConstructorAcceptsConfig(): void

@@ -32,10 +32,10 @@ class FlagsmithProvider extends AbstractProvider
     ) {
         // Initialize Flagsmith client from config (or use injected one for testing)
         $this->flagsmithClient = $flagsmithClient ?? new Flagsmith(
-            $config->getApiKey(),
-            $config->getApiUrl(),
-            $config->getCustomHeaders(),
-            $config->getRequestTimeout(),
+            $config->apiKey,
+            $config->apiUrl,
+            $config->customHeaders,
+            $config->requestTimeout,
         );
 
         // Initialize services (or use injected ones for testing)
@@ -144,6 +144,6 @@ class FlagsmithProvider extends AbstractProvider
 
     public function setLogger(LoggerInterface $logger): void
     {
-        // Logger support can be added in the future
+        $this->evaluator->logger = $logger;
     }
 }
