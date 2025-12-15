@@ -21,11 +21,11 @@
     }
   ],
   "require": {
-    "php": "^8.0 <8.4",
+    "php": "^8.0 <9.0",
     "guzzlehttp/guzzle": "^7.0",
     "guzzlehttp/psr7": "^2.0",
     "open-feature/sdk": "^2.0",
-    "flagsmith/flagsmith-php-client": "^4.5"
+    "flagsmith/flagsmith-php-client": "^5.0"
   },
   "require-dev": {
     "ergebnis/composer-normalize": "^2.25",
