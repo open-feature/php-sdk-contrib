@@ -18,7 +18,7 @@ use function preg_match;
 
 class Validator
 {
-    private const VALID_HOST_REGEXP = '/^(([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.)*([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])$/i';
+    private const VALID_HOST_REGEXP = '/^(([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.)*([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.?$/i';
     private const VALID_PORT_RANGE = [1, 65535];
     private const VALID_PROTOCOLS = ['grpc', 'http'];
 
