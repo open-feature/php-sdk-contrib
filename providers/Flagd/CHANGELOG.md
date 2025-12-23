@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/open-feature/php-sdk-contrib/compare/open-feature/flagd-provider-1.0.0...open-feature/flagd-provider-1.1.0) (2025-12-23)
+
+
+### Features
+
+* Support trailing dot in flagd host ([#133](https://github.com/open-feature/php-sdk-contrib/issues/133)) ([2927c52](https://github.com/open-feature/php-sdk-contrib/commit/2927c528fc688a9b5e38e95130999fc398989643))
+
 ## [1.0.0](https://github.com/open-feature/php-sdk-contrib/compare/open-feature/flagd-provider-v1.0.0...open-feature/flagd-provider-1.0.0) (2024-09-04)
 
 
