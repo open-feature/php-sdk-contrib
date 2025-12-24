@@ -1,0 +1,41 @@
+<?php
+
+declare(strict_types=1);
+
+namespace OpenFeature\Providers\Flagsmith\service;
+
+use OpenFeature\interfaces\flags\EvaluationContext;
+
+use function count;
+
+class ContextMapper
+{
+    /**
+     * Maps OpenFeature EvaluationContext to Flagsmith format.
+     *
+     * @return array{identifier: ?string, traits: ?object}
+     */
+    public function map(?EvaluationContext $context): array
+    {
+        if ($context === null) {
+            return [
+                'identifier' => null,
+                'traits' => null,
+            ];
+        }
+
+        $identifier = $context->getTargetingKey();
+        $attributes = $context->getAttributes();
+
+        $traits = null;
+        $attributesArray = $attributes->toArray();
+        if (count($attributesArray) > 0) {
+            $traits = (object) $attributesArray;
+        }
+
+        return [
+            'identifier' => $identifier,
+            'traits' => $traits,
+        ];
+    }
+}
