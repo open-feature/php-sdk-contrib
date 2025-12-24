@@ -1,0 +1,15 @@
+/.editorconfig              export-ignore
+/.gitattributes             export-ignore
+/.github/                   export-ignore
+/.gitignore                 export-ignore
+/.readthedocs.yml           export-ignore
+/build/                     export-ignore
+/CHANGELOG.md               export-ignore
+/phpcs.xml.dist             export-ignore
+/phpstan.neon.dist          export-ignore
+/phpunit.xml.dist           export-ignore
+/psalm-baseline.xml         export-ignore
+/psalm.xml                  export-ignore
+/tests/                     export-ignore
+
+*                           text=auto
