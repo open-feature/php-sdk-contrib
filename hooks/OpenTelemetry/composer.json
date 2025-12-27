@@ -24,7 +24,7 @@
   "require": {
     "php": "^8",
     "open-feature/sdk": "^2.0",
-    "open-telemetry/api": "^0.0.17"
+    "open-telemetry/api": "^1.0.0"
   },
   "require-dev": {
     "ergebnis/composer-normalize": "^2.25",
