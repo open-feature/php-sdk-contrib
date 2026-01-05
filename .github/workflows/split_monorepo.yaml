@@ -27,6 +27,7 @@ jobs:
           - [provider, flagd, Flagd]
           - [provider, split, Split]
           - [provider, go-feature-flag, GoFeatureFlag]
+          - [provider, flagsmith, Flagsmith]
     steps:
       - name: Detect run requirement
         id: shouldRun
