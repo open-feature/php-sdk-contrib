@@ -1,0 +1,18 @@
+parameters:
+    tmpDir: ./build/cache/phpstan
+    level: max
+    paths:
+        - ./src
+        - ./tests
+    excludePaths:
+        - */tests/fixtures/*
+        - */tests/*/fixtures/*
+    ignoreErrors:
+        # Mockery mock objects in tests
+        -
+            message: '#Call to an undefined method .+::shouldReceive\(\)#'
+            path: tests/*
+        # Test assertion parameter types
+        -
+            message: '#Parameter .+ of method .+::assertStringContainsString\(\) expects string, string\|null given#'
+            path: tests/*
