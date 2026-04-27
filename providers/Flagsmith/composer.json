@@ -100,7 +100,11 @@
     ],
     "dev:test:coverage:ci": "phpunit --colors=always --coverage-text --coverage-clover build/coverage/clover.xml --coverage-cobertura build/coverage/cobertura.xml --coverage-crap4j build/coverage/crap4j.xml --coverage-xml build/coverage/coverage-xml --log-junit build/junit.xml",
     "dev:test:coverage:html": "phpunit --colors=always --coverage-html build/coverage/coverage-html/",
-    "dev:test:unit": "phpunit --colors=always --testdox tests/unit"
+    "dev:test:unit": "phpunit --colors=always --testdox tests/unit",
+    "dev:test:unit:setup": "echo 'Setup for unit tests...'",
+    "dev:test:unit:teardown": "echo 'Tore down unit tests...'",
+    "dev:test:integration:setup": "echo 'Setup for integration tests...'",
+    "dev:test:integration:teardown": "echo 'Tore down integration tests...'"
   },
   "scripts-descriptions": {
     "dev:analyze": "Runs all static analysis checks.",
