@@ -18,6 +18,7 @@ jobs:
           - hooks/DDTrace
           - hooks/Validators
           - providers/Flagd
+          - providers/Flagsmith
           - providers/Split
           - providers/GoFeatureFlag
           # - providers/CloudBees
