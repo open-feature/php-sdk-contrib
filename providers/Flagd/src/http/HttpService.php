@@ -86,6 +86,10 @@ class HttpService implements ServiceInterface
             return FlagdResponseResolutionDetailsAdapter::forError($details, $defaultValue);
         }
 
+        if (($details['reason'] ?? null) === 'DISABLED' && !isset($details['variant'])) {
+            return FlagdResponseResolutionDetailsAdapter::forDisabled($defaultValue);
+        }
+
         if ($flagType === FlagValueType::INTEGER) {
             $this->mapIntegerInResponse($details);
         }

@@ -149,4 +149,111 @@ class FlagdProviderTest extends TestCase
         $this->assertEquals($expectedVariant, $actualDetails->getVariant());
         $this->assertEquals($expectedReason, $actualDetails->getReason());
     }
+
+    public function testDisabledBooleanFlagFallsBackToCallerDefault(): void
+    {
+        // Given
+        $provider = $this->providerWithResponseBody('{"value":false,"reason":"DISABLED"}');
+
+        // When
+        $actualDetails = $provider->resolveBooleanValue('any-key', true, null);
+
+        // Then
+        $this->assertTrue($actualDetails->getValue());
+        $this->assertNull($actualDetails->getVariant());
+        $this->assertEquals('DISABLED', $actualDetails->getReason());
+    }
+
+    public function testDisabledStringFlagFallsBackToCallerDefault(): void
+    {
+        // Given
+        $provider = $this->providerWithResponseBody('{"value":"","reason":"DISABLED"}');
+
+        // When
+        $actualDetails = $provider->resolveStringValue('any-key', 'fallback', null);
+
+        // Then
+        $this->assertEquals('fallback', $actualDetails->getValue());
+        $this->assertNull($actualDetails->getVariant());
+        $this->assertEquals('DISABLED', $actualDetails->getReason());
+    }
+
+    public function testDisabledIntegerFlagFallsBackToCallerDefault(): void
+    {
+        // Given
+        $provider = $this->providerWithResponseBody('{"value":0,"reason":"DISABLED"}');
+
+        // When
+        $actualDetails = $provider->resolveIntegerValue('any-key', 42, null);
+
+        // Then
+        $this->assertEquals(42, $actualDetails->getValue());
+        $this->assertNull($actualDetails->getVariant());
+        $this->assertEquals('DISABLED', $actualDetails->getReason());
+    }
+
+    public function testDisabledFloatFlagFallsBackToCallerDefault(): void
+    {
+        // Given
+        $provider = $this->providerWithResponseBody('{"value":0.0,"reason":"DISABLED"}');
+
+        // When
+        $actualDetails = $provider->resolveFloatValue('any-key', 1.5, null);
+
+        // Then
+        $this->assertEquals(1.5, $actualDetails->getValue());
+        $this->assertNull($actualDetails->getVariant());
+        $this->assertEquals('DISABLED', $actualDetails->getReason());
+    }
+
+    public function testDisabledObjectFlagFallsBackToCallerDefault(): void
+    {
+        // Given
+        $provider = $this->providerWithResponseBody('{"value":{},"reason":"DISABLED"}');
+        $default = ['a' => 1];
+
+        // When
+        $actualDetails = $provider->resolveObjectValue('any-key', $default, null);
+
+        // Then
+        $this->assertEquals($default, $actualDetails->getValue());
+        $this->assertNull($actualDetails->getVariant());
+        $this->assertEquals('DISABLED', $actualDetails->getReason());
+    }
+
+    private function providerWithResponseBody(string $body): FlagdProvider
+    {
+        $mockRequest = $this->mockery(RequestInterface::class);
+        $mockRequest->shouldReceive('withHeader')->andReturn($mockRequest);
+        $mockRequest->shouldReceive('withBody')->andReturn($mockRequest);
+
+        $mockRequestFactory = $this->mockery(RequestFactoryInterface::class);
+        $mockRequestFactory->shouldReceive('createRequest')->andReturn($mockRequest);
+
+        $mockStream = $this->mockery(StreamInterface::class);
+
+        $mockStreamFactory = $this->mockery(StreamFactoryInterface::class);
+        $mockStreamFactory->shouldReceive('createStream')->andReturn($mockStream);
+
+        $mockResponse = $this->mockery(ResponseInterface::class);
+        $mockResponse->shouldReceive('getBody->__toString')->andReturn($body);
+
+        $mockClient = $this->mockery(ClientInterface::class);
+        $mockClient->shouldReceive('sendRequest')->with($mockRequest)->andReturn($mockResponse);
+
+        /** @var ClientInterface $client */
+        $client = $mockClient;
+        /** @var RequestFactoryInterface $requestFactory */
+        $requestFactory = $mockRequestFactory;
+        /** @var StreamFactoryInterface $streamFactory */
+        $streamFactory = $mockStreamFactory;
+
+        return new FlagdProvider([
+            'httpConfig' => [
+                'client' => $client,
+                'requestFactory' => $requestFactory,
+                'streamFactory' => $streamFactory,
+            ],
+        ]);
+    }
 }

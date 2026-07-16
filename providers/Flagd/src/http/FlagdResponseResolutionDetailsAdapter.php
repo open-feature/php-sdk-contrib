@@ -52,6 +52,17 @@ class FlagdResponseResolutionDetailsAdapter
     }
 
     /**
+     * @param mixed[]|bool|DateTime|float|int|string|null $defaultValue
+     */
+    public static function forDisabled(mixed $defaultValue): ResolutionDetails
+    {
+        return (new ResolutionDetailsBuilder())
+            ->withValue($defaultValue)
+            ->withReason('DISABLED')
+            ->build();
+    }
+
+    /**
      * @param array{value: mixed[]|bool|DateTime|float|int|string|null, variant: ?string, reason: ?string} $response
      */
     public static function forSuccess(array $response): ResolutionDetails
