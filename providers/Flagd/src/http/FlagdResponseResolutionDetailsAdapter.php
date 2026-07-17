@@ -9,6 +9,7 @@ use OpenFeature\Providers\Flagd\common\ResponseCodeErrorCodeMap;
 use OpenFeature\implementation\provider\ResolutionDetailsBuilder;
 use OpenFeature\implementation\provider\ResolutionError;
 use OpenFeature\interfaces\provider\ErrorCode;
+use OpenFeature\interfaces\provider\Reason;
 use OpenFeature\interfaces\provider\ResolutionDetails;
 
 class FlagdResponseResolutionDetailsAdapter
@@ -58,7 +59,7 @@ class FlagdResponseResolutionDetailsAdapter
     {
         return (new ResolutionDetailsBuilder())
             ->withValue($defaultValue)
-            ->withReason('DISABLED')
+            ->withReason(Reason::DISABLED)
             ->build();
     }
 

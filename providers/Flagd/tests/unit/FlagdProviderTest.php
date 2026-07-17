@@ -9,6 +9,7 @@ use OpenFeature\Providers\Flagd\Test\TestCase;
 use OpenFeature\Providers\Flagd\config\ConfigFactory;
 use OpenFeature\Providers\Flagd\config\HttpConfig;
 use OpenFeature\interfaces\provider\Provider;
+use OpenFeature\interfaces\provider\Reason;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
@@ -153,7 +154,7 @@ class FlagdProviderTest extends TestCase
     public function testDisabledBooleanFlagFallsBackToCallerDefault(): void
     {
         // Given
-        $provider = $this->providerWithResponseBody('{"value":false,"reason":"DISABLED"}');
+        $provider = $this->providerWithResponseBody('{"value":false,"reason":"DISABLED","variant":"","metadata":{}}');
 
         // When
         $actualDetails = $provider->resolveBooleanValue('any-key', true, null);
@@ -161,13 +162,13 @@ class FlagdProviderTest extends TestCase
         // Then
         $this->assertTrue($actualDetails->getValue());
         $this->assertNull($actualDetails->getVariant());
-        $this->assertEquals('DISABLED', $actualDetails->getReason());
+        $this->assertEquals(Reason::DISABLED, $actualDetails->getReason());
     }
 
     public function testDisabledStringFlagFallsBackToCallerDefault(): void
     {
         // Given
-        $provider = $this->providerWithResponseBody('{"value":"","reason":"DISABLED"}');
+        $provider = $this->providerWithResponseBody('{"value":"","reason":"DISABLED","variant":"","metadata":{}}');
 
         // When
         $actualDetails = $provider->resolveStringValue('any-key', 'fallback', null);
@@ -175,13 +176,13 @@ class FlagdProviderTest extends TestCase
         // Then
         $this->assertEquals('fallback', $actualDetails->getValue());
         $this->assertNull($actualDetails->getVariant());
-        $this->assertEquals('DISABLED', $actualDetails->getReason());
+        $this->assertEquals(Reason::DISABLED, $actualDetails->getReason());
     }
 
     public function testDisabledIntegerFlagFallsBackToCallerDefault(): void
     {
         // Given
-        $provider = $this->providerWithResponseBody('{"value":0,"reason":"DISABLED"}');
+        $provider = $this->providerWithResponseBody('{"value":"0","reason":"DISABLED","variant":"","metadata":{}}');
 
         // When
         $actualDetails = $provider->resolveIntegerValue('any-key', 42, null);
@@ -189,13 +190,13 @@ class FlagdProviderTest extends TestCase
         // Then
         $this->assertEquals(42, $actualDetails->getValue());
         $this->assertNull($actualDetails->getVariant());
-        $this->assertEquals('DISABLED', $actualDetails->getReason());
+        $this->assertEquals(Reason::DISABLED, $actualDetails->getReason());
     }
 
     public function testDisabledFloatFlagFallsBackToCallerDefault(): void
     {
         // Given
-        $provider = $this->providerWithResponseBody('{"value":0.0,"reason":"DISABLED"}');
+        $provider = $this->providerWithResponseBody('{"value":0.0,"reason":"DISABLED","variant":"","metadata":{}}');
 
         // When
         $actualDetails = $provider->resolveFloatValue('any-key', 1.5, null);
@@ -203,13 +204,13 @@ class FlagdProviderTest extends TestCase
         // Then
         $this->assertEquals(1.5, $actualDetails->getValue());
         $this->assertNull($actualDetails->getVariant());
-        $this->assertEquals('DISABLED', $actualDetails->getReason());
+        $this->assertEquals(Reason::DISABLED, $actualDetails->getReason());
     }
 
     public function testDisabledObjectFlagFallsBackToCallerDefault(): void
     {
         // Given
-        $provider = $this->providerWithResponseBody('{"value":{},"reason":"DISABLED"}');
+        $provider = $this->providerWithResponseBody('{"value":{},"reason":"DISABLED","variant":"","metadata":{}}');
         $default = ['a' => 1];
 
         // When
@@ -218,7 +219,7 @@ class FlagdProviderTest extends TestCase
         // Then
         $this->assertEquals($default, $actualDetails->getValue());
         $this->assertNull($actualDetails->getVariant());
-        $this->assertEquals('DISABLED', $actualDetails->getReason());
+        $this->assertEquals(Reason::DISABLED, $actualDetails->getReason());
     }
 
     private function providerWithResponseBody(string $body): FlagdProvider
