@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/open-feature/php-sdk-contrib/compare/open-feature/flagd-provider-1.1.0...open-feature/flagd-provider-1.1.1) (2026-07-20)
+
+
+### Bug Fixes
+
+* **flagd:** fall back to caller default for DISABLED flag evaluations ([#172](https://github.com/open-feature/php-sdk-contrib/issues/172)) ([05e86bb](https://github.com/open-feature/php-sdk-contrib/commit/05e86bb3665368054d802ed0715c8ea8cbfb1aff))
+
 ## [1.1.0](https://github.com/open-feature/php-sdk-contrib/compare/open-feature/flagd-provider-1.0.0...open-feature/flagd-provider-1.1.0) (2025-12-23)
 
 
