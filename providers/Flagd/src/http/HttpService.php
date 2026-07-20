@@ -14,6 +14,7 @@ use OpenFeature\Providers\Flagd\service\ServiceInterface;
 use OpenFeature\implementation\errors\FlagValueTypeError;
 use OpenFeature\interfaces\flags\EvaluationContext;
 use OpenFeature\interfaces\flags\FlagValueType;
+use OpenFeature\interfaces\provider\Reason;
 use OpenFeature\interfaces\provider\ResolutionDetails;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -84,6 +85,10 @@ class HttpService implements ServiceInterface
 
         if (FlagdResponseValidator::isErrorResponse($details)) {
             return FlagdResponseResolutionDetailsAdapter::forError($details, $defaultValue);
+        }
+
+        if (($details['reason'] ?? null) === Reason::DISABLED && ($details['variant'] ?? '') === '') {
+            return FlagdResponseResolutionDetailsAdapter::forDisabled($defaultValue);
         }
 
         if ($flagType === FlagValueType::INTEGER) {
