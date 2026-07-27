@@ -59,11 +59,22 @@ class FlagdProviderTest extends TestCase
         $mockStreamFactory->shouldReceive('createStream')->andReturn($mockStream);
 
         $mockResponse = $this->mockery(ResponseInterface::class);
-        $mockResponse->shouldReceive('getBody->__toString')->andReturn("{
-            \"value\":\"{$expectedValue}\",
-            \"variant\":\"{$expectedVariant}\",
-            \"reason\":\"{$expectedReason}\"
-        }");
+        $mockResponse->shouldReceive('getBody->__toString')->andReturn(
+            "{
+                \"value\":\"{$expectedValue}\",
+                \"variant\":\"{$expectedVariant}\",
+                \"reason\":\"{$expectedReason}\"
+            }",
+            "{
+                \"flags\":{
+                    \"any-key\":
+                        {\"reason\":\"{$expectedReason}\", 
+                        \"variant\":\"{$expectedVariant}\", 
+                        \"doubleValue\":\"{$expectedValue}\"
+                    }
+                }
+            }"
+        );
 
         $mockClient = $this->mockery(ClientInterface::class);
         $mockClient->shouldReceive('sendRequest')->with($mockRequest)->andReturn($mockResponse);
@@ -91,6 +102,13 @@ class FlagdProviderTest extends TestCase
         $this->assertEquals($expectedValue, $actualDetails->getValue());
         $this->assertEquals($expectedVariant, $actualDetails->getVariant());
         $this->assertEquals($expectedReason, $actualDetails->getReason());
+
+        $actualFlagsDetails = $provider->resolveAllValues(null);
+
+        // Then
+        $this->assertEquals($expectedValue, $actualFlagsDetails['any-key']->getValue());
+        $this->assertEquals($expectedVariant, $actualFlagsDetails['any-key']->getVariant());
+        $this->assertEquals($expectedReason, $actualFlagsDetails['any-key']->getReason());
     }
 
     public function testCanInstantiateHttpWithConfigArray(): void
@@ -113,12 +131,23 @@ class FlagdProviderTest extends TestCase
         $mockStreamFactory->shouldReceive('createStream')->andReturn($mockStream);
 
         $mockResponse = $this->mockery(ResponseInterface::class);
-        $mockResponse->shouldReceive('getBody->__toString')->andReturn("{
-            \"value\":\"{$expectedValue}\",
-            \"variant\":\"{$expectedVariant}\",
-            \"reason\":\"{$expectedReason}\"
-        }");
-
+        $mockResponse->shouldReceive('getBody->__toString')->andReturn(
+            "{
+                \"value\":\"{$expectedValue}\",
+                \"variant\":\"{$expectedVariant}\",
+                \"reason\":\"{$expectedReason}\"
+            }",
+            "{
+                \"flags\":{
+                    \"any-key\":
+                        {\"reason\":\"{$expectedReason}\", 
+                        \"variant\":\"{$expectedVariant}\", 
+                        \"doubleValue\":\"{$expectedValue}\"
+                    }
+                }
+            }"
+        );
+        
         $mockClient = $this->mockery(ClientInterface::class);
         $mockClient->shouldReceive('sendRequest')->with($mockRequest)->andReturn($mockResponse);
 
@@ -149,6 +178,13 @@ class FlagdProviderTest extends TestCase
         $this->assertEquals($expectedValue, $actualDetails->getValue());
         $this->assertEquals($expectedVariant, $actualDetails->getVariant());
         $this->assertEquals($expectedReason, $actualDetails->getReason());
+
+        $actualFlagsDetails = $provider->resolveAllValues(null);
+
+        // Then
+        $this->assertEquals($expectedValue, $actualFlagsDetails['any-key']->getValue());
+        $this->assertEquals($expectedVariant, $actualFlagsDetails['any-key']->getVariant());
+        $this->assertEquals($expectedReason, $actualFlagsDetails['any-key']->getReason());
     }
 
     public function testDisabledBooleanFlagFallsBackToCallerDefault(): void

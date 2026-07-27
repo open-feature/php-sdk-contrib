@@ -53,4 +53,9 @@ class FlagdProvider extends AbstractProvider implements Provider
     {
         return $this->service->resolveValue($flagKey, FlagValueType::OBJECT, $defaultValue, $context);
     }
+
+    public function resolveAllValues(?EvaluationContext $context = null): array
+    {
+        return $this->service->resolveValues($context);
+    }
 }
