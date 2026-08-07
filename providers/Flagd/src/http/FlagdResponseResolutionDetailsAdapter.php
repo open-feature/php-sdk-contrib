@@ -64,6 +64,24 @@ class FlagdResponseResolutionDetailsAdapter
     }
 
     /**
+     * v2 only. The flag resolved successfully but carried no value, so the caller's default is
+     * returned. The reason reported by flagd is preserved as-is, since this covers both a
+     * disabled flag (`DISABLED`) and a flag with no default variant (`DEFAULT`).
+     *
+     * @param mixed[]|bool|DateTime|float|int|string|null $defaultValue
+     */
+    public static function forAbsentValue(mixed $defaultValue, ?string $reason): ResolutionDetails
+    {
+        $builder = (new ResolutionDetailsBuilder())->withValue($defaultValue);
+
+        if ($reason !== null && $reason !== '') {
+            $builder->withReason($reason);
+        }
+
+        return $builder->build();
+    }
+
+    /**
      * @param array{value: mixed[]|bool|DateTime|float|int|string|null, variant: ?string, reason: ?string} $response
      */
     public static function forSuccess(array $response): ResolutionDetails
