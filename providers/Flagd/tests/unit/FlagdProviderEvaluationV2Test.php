@@ -224,6 +224,21 @@ class FlagdProviderEvaluationV2Test extends TestCase
         );
     }
 
+    /**
+     * Against a flagd server older than v0.14.0, the v2 endpoint doesn't exist and the server
+     * returns a plain-text 404 rather than a JSON body. `json_decode` then yields null, which
+     * must not leak through as the resolved value in place of the caller's default.
+     */
+    public function testNonJsonResponseFallsBackToCallerDefault(): void
+    {
+        $provider = $this->v2Provider('404 page not found');
+
+        $details = $provider->resolveBooleanValue('any-key', true, null);
+
+        $this->assertTrue($details->getValue());
+        $this->assertNotNull($details->getError());
+    }
+
     // ---------------------------------------------------------------- helpers
 
     private function v2Provider(string $body): FlagdProvider

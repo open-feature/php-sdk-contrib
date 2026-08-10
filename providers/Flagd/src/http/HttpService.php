@@ -84,7 +84,7 @@ class HttpService implements ServiceInterface
         $details = json_decode((string) $response->getBody(), true);
 
         if (FlagdResponseValidator::isTypeMismatch($details)) {
-            return FlagdResponseResolutionDetailsAdapter::forTypeMismatch($details);
+            return FlagdResponseResolutionDetailsAdapter::forTypeMismatch($defaultValue);
         }
 
         if ($this->evaluationApi === EvaluationApis::V2) {
