@@ -12,8 +12,6 @@ interface IConfig
 
     public function getProtocol(): string;
 
-    public function getEvaluationApi(): string;
-
     public function isSecure(): bool;
 
     public function getHttpConfig(): ?IHttpConfig;

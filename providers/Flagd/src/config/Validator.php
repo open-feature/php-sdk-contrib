@@ -21,7 +21,6 @@ class Validator
     private const VALID_HOST_REGEXP = '/^(([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.)*([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.?$/i';
     private const VALID_PORT_RANGE = [1, 65535];
     private const VALID_PROTOCOLS = ['grpc', 'http'];
-    private const VALID_EVALUATION_APIS = [EvaluationApis::V1, EvaluationApis::V2];
 
     public static function validate(mixed $config = null): IConfig
     {
@@ -46,9 +45,8 @@ class Validator
         $protocol = self::validateProtocol($config['protocol'] ?? null);
         $secure = self::validateSecure($config['secure'] ?? null);
         $httpConfig = self::validateHttpConfig($config['httpConfig'] ?? null);
-        $evaluationApi = self::validateEvaluationApi($config['evaluationApi'] ?? null);
 
-        return new Config($host, $port, $protocol, $secure, $httpConfig, $evaluationApi);
+        return new Config($host, $port, $protocol, $secure, $httpConfig);
     }
 
     private static function validateConfig(IConfig $config): IConfig
@@ -58,9 +56,8 @@ class Validator
         $protocol = self::validateProtocol($config->getProtocol());
         $secure = self::validateSecure($config->isSecure());
         $httpConfig = self::validateHttpConfig($config->getHttpConfig());
-        $evaluationApi = self::validateEvaluationApi($config->getEvaluationApi());
 
-        return new Config($host, $port, $protocol, $secure, $httpConfig, $evaluationApi);
+        return new Config($host, $port, $protocol, $secure, $httpConfig);
     }
 
     private static function validateSecure(mixed $secure): bool
@@ -99,15 +96,6 @@ class Validator
         }
 
         return Defaults::DEFAULT_PROTOCOL;
-    }
-
-    private static function validateEvaluationApi(mixed $evaluationApi): string
-    {
-        if (is_string($evaluationApi) && in_array($evaluationApi, self::VALID_EVALUATION_APIS)) {
-            return $evaluationApi;
-        }
-
-        return Defaults::DEFAULT_EVALUATION_API;
     }
 
     private static function validateHttpConfig(mixed $httpConfig): ?IHttpConfig

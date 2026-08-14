@@ -37,7 +37,6 @@ OpenFeatureAPI::setProvider(new FlagdProvider([
     'host' => 'localhost',
     'port' => 8013,
     'secure' => true,
-    'evaluationApi' => 'v1',
     'httpConfig' => [
       'client' => $client,
       'requestFactory' => $requestFactory,
@@ -50,38 +49,19 @@ OpenFeatureAPI::setProvider(new FlagdProvider([
 - **host**: string _(defaults to "localhost")_
 - **port**: number _(defaults to 8013)_
 - **secure**: true | false _(defaults to false)_
-- **evaluationApi**: "v1" | "v2" _(defaults to "v1")_ — see [Evaluation API version](#evaluation-api-version)
 - **httpConfig**: An array or `HttpConfig` object, providing implementations for PSR interfaces
     - **client**: a `ClientInterface` implementation
     - **requestFactory**: a `RequestFactoryInterface` implementation
     - **streamFactory**: a `StreamFactoryInterface` implementation
 
-### Evaluation API version
+### flagd version requirement
 
-By default the provider targets flagd's legacy `schema.v1.Service`, which every flagd release
-supports.
-
-Setting `evaluationApi` to `"v2"` targets `flagd.evaluation.v2.Service` instead. In the v2
-protobuf, `value` and `variant` are declared `optional`, so flagd can represent an absent value
-explicitly rather than zero-filling the field:
-
-| flagd response for a disabled boolean flag | payload |
-| --- | --- |
-| `schema.v1.Service` | `{"value":false,"reason":"DISABLED","variant":"","metadata":{}}` |
-| `flagd.evaluation.v2.Service` | `{"reason":"DISABLED","metadata":{}}` |
-
-On v1 the provider has to infer "no value" from the reason plus an empty variant, because a
-zero-filled `false` is not distinguishable from a genuinely resolved `false`. On v2 the provider
-checks whether the `value` field is present, which is unambiguous.
-
-**Version requirements:**
-
-- `flagd.evaluation.v2.Service` is only registered from **flagd v0.14.0**. Against an older
-  server the endpoint returns a plain HTTP 404 and evaluations will fail.
-- The two APIs only differ in behaviour from **flagd v0.16.0**, which is where flagd started
-  returning disabled flags as a resolution result rather than a `not_found` error.
-
-Leave this set to `v1` unless your flagd server is on v0.16.0 or newer.
+The provider targets flagd's `flagd.evaluation.v2.Service` and **requires flagd v0.16.0 or
+newer**. In the v2 protobuf, `value` and `variant` are declared `optional`, so flagd omits the
+value entirely when a flag resolves without one (a disabled flag, or a flag with no default
+variant); the provider detects this by field presence and returns the caller's default. The
+endpoint is registered from flagd v0.14.0, but correct disabled-flag/default-variant behaviour
+only lands in v0.16.0.
 
 ### gRPC vs HTTP
 

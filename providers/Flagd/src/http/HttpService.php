@@ -6,8 +6,6 @@ namespace OpenFeature\Providers\Flagd\http;
 
 use DateTime;
 use OpenFeature\Providers\Flagd\common\EvaluationContextArrayFactory;
-use OpenFeature\Providers\Flagd\config\Defaults;
-use OpenFeature\Providers\Flagd\config\EvaluationApis;
 use OpenFeature\Providers\Flagd\config\IConfig;
 use OpenFeature\Providers\Flagd\errors\InvalidConfigException;
 use OpenFeature\Providers\Flagd\errors\InvalidTypeException;
@@ -16,7 +14,6 @@ use OpenFeature\Providers\Flagd\service\ServiceInterface;
 use OpenFeature\implementation\errors\FlagValueTypeError;
 use OpenFeature\interfaces\flags\EvaluationContext;
 use OpenFeature\interfaces\flags\FlagValueType;
-use OpenFeature\interfaces\provider\Reason;
 use OpenFeature\interfaces\provider\ResolutionDetails;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -37,7 +34,6 @@ class HttpService implements ServiceInterface
     private ClientInterface $client;
     private RequestFactoryInterface $requestFactory;
     private StreamFactoryInterface $streamFactory;
-    private string $evaluationApi;
 
     private const FLAGD_GRPC_WEB_HEADERS = [
         ['content-type', 'application/json'],
@@ -59,16 +55,15 @@ class HttpService implements ServiceInterface
         $requestFactory = $http->getRequestFactory();
         $streamFactory = $http->getStreamFactory();
 
-        return new HttpService($target, $client, $requestFactory, $streamFactory, $config->getEvaluationApi());
+        return new HttpService($target, $client, $requestFactory, $streamFactory);
     }
 
-    public function __construct(string $target, ClientInterface $client, RequestFactoryInterface $requestFactory, StreamFactoryInterface $streamFactory, ?string $evaluationApi = null)
+    public function __construct(string $target, ClientInterface $client, RequestFactoryInterface $requestFactory, StreamFactoryInterface $streamFactory)
     {
         $this->target = $target;
         $this->client = $client;
         $this->requestFactory = $requestFactory;
         $this->streamFactory = $streamFactory;
-        $this->evaluationApi = $evaluationApi ?? Defaults::DEFAULT_EVALUATION_API;
     }
 
     /**
@@ -87,26 +82,15 @@ class HttpService implements ServiceInterface
             return FlagdResponseResolutionDetailsAdapter::forTypeMismatch($defaultValue);
         }
 
-        if ($this->evaluationApi === EvaluationApis::V2) {
-            if (FlagdResponseValidator::isErrorResponseV2($details)) {
-                return FlagdResponseResolutionDetailsAdapter::forError($details, $defaultValue);
-            }
+        if (FlagdResponseValidator::isErrorResponse($details)) {
+            return FlagdResponseResolutionDetailsAdapter::forError($details, $defaultValue);
+        }
 
-            // v2 omits `value` entirely when the flag resolves without one, so presence of the
-            // field is authoritative and no reason/variant heuristic is required.
-            if (FlagdResponseValidator::hasNoValue($details)) {
-                return FlagdResponseResolutionDetailsAdapter::forAbsentValue($defaultValue, $details['reason'] ?? null);
-            }
-        } else {
-            if (FlagdResponseValidator::isErrorResponse($details)) {
-                return FlagdResponseResolutionDetailsAdapter::forError($details, $defaultValue);
-            }
-
-            // v1 cannot represent an absent value, so a disabled flag arrives zero-filled and has
-            // to be inferred from the reason plus an empty variant.
-            if (($details['reason'] ?? null) === Reason::DISABLED && ($details['variant'] ?? '') === '') {
-                return FlagdResponseResolutionDetailsAdapter::forDisabled($defaultValue);
-            }
+        // flagd.evaluation.v2 declares `value` as an `optional` field, so it is omitted entirely
+        // when the flag resolves without one (a disabled flag, or a flag with no default variant).
+        // Field presence is therefore authoritative; no reason/variant heuristic is required.
+        if (FlagdResponseValidator::hasNoValue($details)) {
+            return FlagdResponseResolutionDetailsAdapter::forAbsentValue($defaultValue, $details['reason'] ?? null);
         }
 
         if ($flagType === FlagValueType::INTEGER) {
@@ -159,19 +143,17 @@ class HttpService implements ServiceInterface
 
     private function determinePathByFlagType(string $flagType): string
     {
-        $isV2 = $this->evaluationApi === EvaluationApis::V2;
-
         switch ($flagType) {
             case FlagValueType::BOOLEAN:
-                return $isV2 ? GrpcWebEndpoint::BOOLEAN_V2 : GrpcWebEndpoint::BOOLEAN;
+                return GrpcWebEndpoint::BOOLEAN;
             case FlagValueType::FLOAT:
-                return $isV2 ? GrpcWebEndpoint::FLOAT_V2 : GrpcWebEndpoint::FLOAT;
+                return GrpcWebEndpoint::FLOAT;
             case FlagValueType::INTEGER:
-                return $isV2 ? GrpcWebEndpoint::INTEGER_V2 : GrpcWebEndpoint::INTEGER;
+                return GrpcWebEndpoint::INTEGER;
             case FlagValueType::OBJECT:
-                return $isV2 ? GrpcWebEndpoint::OBJECT_V2 : GrpcWebEndpoint::OBJECT;
+                return GrpcWebEndpoint::OBJECT;
             case FlagValueType::STRING:
-                return $isV2 ? GrpcWebEndpoint::STRING_V2 : GrpcWebEndpoint::STRING;
+                return GrpcWebEndpoint::STRING;
             default:
                 throw new FlagValueTypeError($flagType);
         }
