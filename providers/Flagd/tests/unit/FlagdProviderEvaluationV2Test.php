@@ -6,9 +6,6 @@ namespace OpenFeature\Providers\Flagd\Test\unit;
 
 use OpenFeature\Providers\Flagd\FlagdProvider;
 use OpenFeature\Providers\Flagd\Test\TestCase;
-use OpenFeature\Providers\Flagd\config\ConfigFactory;
-use OpenFeature\Providers\Flagd\config\Defaults;
-use OpenFeature\Providers\Flagd\config\EvaluationApis;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Reason;
 use Psr\Http\Client\ClientInterface;
@@ -19,47 +16,23 @@ use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * Coverage for the opt-in `flagd.evaluation.v2` API.
+ * Coverage for the `flagd.evaluation.v2` API (the only API the provider speaks; requires
+ * flagd v0.16.0+).
  *
  * Every response body below was captured from a real flagd v0.16.1 instance rather than
- * hand-written, so the fixtures match the wire format exactly. The defining difference from v1
- * is that `value` is declared `optional` in the v2 protobuf, so it is omitted from the payload
- * entirely when the flag resolves without one instead of being zero-filled.
+ * hand-written, so the fixtures match the wire format exactly. The defining property is that
+ * `value` is declared `optional` in the v2 protobuf, so it is omitted from the payload entirely
+ * when the flag resolves without one instead of being zero-filled.
  */
 class FlagdProviderEvaluationV2Test extends TestCase
 {
-    // ---------------------------------------------------------------- config
-
-    public function testDefaultsToV1WhenUnset(): void
-    {
-        $config = ConfigFactory::fromArray([]);
-
-        $this->assertEquals(EvaluationApis::V1, $config->getEvaluationApi());
-        $this->assertEquals(EvaluationApis::V1, Defaults::DEFAULT_EVALUATION_API);
-    }
-
-    public function testAcceptsV2(): void
-    {
-        $config = ConfigFactory::fromArray(['evaluationApi' => EvaluationApis::V2]);
-
-        $this->assertEquals(EvaluationApis::V2, $config->getEvaluationApi());
-    }
-
-    public function testFallsBackToV1OnUnknownValue(): void
-    {
-        $config = ConfigFactory::fromArray(['evaluationApi' => 'v99']);
-
-        $this->assertEquals(EvaluationApis::V1, $config->getEvaluationApi());
-    }
-
     // --------------------------------------------------------------- routing
 
-    public function testV2RoutesToEvaluationV2Service(): void
+    public function testRoutesToEvaluationV2Service(): void
     {
         $uri = null;
         $provider = $this->provider(
             '{"value":true,"reason":"STATIC","variant":"on","metadata":{}}',
-            EvaluationApis::V2,
             $uri,
         );
 
@@ -67,21 +40,6 @@ class FlagdProviderEvaluationV2Test extends TestCase
 
         $this->assertIsString($uri);
         $this->assertStringContainsString('flagd.evaluation.v2.Service/ResolveBoolean', $uri);
-    }
-
-    public function testV1StillRoutesToSchemaV1Service(): void
-    {
-        $uri = null;
-        $provider = $this->provider(
-            '{"value":true,"reason":"STATIC","variant":"on","metadata":{}}',
-            EvaluationApis::V1,
-            $uri,
-        );
-
-        $provider->resolveBooleanValue('any-key', false, null);
-
-        $this->assertIsString($uri);
-        $this->assertStringContainsString('schema.v1.Service/ResolveBoolean', $uri);
     }
 
     // --------------------------------------------------------------- success
@@ -99,7 +57,7 @@ class FlagdProviderEvaluationV2Test extends TestCase
 
     public function testResolvesEnabledIntegerFlagFromStringEncodedValue(): void
     {
-        // v2 keeps the JSON string encoding for 64-bit integers, exactly as v1 does.
+        // v2 keeps the JSON string encoding for 64-bit integers.
         $provider = $this->v2Provider('{"value":"42","reason":"STATIC","variant":"high","metadata":{}}');
 
         $details = $provider->resolveIntegerValue('any-key', 1, null);
@@ -164,9 +122,8 @@ class FlagdProviderEvaluationV2Test extends TestCase
     }
 
     /**
-     * A flag with no default variant resolves to the code default. On v1 this arrives as a
-     * zero-filled value with reason FALLBACK, which is indistinguishable from a real resolution.
-     * On v2 the value is absent and the reason is DEFAULT.
+     * A flag with no default variant resolves to the code default. On v2 the value is absent and
+     * the reason is DEFAULT, so the caller's default is returned unambiguously.
      */
     public function testFlagWithoutDefaultVariantFallsBackToCallerDefault(): void
     {
@@ -180,8 +137,8 @@ class FlagdProviderEvaluationV2Test extends TestCase
     }
 
     /**
-     * The v1 heuristic keys on an empty variant. A disabled flag on v2 carries no variant at all,
-     * so a legitimately resolved falsy value must not be mistaken for one.
+     * A disabled flag on v2 carries no `value` field. A legitimately resolved falsy value (which
+     * does carry the field) must not be mistaken for an absent one.
      */
     public function testFalsyResolvedValueIsNotTreatedAsDisabled(): void
     {
@@ -245,10 +202,10 @@ class FlagdProviderEvaluationV2Test extends TestCase
     {
         $uri = null;
 
-        return $this->provider($body, EvaluationApis::V2, $uri);
+        return $this->provider($body, $uri);
     }
 
-    private function provider(string $body, string $evaluationApi, ?string &$capturedUri): FlagdProvider
+    private function provider(string $body, ?string &$capturedUri): FlagdProvider
     {
         $mockRequest = $this->mockery(RequestInterface::class);
         $mockRequest->shouldReceive('withHeader')->andReturn($mockRequest);
@@ -282,7 +239,6 @@ class FlagdProviderEvaluationV2Test extends TestCase
         $streamFactory = $mockStreamFactory;
 
         return new FlagdProvider([
-            'evaluationApi' => $evaluationApi,
             'httpConfig' => [
                 'client' => $client,
                 'requestFactory' => $requestFactory,
