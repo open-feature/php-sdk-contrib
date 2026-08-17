@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/open-feature/php-sdk-contrib/compare/open-feature/flagd-provider-1.1.1...open-feature/flagd-provider-2.0.0) (2026-08-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* **flagd:** migrate to `flagd.evaluation.v2` API (requires flagd `v0.16.0+`) ([#176](https://github.com/open-feature/php-sdk-contrib/issues/176))
+
+### Features
+
+* **flagd:** migrate to `flagd.evaluation.v2` API (requires flagd `v0.16.0+`) ([#176](https://github.com/open-feature/php-sdk-contrib/issues/176)) ([8880514](https://github.com/open-feature/php-sdk-contrib/commit/8880514707ab8c8d260ba9baceb1757170f6b260))
+
 ## [1.1.1](https://github.com/open-feature/php-sdk-contrib/compare/open-feature/flagd-provider-1.1.0...open-feature/flagd-provider-1.1.1) (2026-07-20)
 
 
