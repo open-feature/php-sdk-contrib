@@ -9,7 +9,6 @@ use OpenFeature\Providers\Flagd\common\ResponseCodeErrorCodeMap;
 use OpenFeature\implementation\provider\ResolutionDetailsBuilder;
 use OpenFeature\implementation\provider\ResolutionError;
 use OpenFeature\interfaces\provider\ErrorCode;
-use OpenFeature\interfaces\provider\Reason;
 use OpenFeature\interfaces\provider\ResolutionDetails;
 
 class FlagdResponseResolutionDetailsAdapter
@@ -53,14 +52,21 @@ class FlagdResponseResolutionDetailsAdapter
     }
 
     /**
+     * The flag resolved successfully but carried no value, so the caller's default is returned.
+     * The reason reported by flagd is preserved as-is, since this covers both a disabled flag
+     * (`DISABLED`) and a flag with no default variant (`DEFAULT`).
+     *
      * @param mixed[]|bool|DateTime|float|int|string|null $defaultValue
      */
-    public static function forDisabled(mixed $defaultValue): ResolutionDetails
+    public static function forAbsentValue(mixed $defaultValue, ?string $reason): ResolutionDetails
     {
-        return (new ResolutionDetailsBuilder())
-            ->withValue($defaultValue)
-            ->withReason(Reason::DISABLED)
-            ->build();
+        $builder = (new ResolutionDetailsBuilder())->withValue($defaultValue);
+
+        if ($reason !== null && $reason !== '') {
+            $builder->withReason($reason);
+        }
+
+        return $builder->build();
     }
 
     /**

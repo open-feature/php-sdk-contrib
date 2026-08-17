@@ -14,7 +14,6 @@ use OpenFeature\Providers\Flagd\service\ServiceInterface;
 use OpenFeature\implementation\errors\FlagValueTypeError;
 use OpenFeature\interfaces\flags\EvaluationContext;
 use OpenFeature\interfaces\flags\FlagValueType;
-use OpenFeature\interfaces\provider\Reason;
 use OpenFeature\interfaces\provider\ResolutionDetails;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -80,15 +79,18 @@ class HttpService implements ServiceInterface
         $details = json_decode((string) $response->getBody(), true);
 
         if (FlagdResponseValidator::isTypeMismatch($details)) {
-            return FlagdResponseResolutionDetailsAdapter::forTypeMismatch($details);
+            return FlagdResponseResolutionDetailsAdapter::forTypeMismatch($defaultValue);
         }
 
         if (FlagdResponseValidator::isErrorResponse($details)) {
             return FlagdResponseResolutionDetailsAdapter::forError($details, $defaultValue);
         }
 
-        if (($details['reason'] ?? null) === Reason::DISABLED && ($details['variant'] ?? '') === '') {
-            return FlagdResponseResolutionDetailsAdapter::forDisabled($defaultValue);
+        // flagd.evaluation.v2 declares `value` as an `optional` field, so it is omitted entirely
+        // when the flag resolves without one (a disabled flag, or a flag with no default variant).
+        // Field presence is therefore authoritative; no reason/variant heuristic is required.
+        if (FlagdResponseValidator::hasNoValue($details)) {
+            return FlagdResponseResolutionDetailsAdapter::forAbsentValue($defaultValue, $details['reason'] ?? null);
         }
 
         if ($flagType === FlagValueType::INTEGER) {
