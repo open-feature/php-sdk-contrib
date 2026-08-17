@@ -56,12 +56,7 @@ OpenFeatureAPI::setProvider(new FlagdProvider([
 
 ### flagd version requirement
 
-The provider targets flagd's `flagd.evaluation.v2.Service` and **requires flagd v0.16.0 or
-newer**. In the v2 protobuf, `value` and `variant` are declared `optional`, so flagd omits the
-value entirely when a flag resolves without one (a disabled flag, or a flag with no default
-variant); the provider detects this by field presence and returns the caller's default. The
-endpoint is registered from flagd v0.14.0, but correct disabled-flag/default-variant behaviour
-only lands in v0.16.0.
+The provider targets `flagd.evaluation.v2.Service` and **requires flagd v0.16.0+**.
 
 ### gRPC vs HTTP
 

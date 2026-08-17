@@ -15,15 +15,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
 
-/**
- * Coverage for the `flagd.evaluation.v2` API (the only API the provider speaks; requires
- * flagd v0.16.0+).
- *
- * Every response body below was captured from a real flagd v0.16.1 instance rather than
- * hand-written, so the fixtures match the wire format exactly. The defining property is that
- * `value` is declared `optional` in the v2 protobuf, so it is omitted from the payload entirely
- * when the flag resolves without one instead of being zero-filled.
- */
 class FlagdProviderEvaluationV2Test extends TestCase
 {
     // --------------------------------------------------------------- routing
