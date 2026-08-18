@@ -38,7 +38,7 @@ jobs:
       with:
         php-version: ${{ matrix.php-version }}
         coverage: xdebug
-        extensions: ast, grpc
+        extensions: ast, grpc, bcmath
     
     - name: Setup Python
       uses: actions/setup-python@v6

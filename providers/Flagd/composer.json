@@ -22,6 +22,8 @@
   ],
   "require": {
     "php": "^8",
+    "ext-bcmath": "*",
+    "google/protobuf": "^4.23",
     "open-feature/sdk": "^2.0",
     "php-http/httplug": "^2.3.0",
     "psr/http-client": "^1.0",
@@ -98,7 +100,7 @@
       "@dev:grpc:generate",
       "@dev:grpc:stage"
     ],
-    "dev:grpc:generate": "export GOPATH=\"$(pwd)/schemas/vendor\" && pushd schemas && make gen-php && popd",
+    "dev:grpc:generate": "export GOPATH=\"$(pwd)/schemas/vendor\" && go install github.com/bufbuild/buf/cmd/buf@v1.26.1 && \"$GOPATH/bin/buf\" generate schemas/protobuf --template buf.gen.php.yaml --path schemas/protobuf/flagd/evaluation/v2/evaluation.proto",
     "dev:grpc:init": "git submodule update --recursive",
     "dev:grpc:stage": "git add --force ./proto",
     "dev:lint": [

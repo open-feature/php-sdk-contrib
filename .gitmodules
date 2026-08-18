@@ -1,6 +1,6 @@
 [submodule "schemas"]
 	path = providers/Flagd/schemas
-	url = https://github.com/tcarrio/schemas/
+	url = https://github.com/open-feature/flagd-schemas.git
 [submodule "providers/Flagd/test-harness"]
 	path = providers/Flagd/test-harness
 	url = https://github.com/open-feature/flagd-testbed.git

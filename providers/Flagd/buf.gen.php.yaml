@@ -1,0 +1,4 @@
+version: v1
+plugins:
+  - plugin: buf.build/protocolbuffers/php:v23.4
+    out: proto/php
