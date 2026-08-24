@@ -2,22 +2,25 @@ name: PHP CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   php:
+    if: |
+      !(matrix.php-version == "8.0" && matrix.project-dir == "providers/Flagsmith")
     runs-on: ubuntu-latest
     strategy:
       matrix:
         operating-system: [ubuntu-latest]
-        php-version: ['8.0', '8.1', '8.2']
+        php-version: ["8.0", "8.1", "8.2"]
         project-dir:
           - hooks/OpenTelemetry
           - hooks/DDTrace
           - hooks/Validators
           - providers/Flagd
+          - providers/Flagsmith
           - providers/Split
           - providers/GoFeatureFlag
           # - providers/CloudBees
@@ -27,75 +30,75 @@ jobs:
     # https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs#excluding-matrix-configurations
 
     steps:
-    - uses: actions/checkout@v6
+      - uses: actions/checkout@v6
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: ${{ matrix.php-version }}
-        coverage: xdebug
-        extensions: ast, grpc
-    
-    - name: Setup Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: '3.14' 
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          coverage: xdebug
+          extensions: ast, grpc
 
-    - name: Validate composer.json and composer.lock
-      run: composer validate
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
 
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v5
-      with:
-        path: ${{ matrix.project-dir }}/vendor
-        key: ${{ runner.os }}-${{ matrix.php-version }}-php-${{ hashFiles('**/composer.json') }}
-        restore-keys: |
-          ${{ runner.os }}-${{ matrix.php-version }}-php-
+      - name: Validate composer.json and composer.lock
+        run: composer validate
 
-    - name: Install dependencies
-      if: steps.composer-cache.outputs.cache-hit != 'true'
-      working-directory: ${{ matrix.project-dir }}
-      run: composer install --prefer-dist --no-progress --no-suggest
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v5
+        with:
+          path: ${{ matrix.project-dir }}/vendor
+          key: ${{ runner.os }}-${{ matrix.php-version }}-php-${{ hashFiles('**/composer.json') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.php-version }}-php-
 
-    - name: Validate Packages composer.json
-      working-directory: ${{ matrix.project-dir }}
-      run: composer validate
+      - name: Install dependencies
+        if: steps.composer-cache.outputs.cache-hit != 'true'
+        working-directory: ${{ matrix.project-dir }}
+        run: composer install --prefer-dist --no-progress --no-suggest
 
-    - name: Check Style
-      working-directory: ${{ matrix.project-dir }}
-      run: vendor/bin/phpcs
+      - name: Validate Packages composer.json
+        working-directory: ${{ matrix.project-dir }}
+        run: composer validate
 
-    - name: Run Phan
-      working-directory: ${{ matrix.project-dir }}
-      env:
-        PHAN_DISABLE_XDEBUG_WARN: 1
-      run: vendor/bin/phan
+      - name: Check Style
+        working-directory: ${{ matrix.project-dir }}
+        run: vendor/bin/phpcs
 
-    - name: Run Psalm
-      working-directory: ${{ matrix.project-dir }}
-      run: vendor/bin/psalm --output-format=github --php-version=${{ matrix.php-version }}
+      - name: Run Phan
+        working-directory: ${{ matrix.project-dir }}
+        env:
+          PHAN_DISABLE_XDEBUG_WARN: 1
+        run: vendor/bin/phan
 
-    - name: Run Phpstan
-      working-directory: ${{ matrix.project-dir }}
-      run: vendor/bin/phpstan analyse --error-format=github
+      - name: Run Psalm
+        working-directory: ${{ matrix.project-dir }}
+        run: vendor/bin/psalm --output-format=github --php-version=${{ matrix.php-version }}
 
-    - name: Run PHPUnit (unit tests)
-      working-directory: ${{ matrix.project-dir }}
-      run: |
-        composer run dev:test:unit:setup
-        vendor/bin/phpunit --coverage-text --coverage-clover=coverage.unit.xml --testsuite unit
-        composer run dev:test:unit:teardown
+      - name: Run Phpstan
+        working-directory: ${{ matrix.project-dir }}
+        run: vendor/bin/phpstan analyse --error-format=github
 
-    - name: Run PHPUnit (integration tests)
-      working-directory: ${{ matrix.project-dir }}
-      run: |
-        composer run dev:test:integration:setup
-        vendor/bin/phpunit --coverage-text --coverage-clover=coverage.integration.xml --testsuite integration
-        composer run dev:test:integration:teardown
+      - name: Run PHPUnit (unit tests)
+        working-directory: ${{ matrix.project-dir }}
+        run: |
+          composer run dev:test:unit:setup
+          vendor/bin/phpunit --coverage-text --coverage-clover=coverage.unit.xml --testsuite unit
+          composer run dev:test:unit:teardown
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
+      - name: Run PHPUnit (integration tests)
+        working-directory: ${{ matrix.project-dir }}
+        run: |
+          composer run dev:test:integration:setup
+          vendor/bin/phpunit --coverage-text --coverage-clover=coverage.integration.xml --testsuite integration
+          composer run dev:test:integration:teardown
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
 
   ### TODO: Replicate any necessary package checks
   # packages:
