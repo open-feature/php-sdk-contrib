@@ -6,7 +6,6 @@ namespace OpenFeature\Providers\Flagd\Test\e2e\bootstrap;
 
 use GuzzleHttp\Client as GuzzleClient;
 use RuntimeException;
-use Testcontainers\Container\GenericContainer;
 use Testcontainers\Container\StartedGenericContainer;
 use Throwable;
 
@@ -42,20 +41,26 @@ final class FlagdTestbedContainer
     {
         $image = sprintf('%s:v%s', self::IMAGE, self::resolveVersion());
 
-        $started = (new GenericContainer($image))
+        $started = (new ExposingGenericContainer($image))
             ->withExposedPorts(self::EVALUATION_PORT, self::HEALTH_PORT, self::LAUNCHPAD_PORT)
             ->start();
 
         $host = $started->getHost();
-        $launchpad = sprintf('http://%s:%d', $host, $started->getMappedPort(self::LAUNCHPAD_PORT));
-        $healthUrl = sprintf('http://%s:%d/healthz', $host, $started->getMappedPort(self::HEALTH_PORT));
+        $id = $started->getId();
+
+        $launchpadPort = self::mappedPort($started, $id, self::LAUNCHPAD_PORT);
+        $healthPort = self::mappedPort($started, $id, self::HEALTH_PORT);
+        $evaluationPort = self::mappedPort($started, $id, self::EVALUATION_PORT);
+
+        $launchpad = sprintf('http://%s:%d', $host, $launchpadPort);
+        $healthUrl = sprintf('http://%s:%d/healthz', $host, $healthPort);
 
         $client = new GuzzleClient(['http_errors' => false, 'timeout' => 5]);
 
         self::poll(fn (): bool => $client->post($launchpad . '/start')->getStatusCode() === 200);
         self::poll(fn (): bool => $client->get($healthUrl)->getStatusCode() === 200);
 
-        return new self($started, $host, $started->getMappedPort(self::EVALUATION_PORT));
+        return new self($started, $host, $evaluationPort);
     }
 
     public function getHost(): string
@@ -74,9 +79,44 @@ final class FlagdTestbedContainer
     }
 
     /**
+     * Resolves a container's published host port for an exposed port. Docker can take a moment
+     * after start to publish the bindings, and StartedGenericContainer caches its inspect, so a
+     * fresh instance is used on each attempt to force an uncached lookup (see
+     * testcontainers/testcontainers-php#50). On timeout the container logs are surfaced to aid
+     * diagnosis on CI runners.
+     */
+    private static function mappedPort(StartedGenericContainer $started, string $id, int $port, int $attempts = 40, int $intervalMs = 250): int
+    {
+        for ($i = 0; $i < $attempts; $i++) {
+            try {
+                return (new StartedGenericContainer($id))->getMappedPort($port);
+            } catch (Throwable $e) {
+                // bindings not published yet; retry until the deadline
+            }
+
+            usleep($intervalMs * 1000);
+        }
+
+        throw new RuntimeException(sprintf(
+            "flagd testbed did not publish port %d in time.\n--- container logs ---\n%s",
+            $port,
+            self::safeLogs($started),
+        ));
+    }
+
+    private static function safeLogs(StartedGenericContainer $started): string
+    {
+        try {
+            return $started->logs();
+        } catch (Throwable $e) {
+            return '(unable to read container logs: ' . $e->getMessage() . ')';
+        }
+    }
+
+    /**
      * @param callable(): bool $probe
      */
-    private static function poll(callable $probe, int $attempts = 60, int $intervalMs = 500): void
+    private static function poll(callable $probe, int $attempts = 20, int $intervalMs = 500): void
     {
         for ($i = 0; $i < $attempts; $i++) {
             try {
