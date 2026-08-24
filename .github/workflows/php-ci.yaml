@@ -95,9 +95,6 @@ jobs:
         vendor/bin/phpunit --coverage-text --coverage-clover=coverage.integration.xml --testsuite integration
         composer run dev:test:integration:teardown
 
-    # Behat/gherkin e2e runs only on the latest matrix PHP (some e2e tooling, e.g. testcontainers,
-    # needs a newer PHP than the whole matrix supports). Every package defines dev:test:e2e; it is a
-    # no-op where there is no suite, and owns its own setup/run/teardown and deps where there is one.
     - name: Run e2e suite (Behat)
       if: matrix.php-version == '8.2'
       working-directory: ${{ matrix.project-dir }}
