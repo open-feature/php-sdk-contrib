@@ -107,6 +107,7 @@
     "dev:test:unit:debug": "phpunit --colors=always --testdox -d xdebug.profiler_enable=on",
     "dev:test:unit:setup": "echo 'Setup for unit tests...'",
     "dev:test:unit:teardown": "echo 'Tore down for unit tests...'",
+    "dev:test:e2e": "echo 'No e2e tests for this package.'",
     "dev:test:integration": [
       "@dev:test:integration:setup",
       "phpunit --colors=always --testdox --testsuite=integration",

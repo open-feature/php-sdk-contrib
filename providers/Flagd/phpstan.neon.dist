@@ -7,5 +7,7 @@ parameters:
     excludePaths:
         - */tests/fixtures/*
         - */tests/*/fixtures/*
+        # e2e bootstrap depends on testcontainers, a dev dep only installed for the opt-in e2e job
+        - ./tests/e2e
         # TODO: Implement gRPC Completely
         - ./src/grpc

@@ -1,0 +1,11 @@
+default:
+  suites:
+    evaluation:
+      paths:
+        - '%paths.base%/test-harness/gherkin/evaluation.feature'
+      contexts:
+        - OpenFeature\Providers\Flagd\Test\e2e\bootstrap\FlagdContext
+  gherkin:
+    filters:
+      # the @deprecated scenarios assert legacy no-default semantics the provider intentionally does not implement
+      tags: "~@deprecated"

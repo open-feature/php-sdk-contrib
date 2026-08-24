@@ -20,7 +20,8 @@ jobs:
           - providers/Flagd
           - providers/Split
           - providers/GoFeatureFlag
-          # - providers/CloudBees
+          # - providers/CloudBees  # disabled: revert after issue is resolved (#92)
+          # - providers/Flagsmith  # not yet wired into CI
       fail-fast: false
 
     # todo exclude some matrix combinations based on php version requirements
@@ -93,6 +94,14 @@ jobs:
         composer run dev:test:integration:setup
         vendor/bin/phpunit --coverage-text --coverage-clover=coverage.integration.xml --testsuite integration
         composer run dev:test:integration:teardown
+
+    # Behat/gherkin e2e runs only on the latest matrix PHP (some e2e tooling, e.g. testcontainers,
+    # needs a newer PHP than the whole matrix supports). Every package defines dev:test:e2e; it is a
+    # no-op where there is no suite, and owns its own setup/run/teardown and deps where there is one.
+    - name: Run e2e suite (Behat)
+      if: matrix.php-version == '8.2'
+      working-directory: ${{ matrix.project-dir }}
+      run: composer run dev:test:e2e
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
