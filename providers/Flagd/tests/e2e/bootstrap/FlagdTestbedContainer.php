@@ -45,20 +45,28 @@ final class FlagdTestbedContainer
             ->withExposedPorts(self::EVALUATION_PORT, self::HEALTH_PORT, self::LAUNCHPAD_PORT)
             ->start();
 
-        $host = $started->getHost();
-        $id = $started->getId();
+        try {
+            $host = $started->getHost();
+            $id = $started->getId();
 
-        $launchpadPort = self::mappedPort($started, $id, self::LAUNCHPAD_PORT);
-        $healthPort = self::mappedPort($started, $id, self::HEALTH_PORT);
-        $evaluationPort = self::mappedPort($started, $id, self::EVALUATION_PORT);
+            $launchpadPort = self::mappedPort($started, $id, self::LAUNCHPAD_PORT);
+            $healthPort = self::mappedPort($started, $id, self::HEALTH_PORT);
+            $evaluationPort = self::mappedPort($started, $id, self::EVALUATION_PORT);
 
-        $launchpad = sprintf('http://%s:%d', $host, $launchpadPort);
-        $healthUrl = sprintf('http://%s:%d/healthz', $host, $healthPort);
+            $launchpad = sprintf('http://%s:%d', $host, $launchpadPort);
+            $healthUrl = sprintf('http://%s:%d/healthz', $host, $healthPort);
 
-        $client = new GuzzleClient(['http_errors' => false, 'timeout' => 5]);
+            $client = new GuzzleClient(['http_errors' => false, 'timeout' => 5]);
 
-        self::poll(fn (): bool => $client->post($launchpad . '/start')->getStatusCode() === 200);
-        self::poll(fn (): bool => $client->get($healthUrl)->getStatusCode() === 200);
+            self::poll(fn (): bool => $client->post($launchpad . '/start')->getStatusCode() === 200);
+            self::poll(fn (): bool => $client->get($healthUrl)->getStatusCode() === 200);
+        } catch (Throwable $e) {
+            // the container is already running; stop it so a failed startup doesn't leak it,
+            // since @AfterSuite can only clean up once this method returns a wrapper instance
+            $started->stop();
+
+            throw $e;
+        }
 
         return new self($started, $host, $evaluationPort);
     }
