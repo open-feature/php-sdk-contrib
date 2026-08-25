@@ -120,7 +120,7 @@ class HttpService implements ServiceInterface
         }
 
         return FlagdResponseResolutionDetailsAdapter::forSuccess([
-            'value' => $this->readValue($flagType, $message),
+            'value' => $this->readValue($message),
             'variant' => $message->hasVariant() ? $message->getVariant() : null,
             'reason' => $this->nonEmptyOrNull($message->getReason()),
         ]);
@@ -129,7 +129,7 @@ class HttpService implements ServiceInterface
     /**
      * @return mixed[]|bool|float|int|string|null
      */
-    private function readValue(string $flagType, ResolveBooleanResponse | ResolveFloatResponse | ResolveIntResponse | ResolveObjectResponse | ResolveStringResponse $message)
+    private function readValue(ResolveBooleanResponse | ResolveFloatResponse | ResolveIntResponse | ResolveObjectResponse | ResolveStringResponse $message)
     {
         if ($message instanceof ResolveObjectResponse) {
             $struct = $message->getValue();
