@@ -30,8 +30,11 @@
     "psr/log": "^2.0 || ^3.0"
   },
   "require-dev": {
+    "behat/behat": "^3.13",
     "ergebnis/composer-normalize": "^2.25",
     "friendsofphp/php-cs-fixer": "^3.13",
+    "guzzlehttp/guzzle": "^7.5",
+    "guzzlehttp/psr7": "^2.4",
     "hamcrest/hamcrest-php": "^2.0",
     "mdwheele/zalgo": "^0.3.1",
     "mockery/mockery": "^1.5",
@@ -50,6 +53,9 @@
     "roave/security-advisories": "dev-latest",
     "spatie/phpunit-snapshot-assertions": "^4.2",
     "vimeo/psalm": "~4.30.0"
+  },
+  "suggest": {
+    "testcontainers/testcontainers": "Required (PHP >= 8.1) to run the opt-in Behat e2e suite (composer dev:test:e2e)"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
@@ -105,17 +111,27 @@
     "dev:test": [
       "@dev:lint",
       "@dev:analyze",
-      "@dev:test:unit",
-      "@dev:test:integration"
+      "@dev:test:unit"
     ],
     "dev:test:coverage:ci": "phpunit --colors=always --coverage-text --coverage-clover build/coverage/clover.xml --coverage-cobertura build/coverage/cobertura.xml --coverage-crap4j build/coverage/crap4j.xml --coverage-xml build/coverage/coverage-xml --log-junit build/junit.xml",
     "dev:test:coverage:html": "phpunit --colors=always --coverage-html build/coverage/coverage-html/",
+    "dev:test:e2e": [
+      "@dev:test:e2e:setup",
+      "@dev:test:e2e:run",
+      "@dev:test:e2e:teardown"
+    ],
+    "dev:test:e2e:run": "behat --colors",
+    "dev:test:e2e:setup": [
+      "git submodule update --init --recursive -- test-harness",
+      "composer require --dev --no-interaction --no-progress \"testcontainers/testcontainers:^1.0\""
+    ],
+    "dev:test:e2e:teardown": "echo 'Tore down e2e tests...'",
+    "dev:test:integration:setup": "echo 'Setup for integration tests...'",
+    "dev:test:integration:teardown": "echo 'Tore down integration tests...'",
     "dev:test:unit": "phpunit --colors=always --testdox",
     "dev:test:unit:debug": "phpunit --colors=always --testdox -d xdebug.profiler_enable=on",
     "dev:test:unit:setup": "echo 'Setup for unit tests...'",
     "dev:test:unit:teardown": "echo 'Tore down unit tests...'",
-    "dev:test:integration:setup": "echo 'Setup for integration tests...'",
-    "dev:test:integration:teardown": "echo 'Tore down integration tests...'",
     "test": "@dev:test"
   },
   "scripts-descriptions": {
@@ -130,6 +146,7 @@
     "dev:test": "Runs linting, static analysis, and unit tests.",
     "dev:test:coverage:ci": "Runs unit tests and generates CI coverage reports.",
     "dev:test:coverage:html": "Runs unit tests and generates HTML coverage report.",
+    "dev:test:e2e": "Runs the opt-in Behat/gherkin e2e suite (setup, run, teardown) against a flagd testbed container.",
     "dev:test:unit": "Runs unit tests.",
     "test": "Runs linting, static analysis, and unit tests."
   }

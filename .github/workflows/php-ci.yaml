@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+
 jobs:
   php:
     runs-on: ubuntu-latest
@@ -20,7 +23,8 @@ jobs:
           - providers/Flagd
           - providers/Split
           - providers/GoFeatureFlag
-          # - providers/CloudBees
+          # - providers/CloudBees  # disabled: revert after issue is resolved (#92)
+          # - providers/Flagsmith  # not yet wired into CI
       fail-fast: false
 
     # todo exclude some matrix combinations based on php version requirements
@@ -93,6 +97,11 @@ jobs:
         composer run dev:test:integration:setup
         vendor/bin/phpunit --coverage-text --coverage-clover=coverage.integration.xml --testsuite integration
         composer run dev:test:integration:teardown
+
+    - name: Run e2e suite (Behat)
+      if: matrix.php-version == '8.2'
+      working-directory: ${{ matrix.project-dir }}
+      run: composer run dev:test:e2e
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
