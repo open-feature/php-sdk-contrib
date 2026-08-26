@@ -21,7 +21,7 @@
     }
   ],
   "require": {
-    "php": "^8",
+    "php": "^8.1",
     "ext-bcmath": "*",
     "google/protobuf": "^4.23",
     "open-feature/sdk": "^2.0",
@@ -54,10 +54,8 @@
     "ramsey/conventional-commits": "^1.3",
     "roave/security-advisories": "dev-latest",
     "spatie/phpunit-snapshot-assertions": "^4.2",
+    "testcontainers/testcontainers": "^1.0",
     "vimeo/psalm": "~4.30.0"
-  },
-  "suggest": {
-    "testcontainers/testcontainers": "Required (PHP >= 8.1) to run the opt-in Behat e2e suite (composer dev:test:e2e)"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
@@ -127,10 +125,7 @@
       "@dev:test:e2e:teardown"
     ],
     "dev:test:e2e:run": "behat --colors",
-    "dev:test:e2e:setup": [
-      "git submodule update --init --recursive -- test-harness",
-      "composer require --dev --no-interaction --no-progress \"testcontainers/testcontainers:^1.0\""
-    ],
+    "dev:test:e2e:setup": "git submodule update --init --recursive -- test-harness",
     "dev:test:e2e:teardown": "echo 'Tore down e2e tests...'",
     "dev:test:integration:setup": "echo 'Setup for integration tests...'",
     "dev:test:integration:teardown": "echo 'Tore down integration tests...'",
