@@ -100,9 +100,13 @@
       "@dev:grpc:generate",
       "@dev:grpc:stage"
     ],
-    "dev:grpc:generate": "export GOPATH=\"$(pwd)/schemas/vendor\" && go install github.com/bufbuild/buf/cmd/buf@v1.26.1 && \"$GOPATH/bin/buf\" generate schemas/protobuf --template buf.gen.php.yaml --path schemas/protobuf/flagd/evaluation/v2/evaluation.proto",
+    "dev:grpc:generate": "export PROTOC_VERSION=23.4 PROTOC_DIR=\"$(pwd)/build/protoc\" && { [ -x \"$PROTOC_DIR/bin/protoc\" ] || { mkdir -p \"$PROTOC_DIR\" && curl -sSL -o \"$PROTOC_DIR/protoc.zip\" \"https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOC_VERSION/protoc-$PROTOC_VERSION-linux-x86_64.zip\" && unzip -qo \"$PROTOC_DIR/protoc.zip\" -d \"$PROTOC_DIR\"; }; } && \"$PROTOC_DIR/bin/protoc\" --php_out=proto/php --proto_path=schemas/protobuf --proto_path=\"$PROTOC_DIR/include\" schemas/protobuf/flagd/evaluation/v2/evaluation.proto",
     "dev:grpc:init": "git submodule update --recursive",
     "dev:grpc:stage": "git add --force ./proto",
+    "dev:grpc:verify": [
+      "@dev:grpc",
+      "git diff --exit-code HEAD -- proto"
+    ],
     "dev:lint": [
       "@dev:lint:syntax",
       "@dev:lint:style"
@@ -141,6 +145,7 @@
     "dev:analyze:phpstan": "Runs the PHPStan static analyzer.",
     "dev:analyze:psalm": "Runs the Psalm static analyzer.",
     "dev:build:clean": "Cleans the build/ directory.",
+    "dev:grpc:verify": "Regenerates the protobuf classes and fails if the committed output is out of date.",
     "dev:lint": "Runs all linting checks.",
     "dev:lint:fix": "Auto-fixes coding standards issues, if possible.",
     "dev:lint:style": "Checks for coding standards issues.",

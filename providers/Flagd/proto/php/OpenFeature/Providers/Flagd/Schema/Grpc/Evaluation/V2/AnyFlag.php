@@ -18,19 +18,19 @@ class AnyFlag extends \Google\Protobuf\Internal\Message
     /**
      * The reason for the given return value, see https://openfeature.dev/docs/specification/types#resolution-details
      *
-     * Generated from protobuf field <code>string reason = 1 [json_name = "reason"];</code>
+     * Generated from protobuf field <code>string reason = 1;</code>
      */
     protected $reason = '';
     /**
      * The variant name of the returned flag value.
      *
-     * Generated from protobuf field <code>optional string variant = 2 [json_name = "variant"];</code>
+     * Generated from protobuf field <code>optional string variant = 2;</code>
      */
     protected $variant = null;
     /**
      * Metadata for this evaluation
      *
-     * Generated from protobuf field <code>.google.protobuf.Struct metadata = 7 [json_name = "metadata"];</code>
+     * Generated from protobuf field <code>.google.protobuf.Struct metadata = 7;</code>
      */
     protected $metadata = null;
     protected $value;
@@ -61,7 +61,7 @@ class AnyFlag extends \Google\Protobuf\Internal\Message
     /**
      * The reason for the given return value, see https://openfeature.dev/docs/specification/types#resolution-details
      *
-     * Generated from protobuf field <code>string reason = 1 [json_name = "reason"];</code>
+     * Generated from protobuf field <code>string reason = 1;</code>
      * @return string
      */
     public function getReason()
@@ -72,7 +72,7 @@ class AnyFlag extends \Google\Protobuf\Internal\Message
     /**
      * The reason for the given return value, see https://openfeature.dev/docs/specification/types#resolution-details
      *
-     * Generated from protobuf field <code>string reason = 1 [json_name = "reason"];</code>
+     * Generated from protobuf field <code>string reason = 1;</code>
      * @param string $var
      * @return $this
      */
@@ -87,7 +87,7 @@ class AnyFlag extends \Google\Protobuf\Internal\Message
     /**
      * The variant name of the returned flag value.
      *
-     * Generated from protobuf field <code>optional string variant = 2 [json_name = "variant"];</code>
+     * Generated from protobuf field <code>optional string variant = 2;</code>
      * @return string
      */
     public function getVariant()
@@ -108,7 +108,7 @@ class AnyFlag extends \Google\Protobuf\Internal\Message
     /**
      * The variant name of the returned flag value.
      *
-     * Generated from protobuf field <code>optional string variant = 2 [json_name = "variant"];</code>
+     * Generated from protobuf field <code>optional string variant = 2;</code>
      * @param string $var
      * @return $this
      */
@@ -121,7 +121,7 @@ class AnyFlag extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>bool bool_value = 3 [json_name = "boolValue"];</code>
+     * Generated from protobuf field <code>bool bool_value = 3;</code>
      * @return bool
      */
     public function getBoolValue()
@@ -135,7 +135,7 @@ class AnyFlag extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>bool bool_value = 3 [json_name = "boolValue"];</code>
+     * Generated from protobuf field <code>bool bool_value = 3;</code>
      * @param bool $var
      * @return $this
      */
@@ -148,7 +148,7 @@ class AnyFlag extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>string string_value = 4 [json_name = "stringValue"];</code>
+     * Generated from protobuf field <code>string string_value = 4;</code>
      * @return string
      */
     public function getStringValue()
@@ -162,7 +162,7 @@ class AnyFlag extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>string string_value = 4 [json_name = "stringValue"];</code>
+     * Generated from protobuf field <code>string string_value = 4;</code>
      * @param string $var
      * @return $this
      */
@@ -175,7 +175,7 @@ class AnyFlag extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>double double_value = 5 [json_name = "doubleValue"];</code>
+     * Generated from protobuf field <code>double double_value = 5;</code>
      * @return float
      */
     public function getDoubleValue()
@@ -189,7 +189,7 @@ class AnyFlag extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>double double_value = 5 [json_name = "doubleValue"];</code>
+     * Generated from protobuf field <code>double double_value = 5;</code>
      * @param float $var
      * @return $this
      */
@@ -202,7 +202,7 @@ class AnyFlag extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>.google.protobuf.Struct object_value = 6 [json_name = "objectValue"];</code>
+     * Generated from protobuf field <code>.google.protobuf.Struct object_value = 6;</code>
      * @return \Google\Protobuf\Struct|null
      */
     public function getObjectValue()
@@ -216,7 +216,7 @@ class AnyFlag extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>.google.protobuf.Struct object_value = 6 [json_name = "objectValue"];</code>
+     * Generated from protobuf field <code>.google.protobuf.Struct object_value = 6;</code>
      * @param \Google\Protobuf\Struct $var
      * @return $this
      */
@@ -231,7 +231,7 @@ class AnyFlag extends \Google\Protobuf\Internal\Message
     /**
      * Metadata for this evaluation
      *
-     * Generated from protobuf field <code>.google.protobuf.Struct metadata = 7 [json_name = "metadata"];</code>
+     * Generated from protobuf field <code>.google.protobuf.Struct metadata = 7;</code>
      * @return \Google\Protobuf\Struct|null
      */
     public function getMetadata()
@@ -252,7 +252,7 @@ class AnyFlag extends \Google\Protobuf\Internal\Message
     /**
      * Metadata for this evaluation
      *
-     * Generated from protobuf field <code>.google.protobuf.Struct metadata = 7 [json_name = "metadata"];</code>
+     * Generated from protobuf field <code>.google.protobuf.Struct metadata = 7;</code>
      * @param \Google\Protobuf\Struct $var
      * @return $this
      */

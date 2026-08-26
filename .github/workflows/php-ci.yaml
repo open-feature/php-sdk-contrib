@@ -106,6 +106,25 @@ jobs:
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
 
+  # Regenerates the flagd protobuf classes from the pinned schema and fails if the committed
+  # output is stale, so generated code can't drift from the proto without being noticed.
+  proto-drift:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        submodules: recursive
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: latest
+        coverage: none
+
+    - name: Verify generated protobuf is up to date
+      working-directory: providers/Flagd
+      run: composer run dev:grpc:verify
+
   ### TODO: Replicate any necessary package checks
   # packages:
   #   uses: opentelemetry-php/gh-workflows/.github/workflows/validate-packages.yml@main

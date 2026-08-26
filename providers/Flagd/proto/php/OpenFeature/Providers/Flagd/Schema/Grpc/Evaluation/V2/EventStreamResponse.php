@@ -18,14 +18,14 @@ class EventStreamResponse extends \Google\Protobuf\Internal\Message
     /**
      * String key indicating the type of event that is being received, for example, provider_ready or configuration_change
      *
-     * Generated from protobuf field <code>string type = 1 [json_name = "type"];</code>
+     * Generated from protobuf field <code>string type = 1;</code>
      */
     protected $type = '';
     /**
      * Object structure for use when sending relevant metadata to provide context to the event.
      * Can be left unset when it is not required.
      *
-     * Generated from protobuf field <code>.google.protobuf.Struct data = 2 [json_name = "data"];</code>
+     * Generated from protobuf field <code>.google.protobuf.Struct data = 2;</code>
      */
     protected $data = null;
 
@@ -50,7 +50,7 @@ class EventStreamResponse extends \Google\Protobuf\Internal\Message
     /**
      * String key indicating the type of event that is being received, for example, provider_ready or configuration_change
      *
-     * Generated from protobuf field <code>string type = 1 [json_name = "type"];</code>
+     * Generated from protobuf field <code>string type = 1;</code>
      * @return string
      */
     public function getType()
@@ -61,7 +61,7 @@ class EventStreamResponse extends \Google\Protobuf\Internal\Message
     /**
      * String key indicating the type of event that is being received, for example, provider_ready or configuration_change
      *
-     * Generated from protobuf field <code>string type = 1 [json_name = "type"];</code>
+     * Generated from protobuf field <code>string type = 1;</code>
      * @param string $var
      * @return $this
      */
@@ -77,7 +77,7 @@ class EventStreamResponse extends \Google\Protobuf\Internal\Message
      * Object structure for use when sending relevant metadata to provide context to the event.
      * Can be left unset when it is not required.
      *
-     * Generated from protobuf field <code>.google.protobuf.Struct data = 2 [json_name = "data"];</code>
+     * Generated from protobuf field <code>.google.protobuf.Struct data = 2;</code>
      * @return \Google\Protobuf\Struct|null
      */
     public function getData()
@@ -99,7 +99,7 @@ class EventStreamResponse extends \Google\Protobuf\Internal\Message
      * Object structure for use when sending relevant metadata to provide context to the event.
      * Can be left unset when it is not required.
      *
-     * Generated from protobuf field <code>.google.protobuf.Struct data = 2 [json_name = "data"];</code>
+     * Generated from protobuf field <code>.google.protobuf.Struct data = 2;</code>
      * @param \Google\Protobuf\Struct $var
      * @return $this
      */

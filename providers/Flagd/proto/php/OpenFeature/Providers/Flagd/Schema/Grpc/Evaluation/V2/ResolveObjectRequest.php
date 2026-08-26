@@ -18,13 +18,13 @@ class ResolveObjectRequest extends \Google\Protobuf\Internal\Message
     /**
      * Flag key of the requested flag.
      *
-     * Generated from protobuf field <code>string flag_key = 1 [json_name = "flagKey"];</code>
+     * Generated from protobuf field <code>string flag_key = 1;</code>
      */
     protected $flag_key = '';
     /**
      * Object structure describing the EvaluationContext used in the flag evaluation, see https://openfeature.dev/docs/reference/concepts/evaluation-context
      *
-     * Generated from protobuf field <code>.google.protobuf.Struct context = 2 [json_name = "context"];</code>
+     * Generated from protobuf field <code>.google.protobuf.Struct context = 2;</code>
      */
     protected $context = null;
 
@@ -48,7 +48,7 @@ class ResolveObjectRequest extends \Google\Protobuf\Internal\Message
     /**
      * Flag key of the requested flag.
      *
-     * Generated from protobuf field <code>string flag_key = 1 [json_name = "flagKey"];</code>
+     * Generated from protobuf field <code>string flag_key = 1;</code>
      * @return string
      */
     public function getFlagKey()
@@ -59,7 +59,7 @@ class ResolveObjectRequest extends \Google\Protobuf\Internal\Message
     /**
      * Flag key of the requested flag.
      *
-     * Generated from protobuf field <code>string flag_key = 1 [json_name = "flagKey"];</code>
+     * Generated from protobuf field <code>string flag_key = 1;</code>
      * @param string $var
      * @return $this
      */
@@ -74,7 +74,7 @@ class ResolveObjectRequest extends \Google\Protobuf\Internal\Message
     /**
      * Object structure describing the EvaluationContext used in the flag evaluation, see https://openfeature.dev/docs/reference/concepts/evaluation-context
      *
-     * Generated from protobuf field <code>.google.protobuf.Struct context = 2 [json_name = "context"];</code>
+     * Generated from protobuf field <code>.google.protobuf.Struct context = 2;</code>
      * @return \Google\Protobuf\Struct|null
      */
     public function getContext()
@@ -95,7 +95,7 @@ class ResolveObjectRequest extends \Google\Protobuf\Internal\Message
     /**
      * Object structure describing the EvaluationContext used in the flag evaluation, see https://openfeature.dev/docs/reference/concepts/evaluation-context
      *
-     * Generated from protobuf field <code>.google.protobuf.Struct context = 2 [json_name = "context"];</code>
+     * Generated from protobuf field <code>.google.protobuf.Struct context = 2;</code>
      * @param \Google\Protobuf\Struct $var
      * @return $this
      */

@@ -18,25 +18,25 @@ class ResolveBooleanResponse extends \Google\Protobuf\Internal\Message
     /**
      * The response value of the boolean flag evaluation, will be unset in the case of error.
      *
-     * Generated from protobuf field <code>optional bool value = 1 [json_name = "value"];</code>
+     * Generated from protobuf field <code>optional bool value = 1;</code>
      */
     protected $value = null;
     /**
      * The reason for the given return value, see https://openfeature.dev/docs/specification/types#resolution-details
      *
-     * Generated from protobuf field <code>string reason = 2 [json_name = "reason"];</code>
+     * Generated from protobuf field <code>string reason = 2;</code>
      */
     protected $reason = '';
     /**
      * The variant name of the returned flag value.
      *
-     * Generated from protobuf field <code>optional string variant = 3 [json_name = "variant"];</code>
+     * Generated from protobuf field <code>optional string variant = 3;</code>
      */
     protected $variant = null;
     /**
      * Metadata for this evaluation
      *
-     * Generated from protobuf field <code>.google.protobuf.Struct metadata = 4 [json_name = "metadata"];</code>
+     * Generated from protobuf field <code>.google.protobuf.Struct metadata = 4;</code>
      */
     protected $metadata = null;
 
@@ -64,7 +64,7 @@ class ResolveBooleanResponse extends \Google\Protobuf\Internal\Message
     /**
      * The response value of the boolean flag evaluation, will be unset in the case of error.
      *
-     * Generated from protobuf field <code>optional bool value = 1 [json_name = "value"];</code>
+     * Generated from protobuf field <code>optional bool value = 1;</code>
      * @return bool
      */
     public function getValue()
@@ -85,7 +85,7 @@ class ResolveBooleanResponse extends \Google\Protobuf\Internal\Message
     /**
      * The response value of the boolean flag evaluation, will be unset in the case of error.
      *
-     * Generated from protobuf field <code>optional bool value = 1 [json_name = "value"];</code>
+     * Generated from protobuf field <code>optional bool value = 1;</code>
      * @param bool $var
      * @return $this
      */
@@ -100,7 +100,7 @@ class ResolveBooleanResponse extends \Google\Protobuf\Internal\Message
     /**
      * The reason for the given return value, see https://openfeature.dev/docs/specification/types#resolution-details
      *
-     * Generated from protobuf field <code>string reason = 2 [json_name = "reason"];</code>
+     * Generated from protobuf field <code>string reason = 2;</code>
      * @return string
      */
     public function getReason()
@@ -111,7 +111,7 @@ class ResolveBooleanResponse extends \Google\Protobuf\Internal\Message
     /**
      * The reason for the given return value, see https://openfeature.dev/docs/specification/types#resolution-details
      *
-     * Generated from protobuf field <code>string reason = 2 [json_name = "reason"];</code>
+     * Generated from protobuf field <code>string reason = 2;</code>
      * @param string $var
      * @return $this
      */
@@ -126,7 +126,7 @@ class ResolveBooleanResponse extends \Google\Protobuf\Internal\Message
     /**
      * The variant name of the returned flag value.
      *
-     * Generated from protobuf field <code>optional string variant = 3 [json_name = "variant"];</code>
+     * Generated from protobuf field <code>optional string variant = 3;</code>
      * @return string
      */
     public function getVariant()
@@ -147,7 +147,7 @@ class ResolveBooleanResponse extends \Google\Protobuf\Internal\Message
     /**
      * The variant name of the returned flag value.
      *
-     * Generated from protobuf field <code>optional string variant = 3 [json_name = "variant"];</code>
+     * Generated from protobuf field <code>optional string variant = 3;</code>
      * @param string $var
      * @return $this
      */
@@ -162,7 +162,7 @@ class ResolveBooleanResponse extends \Google\Protobuf\Internal\Message
     /**
      * Metadata for this evaluation
      *
-     * Generated from protobuf field <code>.google.protobuf.Struct metadata = 4 [json_name = "metadata"];</code>
+     * Generated from protobuf field <code>.google.protobuf.Struct metadata = 4;</code>
      * @return \Google\Protobuf\Struct|null
      */
     public function getMetadata()
@@ -183,7 +183,7 @@ class ResolveBooleanResponse extends \Google\Protobuf\Internal\Message
     /**
      * Metadata for this evaluation
      *
-     * Generated from protobuf field <code>.google.protobuf.Struct metadata = 4 [json_name = "metadata"];</code>
+     * Generated from protobuf field <code>.google.protobuf.Struct metadata = 4;</code>
      * @param \Google\Protobuf\Struct $var
      * @return $this
      */
