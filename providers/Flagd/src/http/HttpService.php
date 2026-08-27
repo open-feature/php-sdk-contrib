@@ -5,10 +5,20 @@ declare(strict_types=1);
 namespace OpenFeature\Providers\Flagd\http;
 
 use DateTime;
+use Google\Protobuf\Struct;
+use OpenFeature\Providers\Flagd\Schema\Grpc\Evaluation\V2\ResolveBooleanRequest;
+use OpenFeature\Providers\Flagd\Schema\Grpc\Evaluation\V2\ResolveBooleanResponse;
+use OpenFeature\Providers\Flagd\Schema\Grpc\Evaluation\V2\ResolveFloatRequest;
+use OpenFeature\Providers\Flagd\Schema\Grpc\Evaluation\V2\ResolveFloatResponse;
+use OpenFeature\Providers\Flagd\Schema\Grpc\Evaluation\V2\ResolveIntRequest;
+use OpenFeature\Providers\Flagd\Schema\Grpc\Evaluation\V2\ResolveIntResponse;
+use OpenFeature\Providers\Flagd\Schema\Grpc\Evaluation\V2\ResolveObjectRequest;
+use OpenFeature\Providers\Flagd\Schema\Grpc\Evaluation\V2\ResolveObjectResponse;
+use OpenFeature\Providers\Flagd\Schema\Grpc\Evaluation\V2\ResolveStringRequest;
+use OpenFeature\Providers\Flagd\Schema\Grpc\Evaluation\V2\ResolveStringResponse;
 use OpenFeature\Providers\Flagd\common\EvaluationContextArrayFactory;
 use OpenFeature\Providers\Flagd\config\IConfig;
 use OpenFeature\Providers\Flagd\errors\InvalidConfigException;
-use OpenFeature\Providers\Flagd\errors\InvalidTypeException;
 use OpenFeature\Providers\Flagd\errors\RequestBuildException;
 use OpenFeature\Providers\Flagd\service\ServiceInterface;
 use OpenFeature\implementation\errors\FlagValueTypeError;
@@ -20,8 +30,6 @@ use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 
-use function intval;
-use function is_numeric;
 use function json_decode;
 use function json_encode;
 use function sprintf;
@@ -72,35 +80,118 @@ class HttpService implements ServiceInterface
     public function resolveValue(string $flagKey, string $flagType, $defaultValue, ?EvaluationContext $context): ResolutionDetails
     {
         $path = $this->determinePathByFlagType($flagType);
+        $body = $this->buildRequestBody($flagType, $flagKey, $context);
 
-        $response = $this->sendRequest($path, $flagKey, $context);
+        $response = $this->sendRequest($path, $body);
+        $payload = (string) $response->getBody();
 
-        /** @var string[] $details */
-        $details = json_decode((string) $response->getBody(), true);
+        // Error envelopes aren't one of the generated message types, so they are still detected
+        // from the decoded JSON and handled as before.
+        /** @var mixed[]|null $errorCheck */
+        $errorCheck = json_decode($payload, true);
 
-        if (FlagdResponseValidator::isTypeMismatch($details)) {
+        if (FlagdResponseValidator::isTypeMismatch($errorCheck)) {
             return FlagdResponseResolutionDetailsAdapter::forTypeMismatch($defaultValue);
         }
 
-        if (FlagdResponseValidator::isErrorResponse($details)) {
-            return FlagdResponseResolutionDetailsAdapter::forError($details, $defaultValue);
+        if (FlagdResponseValidator::isErrorResponse($errorCheck)) {
+            /** @var string[] $errorCheck */
+            return FlagdResponseResolutionDetailsAdapter::forError($errorCheck, $defaultValue);
         }
 
-        // flagd.evaluation.v2 declares `value` as an `optional` field, so it is omitted entirely
-        // when the flag resolves without one (a disabled flag, or a flag with no default variant).
-        // Field presence is therefore authoritative; no reason/variant heuristic is required.
-        if (FlagdResponseValidator::hasNoValue($details)) {
-            return FlagdResponseResolutionDetailsAdapter::forAbsentValue($defaultValue, $details['reason'] ?? null);
+        return $this->parseResponse($flagType, $payload, $defaultValue);
+    }
+
+    /**
+     * @param mixed[]|bool|DateTime|float|int|string|null $defaultValue
+     */
+    private function parseResponse(string $flagType, string $payload, array | bool | DateTime | float | int | string | null $defaultValue): ResolutionDetails
+    {
+        $message = $this->createResponseMessage($flagType);
+        $message->mergeFromJsonString($payload);
+
+        // v2 declares `value` as an `optional` field, so an unset value is authoritative: it means
+        // the flag resolved without one (a disabled flag, or a flag with no default variant).
+        if (!$message->hasValue()) {
+            return FlagdResponseResolutionDetailsAdapter::forAbsentValue(
+                $defaultValue,
+                $this->nonEmptyOrNull($message->getReason()),
+            );
         }
 
-        if ($flagType === FlagValueType::INTEGER) {
-            $this->mapIntegerInResponse($details);
+        return FlagdResponseResolutionDetailsAdapter::forSuccess([
+            'value' => $this->readValue($message),
+            'variant' => $message->hasVariant() ? $message->getVariant() : null,
+            'reason' => $this->nonEmptyOrNull($message->getReason()),
+        ]);
+    }
+
+    /**
+     * @return mixed[]|bool|float|int|string|null
+     */
+    private function readValue(ResolveBooleanResponse | ResolveFloatResponse | ResolveIntResponse | ResolveObjectResponse | ResolveStringResponse $message)
+    {
+        if ($message instanceof ResolveObjectResponse) {
+            $struct = $message->getValue();
+
+            /** @var mixed[]|null $decoded */
+            $decoded = $struct instanceof Struct ? json_decode($struct->serializeToJsonString(), true) : null;
+
+            return $decoded;
         }
 
-        /** @var array{value: mixed[]|bool|DateTime|float|int|string|null, variant: ?string, reason: ?string} $validDetails */
-        $validDetails = $details;
+        if ($message instanceof ResolveIntResponse) {
+            // v2 encodes 64-bit integers as JSON strings; the generated getter normalises them
+            // back to a native int on 64-bit platforms and a numeric string otherwise.
+            return (int) $message->getValue();
+        }
 
-        return FlagdResponseResolutionDetailsAdapter::forSuccess($validDetails);
+        return $message->getValue();
+    }
+
+    private function buildRequestBody(string $flagType, string $flagKey, ?EvaluationContext $context): string
+    {
+        /**
+         * The request is equivalent to:
+         * curl -X POST http://localhost:8013/{path} \
+         *      -H "Content-Type: application/json" \
+         *      -d '{"flagKey": key, "context": evaluation_context}'
+         */
+        $message = match ($flagType) {
+            FlagValueType::BOOLEAN => new ResolveBooleanRequest(),
+            FlagValueType::FLOAT => new ResolveFloatRequest(),
+            FlagValueType::INTEGER => new ResolveIntRequest(),
+            FlagValueType::OBJECT => new ResolveObjectRequest(),
+            FlagValueType::STRING => new ResolveStringRequest(),
+            default => throw new FlagValueTypeError($flagType),
+        };
+
+        $message->setFlagKey($flagKey);
+
+        $contextStruct = $this->buildContextStruct($context);
+        if ($contextStruct !== null) {
+            $message->setContext($contextStruct);
+        }
+
+        return $message->serializeToJsonString();
+    }
+
+    private function buildContextStruct(?EvaluationContext $context): ?Struct
+    {
+        $contextArray = EvaluationContextArrayFactory::build($context);
+        if ($contextArray === null) {
+            return null;
+        }
+
+        $encoded = json_encode($contextArray, JSON_UNESCAPED_UNICODE);
+        if ($encoded === false) {
+            throw new RequestBuildException();
+        }
+
+        $struct = new Struct();
+        $struct->mergeFromJsonString($encoded);
+
+        return $struct;
     }
 
     private function buildRoute(string $path): string
@@ -108,37 +199,34 @@ class HttpService implements ServiceInterface
         return $this->target . '/' . $path;
     }
 
-    private function sendRequest(string $path, string $flagKey, ?EvaluationContext $context): ResponseInterface
+    private function sendRequest(string $path, string $body): ResponseInterface
     {
-        /**
-         * This method is equivalent to:
-         * curl -X POST http://localhost:8013/{path} \
-         *      -H "Content-Type: application/json" \
-         *      -d '{"flag_key": key, "context": evaluation_context}'
-         */
-
         $request = $this->requestFactory->createRequest(Method::POST, $this->buildRoute($path));
 
         foreach (self::FLAGD_GRPC_WEB_HEADERS as $headerInfo) {
             $request = $request->withHeader(...$headerInfo);
         }
 
-        $contextArray = EvaluationContextArrayFactory::build($context);
-
-        $bodyString = json_encode([
-            'flag_key' => $flagKey,
-            'context' => $contextArray,
-        ], JSON_UNESCAPED_UNICODE);
-
-        if ($bodyString === false) {
-            throw new RequestBuildException();
-        }
-
-        $bodyStream = $this->streamFactory->createStream($bodyString);
+        $bodyStream = $this->streamFactory->createStream($body);
 
         $request = $request->withBody($bodyStream);
 
         return $this->client->sendRequest($request);
+    }
+
+    /**
+     * @return ResolveBooleanResponse|ResolveFloatResponse|ResolveIntResponse|ResolveObjectResponse|ResolveStringResponse
+     */
+    private function createResponseMessage(string $flagType)
+    {
+        return match ($flagType) {
+            FlagValueType::BOOLEAN => new ResolveBooleanResponse(),
+            FlagValueType::FLOAT => new ResolveFloatResponse(),
+            FlagValueType::INTEGER => new ResolveIntResponse(),
+            FlagValueType::OBJECT => new ResolveObjectResponse(),
+            FlagValueType::STRING => new ResolveStringResponse(),
+            default => throw new FlagValueTypeError($flagType),
+        };
     }
 
     private function determinePathByFlagType(string $flagType): string
@@ -159,17 +247,8 @@ class HttpService implements ServiceInterface
         }
     }
 
-    /**
-     * @param mixed[] $details
-     */
-    private function mapIntegerInResponse(array &$details): void
+    private function nonEmptyOrNull(string $value): ?string
     {
-        $value = $details['value'];
-
-        if (!is_numeric($value)) {
-            throw new InvalidTypeException();
-        }
-
-        $details['value'] = intval($value);
+        return $value !== '' ? $value : null;
     }
 }

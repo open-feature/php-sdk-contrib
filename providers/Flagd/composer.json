@@ -21,7 +21,9 @@
     }
   ],
   "require": {
-    "php": "^8",
+    "php": "^8.1",
+    "ext-bcmath": "*",
+    "google/protobuf": "^4.23",
     "open-feature/sdk": "^2.0",
     "php-http/httplug": "^2.3.0",
     "psr/http-client": "^1.0",
@@ -52,10 +54,8 @@
     "ramsey/conventional-commits": "^1.3",
     "roave/security-advisories": "dev-latest",
     "spatie/phpunit-snapshot-assertions": "^4.2",
+    "testcontainers/testcontainers": "^1.0",
     "vimeo/psalm": "~4.30.0"
-  },
-  "suggest": {
-    "testcontainers/testcontainers": "Required (PHP >= 8.1) to run the opt-in Behat e2e suite (composer dev:test:e2e)"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
@@ -98,9 +98,13 @@
       "@dev:grpc:generate",
       "@dev:grpc:stage"
     ],
-    "dev:grpc:generate": "export GOPATH=\"$(pwd)/schemas/vendor\" && pushd schemas && make gen-php && popd",
+    "dev:grpc:generate": "export PROTOC_VERSION=23.4 PROTOC_DIR=\"$(pwd)/build/protoc\" && { [ -x \"$PROTOC_DIR/bin/protoc\" ] || { mkdir -p \"$PROTOC_DIR\" && curl -sSL -o \"$PROTOC_DIR/protoc.zip\" \"https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOC_VERSION/protoc-$PROTOC_VERSION-linux-x86_64.zip\" && unzip -qo \"$PROTOC_DIR/protoc.zip\" -d \"$PROTOC_DIR\"; }; } && \"$PROTOC_DIR/bin/protoc\" --php_out=proto/php --proto_path=schemas/protobuf --proto_path=\"$PROTOC_DIR/include\" schemas/protobuf/flagd/evaluation/v2/evaluation.proto",
     "dev:grpc:init": "git submodule update --recursive",
     "dev:grpc:stage": "git add --force ./proto",
+    "dev:grpc:verify": [
+      "@dev:grpc",
+      "git diff --exit-code HEAD -- proto"
+    ],
     "dev:lint": [
       "@dev:lint:syntax",
       "@dev:lint:style"
@@ -121,10 +125,7 @@
       "@dev:test:e2e:teardown"
     ],
     "dev:test:e2e:run": "behat --colors",
-    "dev:test:e2e:setup": [
-      "git submodule update --init --recursive -- test-harness",
-      "composer require --dev --no-interaction --no-progress \"testcontainers/testcontainers:^1.0\""
-    ],
+    "dev:test:e2e:setup": "git submodule update --init --recursive -- test-harness",
     "dev:test:e2e:teardown": "echo 'Tore down e2e tests...'",
     "dev:test:integration:setup": "echo 'Setup for integration tests...'",
     "dev:test:integration:teardown": "echo 'Tore down integration tests...'",
@@ -139,6 +140,7 @@
     "dev:analyze:phpstan": "Runs the PHPStan static analyzer.",
     "dev:analyze:psalm": "Runs the Psalm static analyzer.",
     "dev:build:clean": "Cleans the build/ directory.",
+    "dev:grpc:verify": "Regenerates the protobuf classes and fails if the committed output is out of date.",
     "dev:lint": "Runs all linting checks.",
     "dev:lint:fix": "Auto-fixes coding standards issues, if possible.",
     "dev:lint:style": "Checks for coding standards issues.",
