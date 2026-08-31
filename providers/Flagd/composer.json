@@ -55,7 +55,7 @@
     "roave/security-advisories": "dev-latest",
     "spatie/phpunit-snapshot-assertions": "^4.2",
     "testcontainers/testcontainers": "^1.0",
-    "vimeo/psalm": "~4.30.0"
+    "vimeo/psalm": "~6.16.0"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
