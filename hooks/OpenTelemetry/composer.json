@@ -29,7 +29,7 @@
   "require-dev": {
     "ergebnis/composer-normalize": "^2.25",
     "friendsofphp/php-cs-fixer": "^3.13",
-    "hamcrest/hamcrest-php": "^2.0",
+    "hamcrest/hamcrest-php": "^3.0",
     "mdwheele/zalgo": "^0.3.1",
     "mikey179/vfsstream": "v1.6.12",
     "mockery/mockery": "^1.5",
