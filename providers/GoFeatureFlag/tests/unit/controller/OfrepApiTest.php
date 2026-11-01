@@ -21,9 +21,13 @@ use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Reason;
 use Psr\Http\Client\ClientInterface;
 use ReflectionClass;
+use RuntimeException;
 
 use function gmdate;
 use function json_encode;
+use function ob_end_clean;
+use function ob_get_contents;
+use function ob_start;
 use function time;
 use function usleep;
 
@@ -109,6 +113,28 @@ class OfrepApiTest extends TestCase
         $property->setValue($api, $mockClient);
 
         $api->evaluate('flagKey', $this->defaultEvaluationContext);
+    }
+
+    public function testShouldNotWriteToOutputIfHttpClientThrows()
+    {
+        $mockClient = $this->createMock(ClientInterface::class);
+        $mockClient->method('sendRequest')->willThrowException(new RuntimeException('connection refused'));
+
+        $api = new OfrepApi(new Config('https://gofeatureflag.org'));
+        $reflection = new ReflectionClass($api);
+        $property = $reflection->getProperty('client');
+        $property->setAccessible(true);
+        $property->setValue($api, $mockClient);
+
+        ob_start();
+        try {
+            $api->evaluate('flagKey', $this->defaultEvaluationContext);
+            $this->fail('Expected UnknownOfrepException to be thrown');
+        } catch (UnknownOfrepException $e) {
+            $this->assertSame('', ob_get_contents());
+        } finally {
+            ob_end_clean();
+        }
     }
 
     public function testShouldReturnAnErrorResponseIf400()

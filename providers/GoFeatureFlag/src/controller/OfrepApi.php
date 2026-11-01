@@ -105,8 +105,6 @@ class OfrepApi
         } catch (BaseOfrepException $e) {
             throw $e;
         } catch (GuzzleException | Throwable $e) {
-            echo $e;
-
             throw new UnknownOfrepException(null, $e);
         }
     }
