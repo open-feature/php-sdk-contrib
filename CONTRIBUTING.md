@@ -4,7 +4,7 @@
 
 ### System Requirements
 
-PHP 8+ is required.
+PHP 8.2+ is required.
 
 ### Compilation target(s)
 
