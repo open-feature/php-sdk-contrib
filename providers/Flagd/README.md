@@ -3,7 +3,7 @@
 [![a](https://img.shields.io/badge/slack-%40cncf%2Fopenfeature-brightgreen?style=flat&logo=slack)](https://cloud-native.slack.com/archives/C0344AANLA1)
 [![Latest Stable Version](http://poser.pugx.org/open-feature/flagd-provider/v)](https://packagist.org/packages/open-feature/flagd-provider)
 [![Total Downloads](http://poser.pugx.org/open-feature/flagd-provider/downloads)](https://packagist.org/packages/open-feature/flagd-provider)
-![PHP 8.0+](https://img.shields.io/badge/php->=8.0-blue.svg)
+![PHP 8.2+](https://img.shields.io/badge/php->=8.2-blue.svg)
 [![License](http://poser.pugx.org/open-feature/flagd-provider/license)](https://packagist.org/packages/open-feature/flagd-provider)
 
 ## Overview

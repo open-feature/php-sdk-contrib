@@ -23,7 +23,7 @@
     }
   ],
   "require": {
-    "php": "^8",
+    "php": "^8.2",
     "open-feature/sdk": "^2.0",
     "rollout/rox": "^6.0"
   },

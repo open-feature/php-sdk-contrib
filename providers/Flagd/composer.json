@@ -21,7 +21,7 @@
     }
   ],
   "require": {
-    "php": "^8.1",
+    "php": "^8.2",
     "ext-bcmath": "*",
     "google/protobuf": "^4.23",
     "open-feature/sdk": "^2.0",
