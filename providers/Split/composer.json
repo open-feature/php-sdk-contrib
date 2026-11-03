@@ -22,7 +22,7 @@
     }
   ],
   "require": {
-    "php": "^8",
+    "php": "^8.2",
     "open-feature/sdk": "^2.0",
     "splitsoftware/split-sdk-php": "^7.1"
   },

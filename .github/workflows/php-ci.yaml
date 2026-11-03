@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         operating-system: [ubuntu-latest]
-        php-version: ['8.1', '8.2']
+        php-version: ['8.2', '8.3', '8.4', '8.5']
         project-dir:
           - hooks/OpenTelemetry
           - hooks/DDTrace
@@ -76,7 +76,9 @@ jobs:
         PHAN_DISABLE_XDEBUG_WARN: 1
       run: vendor/bin/phan
 
+    # Psalm 4.30 cannot run on PHP >= 8.3; upgrade vimeo/psalm to run it on every version.
     - name: Run Psalm
+      if: matrix.php-version == '8.2'
       working-directory: ${{ matrix.project-dir }}
       run: vendor/bin/psalm --output-format=github --php-version=${{ matrix.php-version }}
 

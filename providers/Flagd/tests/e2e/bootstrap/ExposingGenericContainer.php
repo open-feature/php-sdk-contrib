@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace OpenFeature\Providers\Flagd\Test\e2e\bootstrap;
 
-use Docker\API\Model\ContainerConfigExposedPortsItem;
 use Docker\API\Model\ContainersCreatePostBody;
 use Testcontainers\Container\GenericContainer;
 
@@ -22,11 +21,10 @@ final class ExposingGenericContainer extends GenericContainer
     {
         $config = parent::createContainerConfig();
 
+        // Docker expects `{"<port>/<proto>": {}}`; the API normalizer turns each `[]` into `{}`.
         $exposed = [];
         foreach ($this->exposedPorts as $port) {
-            $item = new ContainerConfigExposedPortsItem();
-            $item['exposed'] = true;
-            $exposed[$port] = $item;
+            $exposed[$port] = [];
         }
 
         if ($exposed !== []) {

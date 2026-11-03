@@ -133,7 +133,7 @@ This project welcomes contributions from the community.
 If you're interested in contributing, see the [contributors' guide](https://github.com/thomaspoignant/go-feature-flag/blob/main/CONTRIBUTING.md) for some helpful tips.
 
 ### PHP Versioning
-This library targets PHP version 8.0 and newer. As long as you have any compatible version of PHP on your system you should be able to utilize the OpenFeature SDK.
+This library targets PHP version 8.2 and newer. As long as you have any compatible version of PHP on your system you should be able to utilize the OpenFeature SDK.
 
 This package also has a .tool-versions file for use with PHP version managers like asdf.
 
