@@ -172,17 +172,30 @@ jobs:
         if: ${{ steps.mode.outputs.mode == 'branch' }}
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          GH_TOKEN: ${{ github.token }}
           FORCE: ${{ inputs.force }}
         run: |
           set -euo pipefail
+
+          force_flag=""
+          if [ "${FORCE:-false}" = "true" ]; then
+            # GITHUB_SHA is captured when the run is created, and concurrency
+            # does not order queued runs. A forced push from a stale commit
+            # would rewind mirror main behind a newer sync, so only force
+            # when main has not moved since. Non-force pushes are already
+            # protected by git's fast-forward check.
+            current_main="$(gh api "repos/${GITHUB_REPOSITORY}/commits/main" --jq .sha)"
+            if [ "$current_main" != "$GITHUB_SHA" ]; then
+              echo "::error::Refusing forced push: main moved to ${current_main}, this run was created for ${GITHUB_SHA}. Re-dispatch from the current main."
+              exit 1
+            fi
+            force_flag="--force"
+          fi
+
           eval "$(ssh-agent -s)"
           ssh-add - <<< "$SSH_PRIVATE_KEY"
 
           cd "$GITHUB_WORKSPACE"
-          force_flag=""
-          if [ "${FORCE:-false}" = "true" ]; then
-            force_flag="--force"
-          fi
           # Same filter on same history gives identical SHAs, so this is a
           # fast-forward (or "Everything up-to-date") after the first sync.
           # shellcheck disable=SC2086
