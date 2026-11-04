@@ -1,19 +1,52 @@
 name: split-monorepo
+
+# Two modes, selected by the triggering event:
+#
+#   branch mode: `push` to main, or `workflow_dispatch` with `branch: main`.
+#     Filters the monorepo at the triggering commit and pushes the result to
+#     `main` of every package's read-only mirror. Never pushes tags.
+#
+#   tag mode: `release: published`, or `workflow_dispatch` with `tag`.
+#     Only the package matching the tag runs. The filtered history is pushed
+#     to a bare-version tag (e.g. 1.2.3) on the mirror. Never moves `main`.
 on:
+  push:
+    branches:
+      - main
   release:
     types:
       - published
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Package tag'
+        description: 'Tag mode: package tag (e.g. open-feature/flagd-provider-1.2.3). Leave empty for branch mode.'
         type: string
-        required: true
+        required: false
+      branch:
+        description: 'Branch mode: branch to sync to the mirrors (only "main" is supported). Leave empty for tag mode.'
+        type: string
+        required: false
+      force:
+        description: 'Branch mode: force-push mirror main. Needed once to replace the old, unrelated mirror history.'
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: read
 
 jobs:
   split-repositories:
+    # Forks do not have the mirror deploy key.
+    if: github.repository == 'open-feature/php-sdk-contrib'
     runs-on: ubuntu-latest
+    # One sync at a time per mirror and ref. Runs queue instead of being
+    # cancelled so a push can never be interrupted halfway.
+    concurrency:
+      group: split-${{ matrix.config[1] }}-${{ matrix.config[0] }}-${{ github.event.release.tag_name || inputs.tag || inputs.branch || 'main' }}
+      cancel-in-progress: false
     strategy:
+      fail-fast: false
       matrix:
         # Structure of the config tuple is:
         # 0: Type of package (e.g. open-feature/flagd-*provider*)
@@ -28,58 +61,129 @@ jobs:
           - [provider, split, Split]
           - [provider, go-feature-flag, GoFeatureFlag]
           - [provider, flagsmith, Flagsmith]
+    env:
+      PKG_TYPE: ${{ matrix.config[0] }}
+      PKG_NAME: ${{ matrix.config[1] }}
+      PKG_DIR: ${{ matrix.config[2] }}
     steps:
-      - name: Detect run requirement
-        id: shouldRun
+      - name: Detect run mode
+        id: mode
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          INPUT_TAG: ${{ inputs.tag }}
+          INPUT_BRANCH: ${{ inputs.branch }}
         run: |
-          input_ref="${{ github.event.release.tag_name }}"
-          if [ -z "$input_ref" ]; then
-            input_ref="${{ inputs.tag }}"
+          mode=""
+          tag=""
+          case "$EVENT_NAME" in
+            push)
+              mode=branch
+              ;;
+            release)
+              mode=tag
+              tag="$RELEASE_TAG"
+              ;;
+            workflow_dispatch)
+              if [ -n "$INPUT_TAG" ] && [ -n "$INPUT_BRANCH" ]; then
+                echo "::error::Provide exactly one of 'tag' or 'branch', not both."
+                exit 1
+              elif [ -n "$INPUT_TAG" ]; then
+                mode=tag
+                tag="$INPUT_TAG"
+              elif [ -n "$INPUT_BRANCH" ]; then
+                if [ "$INPUT_BRANCH" != "main" ] || [ "$GITHUB_REF" != "refs/heads/main" ]; then
+                  echo "::error::Branch mode only supports 'main': set branch=main and run the workflow from main."
+                  exit 1
+                fi
+                mode=branch
+              else
+                echo "::error::Provide exactly one of 'tag' or 'branch'."
+                exit 1
+              fi
+              ;;
+            *)
+              echo "::error::Unsupported event: $EVENT_NAME"
+              exit 1
+              ;;
+          esac
+
+          if [ "$mode" = "tag" ]; then
+            prefix="open-feature/${PKG_NAME}-${PKG_TYPE}-"
+            if [[ "$tag" == "$prefix"* ]]; then
+              echo "target_ref=refs/tags/${tag#"$prefix"}" >> "$GITHUB_OUTPUT"
+            else
+              mode=skip
+            fi
           fi
-          result=0
-          if [[ "$input_ref" == open-feature/${{ matrix.config[1] }}-${{ matrix.config[0] }}-* ]]; then
-            result=1
-          fi
-          echo "result=${result}" >> "$GITHUB_OUTPUT"
+          echo "mode=${mode}" >> "$GITHUB_OUTPUT"
+          echo "Mode for ${PKG_NAME}-${PKG_TYPE}: ${mode}"
+
       - name: checkout
-        if: ${{ steps.shouldRun.outputs.result == '1' }}
+        if: ${{ steps.mode.outputs.mode != 'skip' }}
         run: |
           git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE"
           cd "$GITHUB_WORKSPACE"
           git checkout "$GITHUB_SHA"
-      - name: Replace string in GitHub Actions
-        if: ${{ steps.shouldRun.outputs.result == '1' }}
-        id: targetRef
-        run: |
-          input_ref="${{ github.event.release.tag_name }}"
-          if [ -z "$input_ref" ]; then
-            input_ref="${{ inputs.tag }}"
-          fi
-          if [ -n "$input_ref" ]; then
-            input_ref="refs/tags/$input_ref"
-            target_ref="$(echo -n "$input_ref"|sed 's#open-feature/${{ matrix.config[1] }}-${{ matrix.config[0] }}-##')"
-          fi
-          echo "result=${target_ref}" >> "$GITHUB_OUTPUT"
-      - name: Generate GitHub App token
-        if: ${{ steps.shouldRun.outputs.result == '1' }}
-        id: app-token
-        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+
+      # Tag mode: unchanged behaviour. The action pushes HEAD to the tag ref
+      # (refs/tags/<version>) and deletes tags not matching tagFilter first.
+      - name: Filter and push tag for package ${{ matrix.config[1] }}-${{ matrix.config[0] }}
+        if: ${{ steps.mode.outputs.mode == 'tag' }}
+        uses: tcarrio/git-filter-repo-docker-action@ad6c01a5abb229439ea7ddf3a63ddb6cf0f41648 # v1.5.0
         with:
-          client-id: ${{ secrets.SPLIT_APP_CLIENT_ID }}
-          private-key: ${{ secrets.SPLIT_APP_PRIVATE_KEY }}
-          owner: open-feature-php
-          repositories: ${{ matrix.config[1] }}-${{ matrix.config[0] }}
-          permission-contents: write
-      - name: Filter and push package ${{ matrix.config[1] }}-${{ matrix.config[0] }}
-        if: ${{ steps.shouldRun.outputs.result == '1' }}
-        uses: open-feature-php/git-filter-repo-docker-action@7d873fc999440318495b59e9c2a5ddf5505897c3
-        with:
-          token: ${{ steps.app-token.outputs.token }}
+          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           targetOrg: open-feature-php
           targetRepo: ${{ matrix.config[1] }}-${{ matrix.config[0] }}
-          targetBranch: ${{ steps.targetRef.outputs.result }}
+          targetBranch: ${{ steps.mode.outputs.target_ref }}
           tagFilter: ^open-feature/${{ matrix.config[1] }}-
           filterArguments: |
             --subdirectory-filter "${{matrix.config[0] }}s/${{ matrix.config[2] }}/" \
             --tag-rename "open-feature/${{ matrix.config[1] }}-${{ matrix.config[0] }}-:" \
             --force
+
+      # Branch mode is plain git because the action cannot do this: with a
+      # branch name it runs a non-force `git push HEAD:<branch>`, so the
+      # one-time history rewrite of mirror main would be rejected.
+      # The deploy key is only exposed to the push step below. Everything that
+      # installs or runs third-party code (pip, git-filter-repo) runs here
+      # without any secret in its environment.
+      - name: Filter history for package ${{ matrix.config[1] }}-${{ matrix.config[0] }}
+        if: ${{ steps.mode.outputs.mode == 'branch' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 -m pip install --user 'git-filter-repo==2.47.0'
+          export PATH="$HOME/.local/bin:$PATH"
+
+          # Trust GitHub's published SSH host keys (not trust-on-first-use).
+          mkdir -p ~/.ssh
+          gh api meta --jq '.ssh_keys[] | "github.com " + .' > ~/.ssh/known_hosts
+
+          cd "$GITHUB_WORKSPACE"
+          # Tags are never mirrored in branch mode.
+          git tag --list | xargs -r git tag --delete
+          git checkout -B split "$GITHUB_SHA"
+          git-filter-repo --force --refs refs/heads/split \
+            --subdirectory-filter "${PKG_TYPE}s/${PKG_DIR}/"
+
+      - name: Push main for package ${{ matrix.config[1] }}-${{ matrix.config[0] }}
+        if: ${{ steps.mode.outputs.mode == 'branch' }}
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          FORCE: ${{ inputs.force }}
+        run: |
+          set -euo pipefail
+          eval "$(ssh-agent -s)"
+          ssh-add - <<< "$SSH_PRIVATE_KEY"
+
+          cd "$GITHUB_WORKSPACE"
+          force_flag=""
+          if [ "${FORCE:-false}" = "true" ]; then
+            force_flag="--force"
+          fi
+          # Same filter on same history gives identical SHAs, so this is a
+          # fast-forward (or "Everything up-to-date") after the first sync.
+          # shellcheck disable=SC2086
+          git push $force_flag "git@github.com:open-feature-php/${PKG_NAME}-${PKG_TYPE}.git" HEAD:refs/heads/main
