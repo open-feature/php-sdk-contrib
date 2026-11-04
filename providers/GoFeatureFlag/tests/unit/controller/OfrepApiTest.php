@@ -275,6 +275,26 @@ class OfrepApiTest extends TestCase
         $api->evaluate('flagKey', $this->defaultEvaluationContext);
     }
 
+    public function testShouldRaiseAnErrorIf400AndErrorCodeIsNotAString()
+    {
+        $this->expectException(ParseException::class);
+        $this->expectExceptionMessage('errorCode is not a string');
+        $mockClient = $this->createMock(ClientInterface::class);
+        $mockResponse = new Response(400, [], json_encode([
+            'key' => 'flagKey',
+            'errorCode' => 123,
+        ]));
+        $mockClient->method('sendRequest')->willReturn($mockResponse);
+
+        $api = new OfrepApi(new Config('https://gofeatureflag.org'));
+        $reflection = new ReflectionClass($api);
+        $property = $reflection->getProperty('client');
+        $property->setAccessible(true);
+        $property->setValue($api, $mockClient);
+
+        $api->evaluate('flagKey', $this->defaultEvaluationContext);
+    }
+
     public function testShouldNotBeAbleToCallTheApiAgainIfRateLimitedWithRetryAfterInt()
     {
         $mockClient = $this->createMock(ClientInterface::class);

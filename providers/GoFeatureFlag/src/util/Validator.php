@@ -108,7 +108,7 @@ class Validator
         }
 
         if (!is_string($data['errorCode'])) {
-            throw new ParseException('key is not a string', null);
+            throw new ParseException('errorCode is not a string', null);
         }
 
         if (key_exists('errorDetails', $data) && !is_string($data['errorDetails'])) {
