@@ -62,7 +62,7 @@ jobs:
           echo "::set-output name=result::${target_ref}"
       - name: Filter and push package ${{ matrix.config[1] }}-${{ matrix.config[0] }}
         if: ${{ steps.shouldRun.outputs.result == '1' }}
-        uses: tcarrio/git-filter-repo-docker-action@v1.5.0
+        uses: tcarrio/git-filter-repo-docker-action@ad6c01a5abb229439ea7ddf3a63ddb6cf0f41648 # v1.5.0
         with:
           privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           targetOrg: open-feature-php
