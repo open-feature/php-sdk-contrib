@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.1](https://github.com/open-feature/php-sdk-contrib/compare/open-feature/go-feature-flag-provider-1.1.0...open-feature/go-feature-flag-provider-1.1.1) (2026-11-04)
+
+
+### Bug Fixes
+
+* **gofeatureflag:** correct errorCode validation error message ([#204](https://github.com/open-feature/php-sdk-contrib/issues/204)) ([9d0b78f](https://github.com/open-feature/php-sdk-contrib/commit/9d0b78f81a7b18af6cb8136980e334a8ec588fc3))
+* **gofeatureflag:** remove debug echo of exceptions in OfrepApi ([#203](https://github.com/open-feature/php-sdk-contrib/issues/203)) ([c829468](https://github.com/open-feature/php-sdk-contrib/commit/c829468135201ba5791f77b06bb92a19951fe89e))
+
 ## [1.1.0](https://github.com/open-feature/php-sdk-contrib/compare/open-feature/go-feature-flag-provider-1.0.0...open-feature/go-feature-flag-provider-1.1.0) (2025-01-29)
 
 
