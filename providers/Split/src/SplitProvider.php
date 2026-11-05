@@ -121,6 +121,10 @@ class SplitProvider extends AbstractProvider implements Provider
             }
 
             $targetingKey = $context->getTargetingKey();
+            if (is_null($targetingKey) || $targetingKey === '') {
+                throw new TargetingKeyMissingException();
+            }
+
             $attributes = $context->getAttributes()->toArray();
 
             $treatment = $this->client->getTreatment($targetingKey, $flagKey, $attributes);
