@@ -7,6 +7,7 @@ namespace OpenFeature\Providers\Split\Test\integration;
 use OpenFeature\Providers\Split\SplitProvider;
 use OpenFeature\Providers\Split\Test\TestCase;
 use OpenFeature\implementation\flags\EvaluationContext;
+use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Provider;
 use Psr\Log\NullLogger;
 
@@ -158,6 +159,32 @@ class SplitProviderTest extends TestCase
 
         // Then
         $this->assertEquals($expectedValue, $actualValue);
+    }
+
+    public function testResolvesDefaultValueWhenTargetingKeyIsMissing(): void
+    {
+        // Given
+        $defaultValue = false;
+
+        // When
+        $actualDetails = $this->provider->resolveBooleanValue('dev.openfeature.bool_flag', $defaultValue, new EvaluationContext(null));
+
+        // Then
+        $this->assertEquals($defaultValue, $actualDetails->getValue());
+        $this->assertEquals(ErrorCode::TARGETING_KEY_MISSING(), $actualDetails->getError()?->getResolutionErrorCode());
+    }
+
+    public function testResolvesDefaultValueWhenTargetingKeyIsEmpty(): void
+    {
+        // Given
+        $defaultValue = false;
+
+        // When
+        $actualDetails = $this->provider->resolveBooleanValue('dev.openfeature.bool_flag', $defaultValue, new EvaluationContext(''));
+
+        // Then
+        $this->assertEquals($defaultValue, $actualDetails->getValue());
+        $this->assertEquals(ErrorCode::TARGETING_KEY_MISSING(), $actualDetails->getError()?->getResolutionErrorCode());
     }
 
     public function testCanResolveStringDefaultValueWhenErrorOccurs(): void
