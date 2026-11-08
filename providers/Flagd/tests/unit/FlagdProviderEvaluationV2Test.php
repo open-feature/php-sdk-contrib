@@ -153,7 +153,7 @@ class FlagdProviderEvaluationV2Test extends TestCase
         $this->assertTrue($details->getValue());
         $this->assertNotNull($details->getError());
         $this->assertEquals(
-            ErrorCode::FLAG_NOT_FOUND(),
+            ErrorCode::FLAG_NOT_FOUND,
             $details->getError()->getResolutionErrorCode(),
         );
     }
@@ -167,7 +167,7 @@ class FlagdProviderEvaluationV2Test extends TestCase
         $this->assertEquals('fallback', $details->getValue());
         $this->assertNotNull($details->getError());
         $this->assertEquals(
-            ErrorCode::TYPE_MISMATCH(),
+            ErrorCode::TYPE_MISMATCH,
             $details->getError()->getResolutionErrorCode(),
         );
     }

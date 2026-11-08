@@ -21,7 +21,6 @@ use OpenFeature\Providers\Flagd\config\IConfig;
 use OpenFeature\Providers\Flagd\errors\InvalidConfigException;
 use OpenFeature\Providers\Flagd\errors\RequestBuildException;
 use OpenFeature\Providers\Flagd\service\ServiceInterface;
-use OpenFeature\implementation\errors\FlagValueTypeError;
 use OpenFeature\interfaces\flags\EvaluationContext;
 use OpenFeature\interfaces\flags\FlagValueType;
 use OpenFeature\interfaces\provider\ResolutionDetails;
@@ -77,7 +76,7 @@ class HttpService implements ServiceInterface
     /**
      * @inheritdoc
      */
-    public function resolveValue(string $flagKey, string $flagType, $defaultValue, ?EvaluationContext $context): ResolutionDetails
+    public function resolveValue(string $flagKey, FlagValueType $flagType, $defaultValue, ?EvaluationContext $context): ResolutionDetails
     {
         $path = $this->determinePathByFlagType($flagType);
         $body = $this->buildRequestBody($flagType, $flagKey, $context);
@@ -105,7 +104,7 @@ class HttpService implements ServiceInterface
     /**
      * @param mixed[]|bool|DateTime|float|int|string|null $defaultValue
      */
-    private function parseResponse(string $flagType, string $payload, array | bool | DateTime | float | int | string | null $defaultValue): ResolutionDetails
+    private function parseResponse(FlagValueType $flagType, string $payload, array | bool | DateTime | float | int | string | null $defaultValue): ResolutionDetails
     {
         $message = $this->createResponseMessage($flagType);
         $message->mergeFromJsonString($payload);
@@ -149,7 +148,7 @@ class HttpService implements ServiceInterface
         return $message->getValue();
     }
 
-    private function buildRequestBody(string $flagType, string $flagKey, ?EvaluationContext $context): string
+    private function buildRequestBody(FlagValueType $flagType, string $flagKey, ?EvaluationContext $context): string
     {
         /**
          * The request is equivalent to:
@@ -163,7 +162,6 @@ class HttpService implements ServiceInterface
             FlagValueType::INTEGER => new ResolveIntRequest(),
             FlagValueType::OBJECT => new ResolveObjectRequest(),
             FlagValueType::STRING => new ResolveStringRequest(),
-            default => throw new FlagValueTypeError($flagType),
         };
 
         $message->setFlagKey($flagKey);
@@ -217,7 +215,7 @@ class HttpService implements ServiceInterface
     /**
      * @return ResolveBooleanResponse|ResolveFloatResponse|ResolveIntResponse|ResolveObjectResponse|ResolveStringResponse
      */
-    private function createResponseMessage(string $flagType)
+    private function createResponseMessage(FlagValueType $flagType)
     {
         return match ($flagType) {
             FlagValueType::BOOLEAN => new ResolveBooleanResponse(),
@@ -225,26 +223,18 @@ class HttpService implements ServiceInterface
             FlagValueType::INTEGER => new ResolveIntResponse(),
             FlagValueType::OBJECT => new ResolveObjectResponse(),
             FlagValueType::STRING => new ResolveStringResponse(),
-            default => throw new FlagValueTypeError($flagType),
         };
     }
 
-    private function determinePathByFlagType(string $flagType): string
+    private function determinePathByFlagType(FlagValueType $flagType): string
     {
-        switch ($flagType) {
-            case FlagValueType::BOOLEAN:
-                return GrpcWebEndpoint::BOOLEAN;
-            case FlagValueType::FLOAT:
-                return GrpcWebEndpoint::FLOAT;
-            case FlagValueType::INTEGER:
-                return GrpcWebEndpoint::INTEGER;
-            case FlagValueType::OBJECT:
-                return GrpcWebEndpoint::OBJECT;
-            case FlagValueType::STRING:
-                return GrpcWebEndpoint::STRING;
-            default:
-                throw new FlagValueTypeError($flagType);
-        }
+        return match ($flagType) {
+            FlagValueType::BOOLEAN => GrpcWebEndpoint::BOOLEAN,
+            FlagValueType::FLOAT => GrpcWebEndpoint::FLOAT,
+            FlagValueType::INTEGER => GrpcWebEndpoint::INTEGER,
+            FlagValueType::OBJECT => GrpcWebEndpoint::OBJECT,
+            FlagValueType::STRING => GrpcWebEndpoint::STRING,
+        };
     }
 
     private function nonEmptyOrNull(string $value): ?string
