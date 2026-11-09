@@ -7,7 +7,9 @@ namespace OpenFeature\Providers\GoFeatureFlag\model;
 use DateTime;
 use OpenFeature\Providers\GoFeatureFlag\exception\ParseException;
 use OpenFeature\Providers\GoFeatureFlag\util\Mapper;
+use OpenFeature\Providers\GoFeatureFlag\util\Validator;
 
+use function array_key_exists;
 use function is_array;
 use function is_bool;
 use function is_float;
@@ -18,17 +20,19 @@ use function is_string;
 class OfrepApiSuccessResponse
 {
     /**
-     * @var array<mixed>|array<string, mixed>|bool|DateTime|float|int|string|null
+     * @var array<mixed>|array<string,mixed>|bool|DateTime|float|int|string|null
      */
     private array | bool | DateTime | float | int | string | null $value;
     private string $reason;
     private string $variant;
 
-    // TODO: Commenting Metadata here because it is not supported by the SDK yet.
-    // private array $metadata;
+    /**
+     * @var array<string,bool|float|int|string>|null
+     */
+    private ?array $metadata;
 
     /**
-     * @param array<string, mixed> $apiData
+     * @param array<string,mixed> $apiData
      *
      * @throws ParseException
      */
@@ -51,7 +55,14 @@ class OfrepApiSuccessResponse
 
         $this->variant = is_string($apiData['variant']) ? $apiData['variant'] : 'error in provider';
         $this->reason = Mapper::reason(is_string($apiData['reason']) ? $apiData['reason'] : '');
-        // $this->metadata = $apiData['metadata'] ?? [];
+
+        // Validate and set flag metadata
+        if (array_key_exists('metadata', $apiData)) {
+            Validator::validateFlagMetadata($apiData['metadata']);
+            $this->metadata = $apiData['metadata'];
+        } else {
+            $this->metadata = null;
+        }
     }
 
     /**
@@ -72,11 +83,11 @@ class OfrepApiSuccessResponse
         return $this->variant;
     }
 
-    //    /**
-    //     * @return array<string, mixed>
-    //     */
-    //    public function getMetadata(): array
-    //    {
-    //        return $this->metadata;
-    //    }
+    /**
+     * @return array<string,bool|float|int|string>|null
+     */
+    public function getMetadata(): ?array
+    {
+        return $this->metadata;
+    }
 }
