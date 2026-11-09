@@ -40,7 +40,7 @@ jobs:
           if [[ "$input_ref" == open-feature/${{ matrix.config[1] }}-${{ matrix.config[0] }}-* ]]; then
             result=1
           fi
-          echo "::set-output name=result::${result}"
+          echo "result=${result}" >> "$GITHUB_OUTPUT"
       - name: checkout
         if: ${{ steps.shouldRun.outputs.result == '1' }}
         run: |
@@ -59,12 +59,22 @@ jobs:
             input_ref="refs/tags/$input_ref"
             target_ref="$(echo -n "$input_ref"|sed 's#open-feature/${{ matrix.config[1] }}-${{ matrix.config[0] }}-##')"
           fi
-          echo "::set-output name=result::${target_ref}"
+          echo "result=${target_ref}" >> "$GITHUB_OUTPUT"
+      - name: Generate GitHub App token
+        if: ${{ steps.shouldRun.outputs.result == '1' }}
+        id: app-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ secrets.SPLIT_APP_CLIENT_ID }}
+          private-key: ${{ secrets.SPLIT_APP_PRIVATE_KEY }}
+          owner: open-feature-php
+          repositories: ${{ matrix.config[1] }}-${{ matrix.config[0] }}
+          permission-contents: write
       - name: Filter and push package ${{ matrix.config[1] }}-${{ matrix.config[0] }}
         if: ${{ steps.shouldRun.outputs.result == '1' }}
-        uses: tcarrio/git-filter-repo-docker-action@v1.5.0
+        uses: open-feature-php/git-filter-repo-docker-action@7d873fc999440318495b59e9c2a5ddf5505897c3
         with:
-          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
+          token: ${{ steps.app-token.outputs.token }}
           targetOrg: open-feature-php
           targetRepo: ${{ matrix.config[1] }}-${{ matrix.config[0] }}
           targetBranch: ${{ steps.targetRef.outputs.result }}
