@@ -78,7 +78,9 @@ jobs:
 
     - name: Run Psalm
       working-directory: ${{ matrix.project-dir }}
-      run: vendor/bin/psalm --output-format=github --php-version=${{ matrix.php-version }}
+      # Analysis targets the minimum supported version (phpVersion in psalm.xml) on every runtime,
+      # so Psalm doesn't demand 8.3+ syntax such as typed class constants.
+      run: vendor/bin/psalm --output-format=github
 
     - name: Run Phpstan
       working-directory: ${{ matrix.project-dir }}
