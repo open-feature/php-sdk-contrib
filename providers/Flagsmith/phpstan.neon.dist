@@ -8,11 +8,11 @@ parameters:
         - */tests/fixtures/*
         - */tests/*/fixtures/*
     ignoreErrors:
-        # Mockery mock objects in tests
-        -
-            message: '#Call to an undefined method .+::shouldReceive\(\)#'
-            path: tests/*
         # Test assertion parameter types
         -
             message: '#Parameter .+ of method .+::assertStringContainsString\(\) expects string, string\|null given#'
+            path: tests/*
+        # assertInstanceOf()/assertNotNull() sanity checks in tests are flagged as always-true by phpstan-phpunit 2.x
+        -
+            identifier: method.alreadyNarrowedType
             path: tests/*

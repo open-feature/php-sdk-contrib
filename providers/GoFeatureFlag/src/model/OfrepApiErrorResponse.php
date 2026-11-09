@@ -18,7 +18,7 @@ class OfrepApiErrorResponse
     private string $reason;
 
     /**
-     * @param array<string, mixed> $apiData
+     * @param array<array-key, mixed> $apiData
      *
      * @throws ParseException
      */

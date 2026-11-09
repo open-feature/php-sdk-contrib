@@ -7,6 +7,7 @@ namespace OpenFeature\Providers\Flagsmith\Test\unit;
 use Flagsmith\Flagsmith;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery\MockInterface;
 use OpenFeature\Providers\Flagsmith\FlagsmithProvider;
 use OpenFeature\Providers\Flagsmith\config\FlagsmithConfig;
 use OpenFeature\Providers\Flagsmith\service\ContextMapper;
@@ -25,9 +26,9 @@ class FlagsmithProviderTest extends TestCase
 
     private FlagsmithProvider $provider;
     private FlagsmithConfig $config;
-    private Flagsmith $mockFlagsmithClient;
-    private ContextMapper $mockContextMapper;
-    private FlagEvaluator $mockEvaluator;
+    private Flagsmith & MockInterface $mockFlagsmithClient;
+    private ContextMapper & MockInterface $mockContextMapper;
+    private FlagEvaluator & MockInterface $mockEvaluator;
 
     protected function setUp(): void
     {

@@ -24,7 +24,7 @@ class EvaluationContextArrayFactory
             $contextArray = array_merge(
                 [],
                 $context->getAttributes()->toArray(),
-                $context->getTargetingKey() ? ['targetingKey' => $context->getTargetingKey()] : [],
+                $context->getTargetingKey() !== null && $context->getTargetingKey() !== '' ? ['targetingKey' => $context->getTargetingKey()] : [],
             );
 
             if (sizeof($contextArray) === 0) {

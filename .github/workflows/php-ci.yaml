@@ -76,11 +76,11 @@ jobs:
         PHAN_DISABLE_XDEBUG_WARN: 1
       run: vendor/bin/phan
 
-    # Psalm 4.30 cannot run on PHP >= 8.3; upgrade vimeo/psalm to run it on every version.
     - name: Run Psalm
-      if: matrix.php-version == '8.2'
       working-directory: ${{ matrix.project-dir }}
-      run: vendor/bin/psalm --output-format=github --php-version=${{ matrix.php-version }}
+      # Analysis targets the minimum supported version (phpVersion in psalm.xml) on every runtime,
+      # so Psalm doesn't demand 8.3+ syntax such as typed class constants.
+      run: vendor/bin/psalm --output-format=github
 
     - name: Run Phpstan
       working-directory: ${{ matrix.project-dir }}

@@ -28,7 +28,7 @@ class OfrepApiSuccessResponse
     // private array $metadata;
 
     /**
-     * @param array<string, mixed> $apiData
+     * @param array<array-key, mixed> $apiData
      *
      * @throws ParseException
      */

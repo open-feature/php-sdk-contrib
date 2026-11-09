@@ -111,7 +111,7 @@ class SplitProvider extends AbstractProvider implements Provider
     }
 
     /**
-     * @param bool|string|int|float|mixed[] $defaultValue
+     * @param bool|string|int|float|mixed[]|null $defaultValue
      */
     private function resolveValue(string $flagKey, string $flagType, mixed $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
     {
