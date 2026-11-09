@@ -31,12 +31,8 @@ class FlagdResponseResolutionDetailsAdapter
     public static function forError(array $response, mixed $defaultValue): ResolutionDetails
     {
         $responseCode = $response['code'];
-        if ($responseCode && ResponseCodeErrorCodeMap::has($responseCode)) {
-            /**
-             * @var ErrorCode $responseErrorCode
-            */
-            $responseErrorCode = ResponseCodeErrorCodeMap::get($responseCode);
-
+        $responseErrorCode = $responseCode ? ResponseCodeErrorCodeMap::get($responseCode) : null;
+        if ($responseErrorCode !== null) {
             $resolutionError = new ResolutionError(
                 $responseErrorCode,
                 $response['message'] ?? (string) ErrorCode::GENERAL(),

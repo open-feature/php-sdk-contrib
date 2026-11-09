@@ -45,7 +45,6 @@ class OfrepApiTest extends TestCase
         $api = new OfrepApi(new Config('https://gofeatureflag.org'));
         $reflection = new ReflectionClass($api);
         $property = $reflection->getProperty('client');
-        $property->setAccessible(true);
         $property->setValue($api, $mockClient);
 
         $api->evaluate('flagKey', $this->defaultEvaluationContext);
@@ -61,7 +60,6 @@ class OfrepApiTest extends TestCase
         $api = new OfrepApi(new Config('https://gofeatureflag.org'));
         $reflection = new ReflectionClass($api);
         $property = $reflection->getProperty('client');
-        $property->setAccessible(true);
         $property->setValue($api, $mockClient);
 
         $api->evaluate('flagKey', $this->defaultEvaluationContext);
@@ -77,7 +75,6 @@ class OfrepApiTest extends TestCase
         $api = new OfrepApi(new Config('https://gofeatureflag.org'));
         $reflection = new ReflectionClass($api);
         $property = $reflection->getProperty('client');
-        $property->setAccessible(true);
         $property->setValue($api, $mockClient);
 
         $api->evaluate('flagKey', $this->defaultEvaluationContext);
@@ -93,7 +90,6 @@ class OfrepApiTest extends TestCase
         $api = new OfrepApi(new Config('https://gofeatureflag.org'));
         $reflection = new ReflectionClass($api);
         $property = $reflection->getProperty('client');
-        $property->setAccessible(true);
         $property->setValue($api, $mockClient);
 
         $api->evaluate('flagKey', $this->defaultEvaluationContext);
@@ -109,7 +105,6 @@ class OfrepApiTest extends TestCase
         $api = new OfrepApi(new Config('https://gofeatureflag.org'));
         $reflection = new ReflectionClass($api);
         $property = $reflection->getProperty('client');
-        $property->setAccessible(true);
         $property->setValue($api, $mockClient);
 
         $api->evaluate('flagKey', $this->defaultEvaluationContext);
@@ -123,7 +118,6 @@ class OfrepApiTest extends TestCase
         $api = new OfrepApi(new Config('https://gofeatureflag.org'));
         $reflection = new ReflectionClass($api);
         $property = $reflection->getProperty('client');
-        $property->setAccessible(true);
         $property->setValue($api, $mockClient);
 
         ob_start();
@@ -150,7 +144,6 @@ class OfrepApiTest extends TestCase
         $api = new OfrepApi(new Config('https://gofeatureflag.org'));
         $reflection = new ReflectionClass($api);
         $property = $reflection->getProperty('client');
-        $property->setAccessible(true);
         $property->setValue($api, $mockClient);
 
         $got = $api->evaluate('flagKey', $this->defaultEvaluationContext);
@@ -174,7 +167,6 @@ class OfrepApiTest extends TestCase
         $api = new OfrepApi(new Config('https://gofeatureflag.org'));
         $reflection = new ReflectionClass($api);
         $property = $reflection->getProperty('client');
-        $property->setAccessible(true);
         $property->setValue($api, $mockClient);
 
         $got = $api->evaluate('flagKey', $this->defaultEvaluationContext);
@@ -197,7 +189,6 @@ class OfrepApiTest extends TestCase
         $api = new OfrepApi(new Config('https://gofeatureflag.org'));
         $reflection = new ReflectionClass($api);
         $property = $reflection->getProperty('client');
-        $property->setAccessible(true);
         $property->setValue($api, $mockClient);
 
         $api->evaluate('flagKey', $this->defaultEvaluationContext);
@@ -217,7 +208,6 @@ class OfrepApiTest extends TestCase
         $api = new OfrepApi(new Config('https://gofeatureflag.org'));
         $reflection = new ReflectionClass($api);
         $property = $reflection->getProperty('client');
-        $property->setAccessible(true);
         $property->setValue($api, $mockClient);
 
         $api->evaluate('flagKey', $this->defaultEvaluationContext);
@@ -237,7 +227,6 @@ class OfrepApiTest extends TestCase
         $api = new OfrepApi(new Config('https://gofeatureflag.org'));
         $reflection = new ReflectionClass($api);
         $property = $reflection->getProperty('client');
-        $property->setAccessible(true);
         $property->setValue($api, $mockClient);
 
         $api->evaluate('flagKey', $this->defaultEvaluationContext);
@@ -257,7 +246,6 @@ class OfrepApiTest extends TestCase
         $api = new OfrepApi(new Config('https://gofeatureflag.org'));
         $reflection = new ReflectionClass($api);
         $property = $reflection->getProperty('client');
-        $property->setAccessible(true);
         $property->setValue($api, $mockClient);
 
         $api->evaluate('flagKey', $this->defaultEvaluationContext);
@@ -276,7 +264,6 @@ class OfrepApiTest extends TestCase
         $api = new OfrepApi(new Config('https://gofeatureflag.org'));
         $reflection = new ReflectionClass($api);
         $property = $reflection->getProperty('client');
-        $property->setAccessible(true);
         $property->setValue($api, $mockClient);
 
         $api->evaluate('flagKey', $this->defaultEvaluationContext);
@@ -295,7 +282,6 @@ class OfrepApiTest extends TestCase
         $api = new OfrepApi(new Config('https://gofeatureflag.org'));
         $reflection = new ReflectionClass($api);
         $property = $reflection->getProperty('client');
-        $property->setAccessible(true);
         $property->setValue($api, $mockClient);
 
         $api->evaluate('flagKey', $this->defaultEvaluationContext);
@@ -315,7 +301,6 @@ class OfrepApiTest extends TestCase
         $api = new OfrepApi(new Config('https://gofeatureflag.org'));
         $reflection = new ReflectionClass($api);
         $property = $reflection->getProperty('client');
-        $property->setAccessible(true);
         $property->setValue($api, $mockClient);
 
         $api->evaluate('flagKey', $this->defaultEvaluationContext);
@@ -337,7 +322,6 @@ class OfrepApiTest extends TestCase
         $api = new OfrepApi(new Config('https://gofeatureflag.org'));
         $reflection = new ReflectionClass($api);
         $property = $reflection->getProperty('client');
-        $property->setAccessible(true);
         $property->setValue($api, $mockClient);
 
         try {
@@ -363,12 +347,11 @@ class OfrepApiTest extends TestCase
             'reason' => Reason::TARGETING_MATCH,
             'variant' => 'default',
         ]));
-        $mockClient->method('sendRequest')->will($this->onConsecutiveCalls($mockResponseRateLimited, $mockResponseSuccess));
+        $mockClient->method('sendRequest')->willReturn($mockResponseRateLimited, $mockResponseSuccess);
 
         $api = new OfrepApi(new Config('https://gofeatureflag.org'));
         $reflection = new ReflectionClass($api);
         $property = $reflection->getProperty('client');
-        $property->setAccessible(true);
         $property->setValue($api, $mockClient);
 
         try {
@@ -400,7 +383,6 @@ class OfrepApiTest extends TestCase
         $api = new OfrepApi(new Config('https://gofeatureflag.org'));
         $reflection = new ReflectionClass($api);
         $property = $reflection->getProperty('client');
-        $property->setAccessible(true);
         $property->setValue($api, $mockClient);
 
         try {
@@ -426,12 +408,11 @@ class OfrepApiTest extends TestCase
             'reason' => Reason::TARGETING_MATCH,
             'variant' => 'default',
         ]));
-        $mockClient->method('sendRequest')->will($this->onConsecutiveCalls($mockResponseRateLimited, $mockResponseSuccess));
+        $mockClient->method('sendRequest')->willReturn($mockResponseRateLimited, $mockResponseSuccess);
 
         $api = new OfrepApi(new Config('https://gofeatureflag.org'));
         $reflection = new ReflectionClass($api);
         $property = $reflection->getProperty('client');
-        $property->setAccessible(true);
         $property->setValue($api, $mockClient);
 
         try {
@@ -469,7 +450,6 @@ class OfrepApiTest extends TestCase
         $api = new OfrepApi(new Config('https://gofeatureflag.org', apiKey: 'your-secure-api-key'));
         $reflection = new ReflectionClass($api);
         $property = $reflection->getProperty('client');
-        $property->setAccessible(true);
         $property->setValue($api, $mockClient);
 
         $api->evaluate('flagKey', $this->defaultEvaluationContext);

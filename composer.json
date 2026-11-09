@@ -41,7 +41,7 @@
     }
   },
   "require": {
-    "captainhook/captainhook": "^5.11",
-    "ramsey/conventional-commits": "^1.3"
+    "captainhook/captainhook": "^5.29",
+    "ramsey/conventional-commits": "^1.7"
   }
 }

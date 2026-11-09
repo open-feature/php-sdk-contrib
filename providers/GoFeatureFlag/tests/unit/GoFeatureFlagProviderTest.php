@@ -111,12 +111,10 @@ class GoFeatureFlagProviderTest extends TestCase
     {
         $providerReflection = new ReflectionClass($provider);
         $ofrepApiProperty = $providerReflection->getProperty('ofrepApi');
-        $ofrepApiProperty->setAccessible(true);
         $ofrepApi = $ofrepApiProperty->getValue($provider);
 
         $ofrepApiReflection = new ReflectionClass($ofrepApi);
         $clientProperty = $ofrepApiReflection->getProperty('client');
-        $clientProperty->setAccessible(true);
         $clientProperty->setValue($ofrepApi, $mockClient);
     }
 
