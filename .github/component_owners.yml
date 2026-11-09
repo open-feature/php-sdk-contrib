@@ -1,0 +1,26 @@
+# Keep all in alphabetical order
+components:
+  hooks/DDTrace:
+    - JamieSinn
+  hooks/OpenTelemetry:
+    - JamieSinn
+  hooks/Validators:
+    - JamieSinn
+  providers/CloudBees:
+    - JamieSinn
+  providers/Flagd:
+    - JamieSinn
+    - toddbaert
+  providers/Flagsmith:
+    - JamieSinn
+    - matthewelwell
+    - Zaimwa9
+  providers/GoFeatureFlag:
+    - JamieSinn
+    - thomaspoignant
+  providers/Split:
+    - JamieSinn
+
+ignored-authors:
+  - renovate[bot]
+  - openfeaturebot
