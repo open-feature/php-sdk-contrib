@@ -100,6 +100,7 @@
     ],
     "dev:test:coverage:ci": "phpunit --colors=always --coverage-text --coverage-clover build/coverage/clover.xml --coverage-cobertura build/coverage/cobertura.xml --coverage-crap4j build/coverage/crap4j.xml --coverage-xml build/coverage/coverage-xml --log-junit build/junit.xml",
     "dev:test:coverage:html": "phpunit --colors=always --coverage-html build/coverage/coverage-html/",
+    "dev:test:e2e": "echo 'No e2e tests for this package.'",
     "dev:test:unit": "phpunit --colors=always --testdox tests/unit",
     "dev:test:unit:debug": "phpunit --colors=always --testdox -d xdebug.profiler_enable=on tests/unit",
     "dev:test:unit:setup": "echo 'Setup for unit tests...'",
