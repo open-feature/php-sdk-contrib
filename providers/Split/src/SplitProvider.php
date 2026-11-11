@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenFeature\Providers\Split;
 
+use OpenFeature\Providers\Split\errors\FlagNotFoundException;
 use OpenFeature\Providers\Split\errors\InvalidTreatmentTypeException;
 use OpenFeature\Providers\Split\errors\SplitFactoryCreationException;
 use OpenFeature\Providers\Split\errors\TargetingKeyMissingException;
@@ -22,6 +23,7 @@ use OpenFeature\interfaces\provider\ThrowableWithResolutionError;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use SplitIO\Component\Common\Di;
+use SplitIO\Grammar\Condition\Partition\TreatmentEnum;
 use SplitIO\Sdk;
 use SplitIO\Sdk\ClientInterface;
 use SplitIO\Sdk\Factory\SplitFactoryInterface;
@@ -124,6 +126,11 @@ class SplitProvider extends AbstractProvider implements Provider
             $attributes = $context->getAttributes()->toArray();
 
             $treatment = $this->client->getTreatment($targetingKey, $flagKey, $attributes);
+
+            // Split returns the control treatment when the flag does not exist or cannot be evaluated
+            if ($treatment === TreatmentEnum::CONTROL) {
+                throw new FlagNotFoundException();
+            }
 
             if (!TreatmentValidator::validate($flagType, $treatment)) {
                 throw new InvalidTreatmentTypeException();

@@ -7,6 +7,7 @@ namespace OpenFeature\Providers\Split\Test\integration;
 use OpenFeature\Providers\Split\SplitProvider;
 use OpenFeature\Providers\Split\Test\TestCase;
 use OpenFeature\implementation\flags\EvaluationContext;
+use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Provider;
 use Psr\Log\NullLogger;
 
@@ -158,6 +159,32 @@ class SplitProviderTest extends TestCase
 
         // Then
         $this->assertEquals($expectedValue, $actualValue);
+    }
+
+    public function testResolvesStringDefaultValueWhenFlagIsNotFound(): void
+    {
+        // Given
+        $defaultValue = 'default-value';
+
+        // When
+        $actualDetails = $this->provider->resolveStringValue('dev.openfeature.missing_flag', $defaultValue, $this->evaluationContext);
+
+        // Then
+        $this->assertEquals($defaultValue, $actualDetails->getValue());
+        $this->assertEquals(ErrorCode::FLAG_NOT_FOUND(), $actualDetails->getError()?->getResolutionErrorCode());
+    }
+
+    public function testResolvesBooleanDefaultValueWhenFlagIsNotFound(): void
+    {
+        // Given
+        $defaultValue = true;
+
+        // When
+        $actualDetails = $this->provider->resolveBooleanValue('dev.openfeature.missing_flag', $defaultValue, $this->evaluationContext);
+
+        // Then
+        $this->assertEquals($defaultValue, $actualDetails->getValue());
+        $this->assertEquals(ErrorCode::FLAG_NOT_FOUND(), $actualDetails->getError()?->getResolutionErrorCode());
     }
 
     public function testCanResolveStringDefaultValueWhenErrorOccurs(): void
