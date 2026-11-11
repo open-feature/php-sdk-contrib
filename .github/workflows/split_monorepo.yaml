@@ -37,7 +37,7 @@ permissions:
 
 jobs:
   split-repositories:
-    # Forks do not have the mirror deploy key.
+    # Forks do not have the split GitHub App credentials.
     if: github.repository == 'open-feature/php-sdk-contrib'
     runs-on: ubuntu-latest
     # One sync at a time per mirror and ref. Runs queue instead of being
@@ -126,13 +126,22 @@ jobs:
           cd "$GITHUB_WORKSPACE"
           git checkout "$GITHUB_SHA"
 
-      # Tag mode: unchanged behaviour. The action pushes HEAD to the tag ref
-      # (refs/tags/<version>) and deletes tags not matching tagFilter first.
+      - name: Generate GitHub App token (tag mode)
+        if: ${{ steps.mode.outputs.mode == 'tag' }}
+        id: tag-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ secrets.SPLIT_APP_CLIENT_ID }}
+          private-key: ${{ secrets.SPLIT_APP_PRIVATE_KEY }}
+          owner: open-feature-php
+          repositories: ${{ matrix.config[1] }}-${{ matrix.config[0] }}
+          permission-contents: write
+
       - name: Filter and push tag for package ${{ matrix.config[1] }}-${{ matrix.config[0] }}
         if: ${{ steps.mode.outputs.mode == 'tag' }}
-        uses: tcarrio/git-filter-repo-docker-action@ad6c01a5abb229439ea7ddf3a63ddb6cf0f41648 # v1.5.0
+        uses: open-feature-php/git-filter-repo-docker-action@7d873fc999440318495b59e9c2a5ddf5505897c3
         with:
-          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
+          token: ${{ steps.tag-token.outputs.token }}
           targetOrg: open-feature-php
           targetRepo: ${{ matrix.config[1] }}-${{ matrix.config[0] }}
           targetBranch: ${{ steps.mode.outputs.target_ref }}
@@ -145,21 +154,15 @@ jobs:
       # Branch mode is plain git because the action cannot do this: with a
       # branch name it runs a non-force `git push HEAD:<branch>`, so the
       # one-time history rewrite of mirror main would be rejected.
-      # The deploy key is only exposed to the push step below. Everything that
-      # installs or runs third-party code (pip, git-filter-repo) runs here
-      # without any secret in its environment.
+      # The App token is minted after filtering and only exposed to the push
+      # step. Everything that installs or runs third-party code (pip,
+      # git-filter-repo) runs without any credential in its environment.
       - name: Filter history for package ${{ matrix.config[1] }}-${{ matrix.config[0] }}
         if: ${{ steps.mode.outputs.mode == 'branch' }}
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           python3 -m pip install --user 'git-filter-repo==2.47.0'
           export PATH="$HOME/.local/bin:$PATH"
-
-          # Trust GitHub's published SSH host keys (not trust-on-first-use).
-          mkdir -p ~/.ssh
-          gh api meta --jq '.ssh_keys[] | "github.com " + .' > ~/.ssh/known_hosts
 
           cd "$GITHUB_WORKSPACE"
           # Tags are never mirrored in branch mode.
@@ -168,10 +171,25 @@ jobs:
           git-filter-repo --force --refs refs/heads/split \
             --subdirectory-filter "${PKG_TYPE}s/${PKG_DIR}/"
 
+      # Package histories contain .github/workflows/ files, and GitHub rejects
+      # App pushes that create or update workflow files without the
+      # `workflows` permission.
+      - name: Generate GitHub App token (branch mode)
+        if: ${{ steps.mode.outputs.mode == 'branch' }}
+        id: branch-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ secrets.SPLIT_APP_CLIENT_ID }}
+          private-key: ${{ secrets.SPLIT_APP_PRIVATE_KEY }}
+          owner: open-feature-php
+          repositories: ${{ matrix.config[1] }}-${{ matrix.config[0] }}
+          permission-contents: write
+          permission-workflows: write
+
       - name: Push main for package ${{ matrix.config[1] }}-${{ matrix.config[0] }}
         if: ${{ steps.mode.outputs.mode == 'branch' }}
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          TARGET_TOKEN: ${{ steps.branch-token.outputs.token }}
           GH_TOKEN: ${{ github.token }}
           FORCE: ${{ inputs.force }}
         run: |
@@ -192,11 +210,16 @@ jobs:
             force_flag="--force"
           fi
 
-          eval "$(ssh-agent -s)"
-          ssh-add - <<< "$SSH_PRIVATE_KEY"
+          basic="$(printf 'x-access-token:%s' "$TARGET_TOKEN" | base64 | tr -d '\n')"
+          echo "::add-mask::$basic"
+          export GIT_CONFIG_COUNT=2
+          export GIT_CONFIG_KEY_0="http.https://github.com/.extraheader"
+          export GIT_CONFIG_VALUE_0=""
+          export GIT_CONFIG_KEY_1="http.https://github.com/.extraheader"
+          export GIT_CONFIG_VALUE_1="AUTHORIZATION: basic $basic"
 
           cd "$GITHUB_WORKSPACE"
           # Same filter on same history gives identical SHAs, so this is a
           # fast-forward (or "Everything up-to-date") after the first sync.
           # shellcheck disable=SC2086
-          git push $force_flag "git@github.com:open-feature-php/${PKG_NAME}-${PKG_TYPE}.git" HEAD:refs/heads/main
+          git push $force_flag "https://github.com/open-feature-php/${PKG_NAME}-${PKG_TYPE}.git" HEAD:refs/heads/main
