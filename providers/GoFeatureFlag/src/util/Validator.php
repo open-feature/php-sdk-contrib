@@ -131,6 +131,8 @@ class Validator
     /**
      * Validate the flag metadata, if any, to be compliant with https://openfeature.dev/specification/types#flag-metadata
      *
+     * @param mixed $metadata - The metadata to validate
+     *
      * @throws ParseException
      *
      * @phpstan-assert array<string,bool|float|int|string>|null $metadata
@@ -142,7 +144,7 @@ class Validator
         }
         foreach ($metadata as $key => $item) {
             if (!is_string($key)) {
-                throw new ParseException("metadata contains invalid key: {$key}");
+                throw new ParseException("metadata contains invalid key type: expected string, got integer {$key}");
             }
             if (!is_scalar($item)) {
                 $itemType = get_debug_type($item);
