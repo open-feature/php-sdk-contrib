@@ -18,6 +18,7 @@ use function preg_match;
 
 class RegexpValidatorHook implements Hook
 {
+    /** @var non-empty-string */
     private string $regexp;
 
     public function __construct(string $regexp)
@@ -35,6 +36,7 @@ class RegexpValidatorHook implements Hook
       /** @var string $resolvedValue */
         $resolvedValue = $details->getValue();
 
+        // @phan-suppress-next-line PhanTypeMismatchArgumentNullable -- hook only supports string flags
         if ($this->testResolvedValue($resolvedValue)) {
             return;
         }
@@ -62,6 +64,9 @@ class RegexpValidatorHook implements Hook
         return preg_match($this->regexp, $resolvedValue) === 1;
     }
 
+    /**
+     * @return non-empty-string
+     */
     private static function validateRegexp(string $regexp): string
     {
         if (self::isValidRegexp($regexp)) {
@@ -71,8 +76,13 @@ class RegexpValidatorHook implements Hook
         throw new InvalidRegularExpressionException($regexp);
     }
 
+    /**
+     * @psalm-assert-if-true non-empty-string $regexp
+     * @phpstan-assert-if-true non-empty-string $regexp
+     */
     private static function isValidRegexp(string $regexp): bool
     {
-        return is_int(@preg_match($regexp, ''));
+        // @phan-suppress-next-line PhanParamSuspiciousOrder -- compiling the pattern against an empty subject is intentional
+        return $regexp !== '' && is_int(@preg_match($regexp, ''));
     }
 }

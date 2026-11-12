@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace OpenFeature\Providers\GoFeatureFlag\controller;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
 use OpenFeature\Providers\GoFeatureFlag\config\Config;
 use OpenFeature\Providers\GoFeatureFlag\exception\BaseOfrepException;
@@ -104,7 +103,7 @@ class OfrepApi
             }
         } catch (BaseOfrepException $e) {
             throw $e;
-        } catch (GuzzleException | Throwable $e) {
+        } catch (Throwable $e) {
             throw new UnknownOfrepException(null, $e);
         }
     }

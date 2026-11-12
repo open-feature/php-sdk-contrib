@@ -471,7 +471,7 @@ class OfrepApiTest extends TestCase
             'reason' => Reason::TARGETING_MATCH,
             'variant' => 'default',
         ]));
-        $mockClient->method('sendRequest')->will($this->onConsecutiveCalls($mockResponseRateLimited, $mockResponseSuccess));
+        $mockClient->method('sendRequest')->willReturn($mockResponseRateLimited, $mockResponseSuccess);
 
         $api = new OfrepApi(new Config('https://gofeatureflag.org'));
         $reflection = new ReflectionClass($api);
@@ -532,7 +532,7 @@ class OfrepApiTest extends TestCase
             'reason' => Reason::TARGETING_MATCH,
             'variant' => 'default',
         ]));
-        $mockClient->method('sendRequest')->will($this->onConsecutiveCalls($mockResponseRateLimited, $mockResponseSuccess));
+        $mockClient->method('sendRequest')->willReturn($mockResponseRateLimited, $mockResponseSuccess);
 
         $api = new OfrepApi(new Config('https://gofeatureflag.org'));
         $reflection = new ReflectionClass($api);

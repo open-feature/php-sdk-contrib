@@ -9,7 +9,7 @@ use function is_null;
 class FlagdResponseValidator
 {
     /**
-     * @param mixed[] $response
+     * @param mixed[]|null $response
      */
     public static function isTypeMismatch(?array $response): bool
     {
@@ -20,7 +20,7 @@ class FlagdResponseValidator
      * An absent `value` is a valid resolution rather than an error, so error detection keys on
      * the Connect error envelope instead.
      *
-     * @param mixed[] $response
+     * @param mixed[]|null $response
      */
     public static function isErrorResponse(?array $response): bool
     {

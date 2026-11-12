@@ -2,9 +2,8 @@
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="./vendor/phpunit/phpunit/phpunit.xsd"
          bootstrap="./vendor/autoload.php"
-         cacheResultFile="./build/cache/phpunit.result.cache"
-         colors="true"
-         verbose="true">
+         cacheDirectory="./build/cache/phpunit"
+         colors="true">
 
     <testsuites>
         <testsuite name="unit">
@@ -15,11 +14,11 @@
         </testsuite>
     </testsuites>
 
-    <coverage processUncoveredFiles="true">
+    <source>
         <include>
             <directory suffix=".php">./src</directory>
         </include>
-    </coverage>
+    </source>
 
     <php>
         <ini name="date.timezone" value="UTC"/>

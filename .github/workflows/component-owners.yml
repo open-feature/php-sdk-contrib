@@ -1,0 +1,17 @@
+name: 'Component Owners'
+on:
+  pull_request_target:
+
+jobs:
+  run_self:
+    runs-on: ubuntu-latest
+    name: Auto Assign Owners
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: dyladan/component-owners@d66f135510221a6915c8e27263e8b1c4a08b2d1c
+        with:
+          config-file: .github/component_owners.yml
+          repo-token: ${{ secrets.GITHUB_TOKEN }}

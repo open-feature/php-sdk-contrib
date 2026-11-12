@@ -11,6 +11,7 @@ class ServiceFactory
 {
     public static function fromConfig(IConfig $config): ServiceInterface
     {
+        // @phan-suppress-next-line PhanNoopSwitchCases -- only HTTP is implemented; gRPC will add a case here
         switch ($config->getProtocol()) {
             default:
                 return HttpService::fromConfig($config);

@@ -10,6 +10,7 @@ use Flagsmith\Models\BaseFlag;
 use Flagsmith\Models\Flags;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery\MockInterface;
 use OpenFeature\Providers\Flagsmith\Test\unit\fixtures\MockFlags;
 use OpenFeature\Providers\Flagsmith\service\FlagEvaluator;
 use OpenFeature\interfaces\provider\ErrorCode;
@@ -20,8 +21,8 @@ class FlagEvaluatorTest extends TestCase
     use MockeryPHPUnitIntegration;
 
     private FlagEvaluator $evaluator;
-    private Flagsmith $flagsmithClient;
-    private Flags $mockFlags;
+    private Flagsmith & MockInterface $flagsmithClient;
+    private Flags & MockInterface $mockFlags;
 
     /**
      * Create a mock BaseFlag from configuration.

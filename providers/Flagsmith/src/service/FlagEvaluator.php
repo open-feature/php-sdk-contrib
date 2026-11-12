@@ -14,6 +14,7 @@ use OpenFeature\interfaces\provider\ResolutionDetails;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
+use function filter_var;
 use function floatval;
 use function gettype;
 use function intval;
@@ -31,6 +32,7 @@ use function json_last_error;
 use function json_last_error_msg;
 use function strtolower;
 
+use const FILTER_VALIDATE_INT;
 use const JSON_ERROR_NONE;
 
 class FlagEvaluator

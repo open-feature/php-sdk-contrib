@@ -51,9 +51,11 @@ class Validator
     /**
      * @param mixed $data - The data to validate
      *
-     * @return array{key: string, reason: string, variant: string}
+     * @return array<array-key, mixed>
      *
      * @throws ParseException
+     *
+     * @phpstan-return array{key: string, reason: string, variant: string, ...}
      */
     public static function validateSuccessApiResponse(mixed $data): array
     {
@@ -87,9 +89,11 @@ class Validator
     /**
      * @param mixed $data - The data to validate
      *
-     * @return array{errorCode: string}
+     * @return array<array-key, mixed>
      *
      * @throws ParseException
+     *
+     * @phpstan-return array{errorCode: string, ...}
      */
     public static function validateErrorApiResponse(mixed $data): array
     {
