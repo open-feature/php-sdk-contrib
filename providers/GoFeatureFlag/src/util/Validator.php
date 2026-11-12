@@ -137,17 +137,20 @@ class Validator
      *
      * @phpstan-assert array<string,bool|float|int|string>|null $metadata
      */
-    public static function validateFlagMetadata(mixed $metadata): void
+    public static function validateFlagMetadata(mixed &$metadata): void
     {
         if (!is_array($metadata)) {
             throw new ParseException('metadata is not a valid container');
         }
-        foreach ($metadata as $key => $item) {
+
+        $keys = array_keys($metadata);
+
+        foreach ($keys as $key) {
+            // For simplicity, we remove keys that are not strings to be compliant with OpenFeature spec.
             if (!is_string($key)) {
-                throw new ParseException("metadata contains invalid key type: expected string, got integer {$key}");
-            }
-            if (!is_scalar($item)) {
-                $itemType = get_debug_type($item);
+                unset($metadata[$key]);
+            } elseif (!is_scalar($metadata[$key])) {
+                $itemType = get_debug_type($metadata[$key]);
 
                 throw new ParseException("metadata contains invalid data: value of key '{$key}' is of type {$itemType}");
             }

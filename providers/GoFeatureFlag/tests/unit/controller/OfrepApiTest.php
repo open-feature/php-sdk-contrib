@@ -347,9 +347,8 @@ class OfrepApiTest extends TestCase
         $api->evaluate('flagKey', $this->defaultEvaluationContext);
     }
 
-    public function testShouldRaiseAnErrorIf200AndJsonDoesContainTheOptionalKeyMetadataWithAnyNotStringTypeKey()
+    public function testShouldNotRaiseAnErrorIf200AndJsonDoesContainTheOptionalKeyMetadataWithAnyNotStringTypeKey()
     {
-        $this->expectException(ParseException::class);
         $mockClient = $this->createMock(ClientInterface::class);
         $mockResponse = new Response(200, [], json_encode([
             'key' => 'flagKey',
@@ -368,7 +367,10 @@ class OfrepApiTest extends TestCase
         $property = $reflection->getProperty('client');
         $property->setValue($api, $mockClient);
 
-        $api->evaluate('flagKey', $this->defaultEvaluationContext);
+        $flagDetails = $api->evaluate('flagKey', $this->defaultEvaluationContext);
+
+        $this->assertArrayHasKey('valid_key', $flagDetails->getMetadata());
+        $this->assertArrayNotHasKey(0, $flagDetails->getMetadata());
     }
 
     // END: Flag metadata test cases
