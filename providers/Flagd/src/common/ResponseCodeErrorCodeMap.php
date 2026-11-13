@@ -34,8 +34,8 @@ class ResponseCodeErrorCodeMap
     {
         if (!self::$initialized) {
             self::$keys = [
-                'not_found' => ErrorCode::FLAG_NOT_FOUND(),
-                'invalid_argument' => ErrorCode::TYPE_MISMATCH(),
+                'not_found' => ErrorCode::FLAG_NOT_FOUND,
+                'invalid_argument' => ErrorCode::TYPE_MISMATCH,
             ];
 
             self::$initialized = true;
