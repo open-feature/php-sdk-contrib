@@ -3,7 +3,7 @@
 [![a](https://img.shields.io/badge/slack-%40cncf%2Fopenfeature-brightgreen?style=flat&logo=slack)](https://cloud-native.slack.com/archives/C0344AANLA1)
 [![Latest Stable Version](http://poser.pugx.org/open-feature/flagd-provider/v)](https://packagist.org/packages/open-feature/flagd-provider)
 [![Total Downloads](http://poser.pugx.org/open-feature/flagd-provider/downloads)](https://packagist.org/packages/open-feature/flagd-provider)
-![PHP 8.1+](https://img.shields.io/badge/php->=8.1-blue.svg)
+![PHP 8.2+](https://img.shields.io/badge/php->=8.2-blue.svg)
 [![License](http://poser.pugx.org/open-feature/flagd-provider/license)](https://packagist.org/packages/open-feature/flagd-provider)
 
 ## Overview
@@ -66,7 +66,7 @@ The Flagd server is gRPC but offers gRPC Web endpoints that can be accessed over
 
 ### PHP Versioning
 
-This library requires PHP 8.1 or newer within the PHP 8.x series (`^8.1`), as declared in [composer.json](composer.json). The `bcmath` extension must also be enabled.
+This library requires PHP 8.2 or newer within the PHP 8.x series (`^8.2`), as declared in [composer.json](composer.json). The `bcmath` extension must also be enabled.
 
 This package also has a `.tool-versions` file for use with PHP version managers like `asdf`.
 
