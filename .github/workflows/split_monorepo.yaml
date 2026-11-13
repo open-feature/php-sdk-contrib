@@ -2,9 +2,9 @@ name: split-monorepo
 
 # Two modes, selected by the triggering event:
 #
-#   branch mode: `push` to main, or `workflow_dispatch` with `branch: main`.
-#     Filters the monorepo at the triggering commit and pushes the result to
-#     `main` of every package's read-only mirror. Never pushes tags.
+#   branch mode: `push` to main, or `workflow_dispatch` from main with `branch`.
+#     Filters the selected branch and pushes the result to the same branch
+#     of every package's read-only mirror. Never pushes tags.
 #
 #   tag mode: `release: published`, or `workflow_dispatch` with `tag`.
 #     Only the package matching the tag runs. The filtered history is pushed
@@ -23,11 +23,11 @@ on:
         type: string
         required: false
       branch:
-        description: 'Branch mode: branch to sync to the mirrors (only "main" is supported). Leave empty for tag mode.'
+        description: 'Branch mode: branch to sync to the mirrors. Run the workflow from main. Leave empty for tag mode.'
         type: string
         required: false
       force:
-        description: 'Branch mode: force-push mirror main. Needed once to replace the old, unrelated mirror history.'
+        description: 'Branch mode: force-push the selected mirror branch. Needed to replace unrelated mirror history.'
         type: boolean
         required: false
         default: false
@@ -62,6 +62,7 @@ jobs:
           - [provider, go-feature-flag, GoFeatureFlag]
           - [provider, flagsmith, Flagsmith]
     env:
+      TARGET_BRANCH: ${{ inputs.branch || 'main' }}
       PKG_TYPE: ${{ matrix.config[0] }}
       PKG_NAME: ${{ matrix.config[1] }}
       PKG_DIR: ${{ matrix.config[2] }}
@@ -92,10 +93,11 @@ jobs:
                 mode=tag
                 tag="$INPUT_TAG"
               elif [ -n "$INPUT_BRANCH" ]; then
-                if [ "$INPUT_BRANCH" != "main" ] || [ "$GITHUB_REF" != "refs/heads/main" ]; then
-                  echo "::error::Branch mode only supports 'main': set branch=main and run the workflow from main."
+                if [ "$GITHUB_REF" != "refs/heads/main" ]; then
+                  echo "::error::Run branch mode from main."
                   exit 1
                 fi
+                git check-ref-format "refs/heads/$INPUT_BRANCH"
                 mode=branch
               else
                 echo "::error::Provide exactly one of 'tag' or 'branch'."
@@ -120,11 +122,21 @@ jobs:
           echo "Mode for ${PKG_NAME}-${PKG_TYPE}: ${mode}"
 
       - name: checkout
+        id: checkout
         if: ${{ steps.mode.outputs.mode != 'skip' }}
+        env:
+          MODE: ${{ steps.mode.outputs.mode }}
+          EVENT_NAME: ${{ github.event_name }}
         run: |
           git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE"
           cd "$GITHUB_WORKSPACE"
-          git checkout "$GITHUB_SHA"
+          if [ "$MODE" = "branch" ] && [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            git fetch origin "refs/heads/$TARGET_BRANCH"
+            git checkout --detach FETCH_HEAD
+          else
+            git checkout "$GITHUB_SHA"
+          fi
+          echo "source_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Generate GitHub App token (tag mode)
         if: ${{ steps.mode.outputs.mode == 'tag' }}
@@ -167,7 +179,7 @@ jobs:
           cd "$GITHUB_WORKSPACE"
           # Tags are never mirrored in branch mode.
           git tag --list | xargs -r git tag --delete
-          git checkout -B split "$GITHUB_SHA"
+          git checkout -B split HEAD
           git-filter-repo --force --refs refs/heads/split \
             --subdirectory-filter "${PKG_TYPE}s/${PKG_DIR}/"
 
@@ -186,25 +198,23 @@ jobs:
           permission-contents: write
           permission-workflows: write
 
-      - name: Push main for package ${{ matrix.config[1] }}-${{ matrix.config[0] }}
+      - name: Push branch for package ${{ matrix.config[1] }}-${{ matrix.config[0] }}
         if: ${{ steps.mode.outputs.mode == 'branch' }}
         env:
           TARGET_TOKEN: ${{ steps.branch-token.outputs.token }}
-          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ steps.checkout.outputs.source_sha }}
           FORCE: ${{ inputs.force }}
         run: |
           set -euo pipefail
 
           force_flag=""
           if [ "${FORCE:-false}" = "true" ]; then
-            # GITHUB_SHA is captured when the run is created, and concurrency
-            # does not order queued runs. A forced push from a stale commit
-            # would rewind mirror main behind a newer sync, so only force
-            # when main has not moved since. Non-force pushes are already
-            # protected by git's fast-forward check.
-            current_main="$(gh api "repos/${GITHUB_REPOSITORY}/commits/main" --jq .sha)"
-            if [ "$current_main" != "$GITHUB_SHA" ]; then
-              echo "::error::Refusing forced push: main moved to ${current_main}, this run was created for ${GITHUB_SHA}. Re-dispatch from the current main."
+            # Concurrency does not order queued runs. Only force when the
+            # source branch has not moved since checkout. Non-force pushes
+            # are already protected by git's fast-forward check.
+            current_sha="$(git ls-remote --exit-code "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" "refs/heads/$TARGET_BRANCH" | cut -f1)"
+            if [ "$current_sha" != "$SOURCE_SHA" ]; then
+              echo "::error::Refusing forced push: $TARGET_BRANCH moved to ${current_sha}, this run checked out ${SOURCE_SHA}. Re-dispatch for the current branch."
               exit 1
             fi
             force_flag="--force"
@@ -222,4 +232,4 @@ jobs:
           # Same filter on same history gives identical SHAs, so this is a
           # fast-forward (or "Everything up-to-date") after the first sync.
           # shellcheck disable=SC2086
-          git push $force_flag "https://github.com/open-feature-php/${PKG_NAME}-${PKG_TYPE}.git" HEAD:refs/heads/main
+          git push $force_flag "https://github.com/open-feature-php/${PKG_NAME}-${PKG_TYPE}.git" "HEAD:refs/heads/$TARGET_BRANCH"
