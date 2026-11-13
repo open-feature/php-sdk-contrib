@@ -70,13 +70,9 @@ class DDTraceHook implements Hook
             return;
         }
 
-        $span->log([
-            Tag::LOG_MESSAGE => [
-                self::FLAG_KEY => $context->getFlagKey(),
-                self::FLAG_PROVIDER_NAME => OpenFeatureAPI::getInstance()->getProvider()->getMetadata()->getName(),
-                self::FLAG_VARIANT => $details->getVariant(),
-            ],
-        ], new DateTimeImmutable('now'));
+        $span->setTag(self::FLAG_KEY, $context->getFlagKey());
+        $span->setTag(self::FLAG_PROVIDER_NAME, OpenFeatureAPI::getInstance()->getProvider()->getMetadata()->getName());
+        $span->setTag(self::FLAG_VARIANT, $details->getVariant());
     }
 
     public function error(HookContext $context, Throwable $error, HookHints $hints): void
