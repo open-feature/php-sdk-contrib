@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.1](https://github.com/open-feature/php-sdk-contrib/compare/open-feature/split-provider-1.0.0...open-feature/split-provider-1.0.1) (2026-11-13)
+
+
+### Bug Fixes
+
+* **split:** reject non-integer treatments for integer flags ([#213](https://github.com/open-feature/php-sdk-contrib/issues/213)) ([f9f3e35](https://github.com/open-feature/php-sdk-contrib/commit/f9f3e35596d8ff2bdcf278b65984fe37f095e7af))
+* **split:** report missing targeting key for null or empty keys ([#209](https://github.com/open-feature/php-sdk-contrib/issues/209)) ([9849447](https://github.com/open-feature/php-sdk-contrib/commit/98494473ce285b8ff2da5bcf4fc8c968f2ea9955))
+
 ## [1.0.0](https://github.com/open-feature/php-sdk-contrib/compare/open-feature/split-provider-v1.0.0...open-feature/split-provider-1.0.0) (2024-09-04)
 
 
