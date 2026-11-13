@@ -4,11 +4,11 @@
 
 ### System Requirements
 
-PHP 8+ is required.
+PHP 8.2+ is required.
 
 ### Compilation target(s)
 
-We target compatibility with PHP versions 8.0, 8.1, and 8.2.
+We target compatibility with PHP versions 8.2, 8.3, 8.4, and 8.5.
 
 ### Project Structure
 

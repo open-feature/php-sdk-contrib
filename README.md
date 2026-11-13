@@ -2,7 +2,7 @@
 
 [![a](https://img.shields.io/badge/slack-%40cncf%2Fopenfeature-brightgreen?style=flat&logo=slack)](https://cloud-native.slack.com/archives/C0344AANLA1)
 [![codecov](https://codecov.io/gh/open-feature/php-sdk-contrib/branch/main/graph/badge.svg?token=3DC5XOEHMY)](https://codecov.io/gh/open-feature/php-sdk-contrib)
-![PHP 8.0+](https://img.shields.io/badge/php->=8.0-blue.svg)
+![PHP 8.2+](https://img.shields.io/badge/php->=8.2-blue.svg)
 ![License](https://img.shields.io/github/license/open-feature/php-sdk-contrib)
 ![Experimental](https://img.shields.io/badge/Status-Experimental-yellow)
 
@@ -28,7 +28,7 @@ This repository is marked as **experimental** since the repository structure its
 
 ### PHP Versioning
 
-This library targets PHP version 8.0 and newer. As long as you have any compatible version of PHP on your system you should be able to utilize the OpenFeature SDK.
+This library targets PHP version 8.2 and newer. As long as you have any compatible version of PHP on your system you should be able to utilize the OpenFeature SDK.
 
 This package also has a `.tool-versions` file for use with PHP version managers like `asdf`.
 

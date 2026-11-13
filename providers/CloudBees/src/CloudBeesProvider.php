@@ -50,7 +50,7 @@ class CloudBeesProvider extends AbstractProvider implements Provider
     {
     }
 
-    public function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger): void
     {
         // no-op
     }
@@ -106,7 +106,7 @@ class CloudBeesProvider extends AbstractProvider implements Provider
     }
 
     /**
-     * @param bool|string|int|float|mixed[] $defaultValue
+     * @param bool|string|int|float|mixed[]|null $defaultValue
      */
     private function resolve(mixed $defaultValue, callable $fn, ?callable $transformer = null): ResolutionDetails
     {

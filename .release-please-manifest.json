@@ -5,6 +5,6 @@
   "providers/CloudBees": "1.1.0",
   "providers/Flagd": "2.0.0",
   "providers/Split": "1.0.0",
-  "providers/GoFeatureFlag": "1.1.0",
+  "providers/GoFeatureFlag": "1.1.1",
   "providers/Flagsmith": "0.1.1"
 }

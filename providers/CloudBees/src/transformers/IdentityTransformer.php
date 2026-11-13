@@ -7,9 +7,9 @@ namespace OpenFeature\Providers\CloudBees\transformers;
 class IdentityTransformer
 {
     /**
-     * @param bool|string|int|float|mixed[] $x
+     * @param bool|string|int|float|mixed[]|null $x
      *
-     * @return bool|string|int|float|mixed[]
+     * @return bool|string|int|float|mixed[]|null
      */
     public function __invoke(mixed $x): mixed
     {

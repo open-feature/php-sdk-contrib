@@ -3,8 +3,12 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
        errorLevel="1"
+       phpVersion="8.2"
        cacheDirectory="./build/cache/psalm"
-       errorBaseline="./psalm-baseline.xml">
+       errorBaseline="./psalm-baseline.xml"
+       findUnusedCode="false"
+       findUnusedBaselineEntry="false"
+       ensureOverrideAttribute="false">
 
     <projectFiles>
         <directory name="./src"/>
@@ -13,5 +17,10 @@
             <directory name="./vendor"/>
         </ignoreFiles>
     </projectFiles>
+
+    <issueHandlers>
+        <!-- Psalm 6+ default; making public classes final would be a BC break for consumers -->
+        <ClassMustBeFinal errorLevel="suppress"/>
+    </issueHandlers>
 
 </psalm>
