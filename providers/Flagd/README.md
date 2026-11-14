@@ -66,7 +66,7 @@ The Flagd server is gRPC but offers gRPC Web endpoints that can be accessed over
 
 ### PHP Versioning
 
-This library targets PHP version 8.2 and newer. As long as you have any compatible version of PHP on your system you should be able to utilize the OpenFeature SDK.
+This library requires PHP 8.2 or newer within the PHP 8.x series (`^8.2`), as declared in [composer.json](composer.json). The `bcmath` extension must also be enabled.
 
 This package also has a `.tool-versions` file for use with PHP version managers like `asdf`.
 
