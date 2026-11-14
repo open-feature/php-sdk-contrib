@@ -269,6 +269,144 @@ class GoFeatureFlagProviderTest extends TestCase
         assertEquals('integer_key', $got->getFlagKey());
     }
 
+    // START: Flag metadata tests
+
+    public function testShouldReturnFlagMetadataAsNullWhenResponseIs200AndMetadataIsNotAvailable(): void
+    {
+        $mockClient = $this->createMock(ClientInterface::class);
+        $mockResponse = new Response(200, [], json_encode([
+            'key' => 'flag-key',
+            'value' => ['value' => 'value as object'],
+            'reason' => 'TARGETING_MATCH',
+            'variant' => 'default',
+        ]));
+
+        $mockClient->expects($this->once())
+            ->method('sendRequest')
+            ->willReturn($mockResponse);
+
+        $config = new Config('http://gofeatureflag.org');
+        $provider = new GoFeatureFlagProvider($config);
+
+        $this->mockHttpClient($provider, $mockClient);
+
+        $api = OpenFeatureAPI::getInstance();
+        $api->setProvider($provider);
+        $client = $api->getClient();
+        $got = $client->getObjectDetails('flag-key', ['default' => true], $this->defaultEvaluationContext);
+        $this->assertIsArray($got->getMetadata());
+        $this->assertEmpty($got->getMetadata());
+    }
+
+    public function testShouldReturnFlagMetadataAsArrayWhenResponseIs200AndMetadataIsAvailable(): void
+    {
+        $mockClient = $this->createMock(ClientInterface::class);
+        $mockResponse = new Response(200, [], json_encode([
+            'key' => 'flag-key',
+            'value' => ['value' => 'value as object'],
+            'reason' => 'TARGETING_MATCH',
+            'variant' => 'default',
+            'metadata' => [
+                'bool_metadata' => true,
+                'float_metadata' => 10.10,
+                'int_metadata' => 10,
+                'string_metadata' => 'string value',
+            ],
+        ]));
+
+        $mockClient->expects($this->once())
+            ->method('sendRequest')
+            ->willReturn($mockResponse);
+
+        $config = new Config('http://gofeatureflag.org');
+        $provider = new GoFeatureFlagProvider($config);
+
+        $this->mockHttpClient($provider, $mockClient);
+
+        $api = OpenFeatureAPI::getInstance();
+        $api->setProvider($provider);
+        $client = $api->getClient();
+        $got = $client->getObjectDetails('flag-key', ['default' => true], $this->defaultEvaluationContext);
+        $this->assertIsArray($got->getMetadata());
+        $this->assertNotEmpty($got->getMetadata());
+        // String values
+        $this->assertArrayHasKey('string_metadata', $got->getMetadata());
+        $this->assertEquals('string value', $got->getMetadata()['string_metadata']);
+        // Int values
+        $this->assertArrayHasKey('int_metadata', $got->getMetadata());
+        $this->assertEquals(10, $got->getMetadata()['int_metadata']);
+        // Float values
+        $this->assertArrayHasKey('float_metadata', $got->getMetadata());
+        $this->assertEquals(10.10, $got->getMetadata()['float_metadata']);
+        // Bool values
+        $this->assertArrayHasKey('bool_metadata', $got->getMetadata());
+        $this->assertEquals(true, $got->getMetadata()['bool_metadata']);
+    }
+
+    public function testShouldReturnErrorWhenResponseIs200AndMetadataIsNotValidArray(): void
+    {
+        $mockClient = $this->createMock(ClientInterface::class);
+        $mockResponse = new Response(200, [], json_encode([
+            'key' => 'flag-key',
+            'metadata' => 'metadata value',
+            'reason' => 'TARGETING_MATCH',
+            'value' => ['value' => 'value as object'],
+            'variant' => 'default',
+        ]));
+
+        $mockClient->expects($this->once())
+            ->method('sendRequest')
+            ->willReturn($mockResponse);
+
+        $config = new Config('http://gofeatureflag.org');
+        $provider = new GoFeatureFlagProvider($config);
+
+        $this->mockHttpClient($provider, $mockClient);
+
+        $api = OpenFeatureAPI::getInstance();
+        $api->setProvider($provider);
+        $client = $api->getClient();
+        $got = $client->getObjectDetails('flag-key', ['default' => true], $this->defaultEvaluationContext);
+        $this->assertNotEmpty($got->getError());
+        $this->assertEquals(ErrorCode::PARSE_ERROR(), $got->getError()->getResolutionErrorCode());
+        $this->assertEquals('metadata is not a valid container', $got->getError()->getResolutionErrorMessage());
+    }
+
+    public function testShouldReturnErrorWhenResponseIs200AndMetadataIsValidArrayWithNonScalarItems(): void
+    {
+        $mockClient = $this->createMock(ClientInterface::class);
+        $mockResponse = new Response(200, [], json_encode([
+            'key' => 'flag-key',
+            'value' => ['value' => 'value as object'],
+            'reason' => 'TARGETING_MATCH',
+            'variant' => 'default',
+            'metadata' => [
+                'nested_metadata' => [
+                    'nested_key' => 'nested value',
+                ],
+            ],
+        ]));
+
+        $mockClient->expects($this->once())
+            ->method('sendRequest')
+            ->willReturn($mockResponse);
+
+        $config = new Config('http://gofeatureflag.org');
+        $provider = new GoFeatureFlagProvider($config);
+
+        $this->mockHttpClient($provider, $mockClient);
+
+        $api = OpenFeatureAPI::getInstance();
+        $api->setProvider($provider);
+        $client = $api->getClient();
+        $got = $client->getObjectDetails('flag-key', ['default' => true], $this->defaultEvaluationContext);
+        $this->assertNotEmpty($got->getError());
+        $this->assertEquals(ErrorCode::PARSE_ERROR(), $got->getError()->getResolutionErrorCode());
+        $this->assertEquals("metadata contains invalid data: value of key 'nested_metadata' is of type array", $got->getError()->getResolutionErrorMessage());
+    }
+
+    // END: Flag metadata tests
+
     public function testShouldReturnTheDefaultValueOfTheFlagIfErrorSendByTheAPIHttpCode403(): void
     {
         $mockClient = $this->createMock(ClientInterface::class);

@@ -12,8 +12,10 @@ use function array_diff;
 use function array_keys;
 use function count;
 use function filter_var;
+use function get_debug_type;
 use function implode;
 use function is_array;
+use function is_scalar;
 use function is_string;
 use function key_exists;
 
@@ -81,10 +83,6 @@ class Validator
             throw new ParseException('reason is not a string');
         }
 
-        if (key_exists('metadata', $data) && !is_array($data['metadata'])) {
-            throw new ParseException('metadata is not an array');
-        }
-
         return $data;
     }
 
@@ -131,6 +129,35 @@ class Validator
     {
         if ($flagKey === '') {
             throw new InvalidConfigException('Flag key is null or empty');
+        }
+    }
+
+    /**
+     * Validate the flag metadata, if any, to be compliant with https://openfeature.dev/specification/types#flag-metadata
+     *
+     * @param mixed $metadata - The metadata to validate
+     *
+     * @throws ParseException
+     *
+     * @phpstan-assert array<string,bool|float|int|string>|null $metadata
+     */
+    public static function validateFlagMetadata(mixed &$metadata): void
+    {
+        if (!is_array($metadata)) {
+            throw new ParseException('metadata is not a valid container');
+        }
+
+        $keys = array_keys($metadata);
+
+        foreach ($keys as $key) {
+            // For simplicity, we remove keys that are not strings to be compliant with OpenFeature spec.
+            if (!is_string($key)) {
+                unset($metadata[$key]);
+            } elseif (!is_scalar($metadata[$key])) {
+                $itemType = get_debug_type($metadata[$key]);
+
+                throw new ParseException("metadata contains invalid data: value of key '{$key}' is of type {$itemType}");
+            }
         }
     }
 }
