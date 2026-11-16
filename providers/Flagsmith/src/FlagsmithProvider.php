@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace OpenFeature\Providers\Flagsmith;
 
 use Flagsmith\Flagsmith;
+use GuzzleHttp\Client;
+use GuzzleHttp\RequestOptions;
 use OpenFeature\Providers\Flagsmith\config\FlagsmithConfig;
 use OpenFeature\Providers\Flagsmith\service\ContextMapper;
 use OpenFeature\Providers\Flagsmith\service\FlagEvaluator;
@@ -31,16 +33,30 @@ class FlagsmithProvider extends AbstractProvider
         ?FlagEvaluator $evaluator = null,
     ) {
         // Initialize Flagsmith client from config (or use injected one for testing)
-        $this->flagsmithClient = $flagsmithClient ?? new Flagsmith(
-            $config->apiKey,
-            $config->apiUrl,
-            $config->customHeaders,
-        );
+        $this->flagsmithClient = $flagsmithClient ?? $this->createFlagsmithClient($config);
 
         // Initialize services (or use injected ones for testing)
         $this->contextMapper = $contextMapper ?? new ContextMapper();
         $this->evaluator = $evaluator ?? new FlagEvaluator($this->flagsmithClient);
         $this->evaluator->useBooleanConfigValue = $config->useBooleanConfigValue;
+    }
+
+    private function createFlagsmithClient(FlagsmithConfig $config): Flagsmith
+    {
+        $flagsmithClient = new Flagsmith(
+            $config->apiKey,
+            $config->apiUrl,
+            $config->customHeaders,
+        );
+
+        if ($config->requestTimeout === null) {
+            return $flagsmithClient;
+        }
+
+        // requestTimeout is in milliseconds, Guzzle expects seconds
+        return $flagsmithClient->withClient(
+            new Client([RequestOptions::TIMEOUT => $config->requestTimeout / 1000]),
+        );
     }
 
     public function getMetadata(): Metadata

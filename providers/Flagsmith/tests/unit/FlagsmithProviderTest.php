@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace OpenFeature\Providers\Flagsmith\Test\unit;
 
 use Flagsmith\Flagsmith;
+use GuzzleHttp\Client;
+use GuzzleHttp\RequestOptions;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
@@ -19,6 +21,7 @@ use OpenFeature\interfaces\common\Metadata;
 use OpenFeature\interfaces\hooks\Hook;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use ReflectionProperty;
 
 class FlagsmithProviderTest extends TestCase
 {
@@ -54,6 +57,22 @@ class FlagsmithProviderTest extends TestCase
         $provider = new FlagsmithProvider($config);
 
         $this->assertInstanceOf(FlagsmithProvider::class, $provider);
+    }
+
+    public function testAppliesRequestTimeoutToHttpClient(): void
+    {
+        $config = new FlagsmithConfig('test-environment-key', requestTimeout: 5000);
+
+        $provider = new FlagsmithProvider($config);
+
+        $this->assertEquals(5.0, $this->getHttpClient($provider)->getConfig(RequestOptions::TIMEOUT));
+    }
+
+    public function testDoesNotSetTimeoutWithoutRequestTimeout(): void
+    {
+        $provider = new FlagsmithProvider($this->config);
+
+        $this->assertNull($this->getHttpClient($provider)->getConfig(RequestOptions::TIMEOUT));
     }
 
     public function testGetMetadataReturnsProviderName(): void
@@ -240,5 +259,17 @@ class FlagsmithProviderTest extends TestCase
         $this->assertInstanceOf(FlagsmithProvider::class, $provider);
         $metadata = $provider->getMetadata();
         $this->assertEquals('FlagsmithProvider', $metadata->getName());
+    }
+
+    private function getHttpClient(FlagsmithProvider $provider): Client
+    {
+        $flagsmithClient = (new ReflectionProperty(FlagsmithProvider::class, 'flagsmithClient'))->getValue($provider);
+        $this->assertInstanceOf(Flagsmith::class, $flagsmithClient);
+
+        $httpClient = (new ReflectionProperty(Flagsmith::class, 'client'))->getValue($flagsmithClient);
+
+        $this->assertInstanceOf(Client::class, $httpClient);
+
+        return $httpClient;
     }
 }
