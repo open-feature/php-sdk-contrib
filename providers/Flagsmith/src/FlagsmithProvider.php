@@ -35,7 +35,6 @@ class FlagsmithProvider extends AbstractProvider
             $config->apiKey,
             $config->apiUrl,
             $config->customHeaders,
-            $config->requestTimeout,
         );
 
         // Initialize services (or use injected ones for testing)

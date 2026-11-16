@@ -47,6 +47,15 @@ class FlagsmithProviderTest extends TestCase
         );
     }
 
+    public function testCanBeCreatedWithRequestTimeoutAndEnvironmentKey(): void
+    {
+        $config = new FlagsmithConfig('test-environment-key', requestTimeout: 5000);
+
+        $provider = new FlagsmithProvider($config);
+
+        $this->assertInstanceOf(FlagsmithProvider::class, $provider);
+    }
+
     public function testGetMetadataReturnsProviderName(): void
     {
         $metadata = $this->provider->getMetadata();
