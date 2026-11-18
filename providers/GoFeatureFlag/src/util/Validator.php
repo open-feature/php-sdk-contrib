@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace OpenFeature\Providers\GoFeatureFlag\util;
 
+use JsonException;
 use OpenFeature\Providers\GoFeatureFlag\config\Config;
 use OpenFeature\Providers\GoFeatureFlag\exception\InvalidConfigException;
 use OpenFeature\Providers\GoFeatureFlag\exception\ParseException;
 
 use function array_diff;
+use function array_key_exists;
 use function array_keys;
 use function count;
 use function filter_var;
@@ -17,9 +19,11 @@ use function implode;
 use function is_array;
 use function is_scalar;
 use function is_string;
+use function json_decode;
 use function key_exists;
 
 use const FILTER_VALIDATE_URL;
+use const JSON_THROW_ON_ERROR;
 
 class Validator
 {
@@ -49,20 +53,27 @@ class Validator
     }
 
     /**
-     * @param mixed $data - The data to validate
+     * @param string $response - The API response to validate, as a JSON string
      *
      * @return array<array-key, mixed>
      *
      * @throws ParseException
-     *
-     * @phpstan-return array{key: string, reason: string, variant: string, ...}
      */
-    public static function validateSuccessApiResponse(mixed $data): array
+    public static function validateSuccessApiResponse(string $response): array
     {
-        if (!is_array($data)) {
-            throw new ParseException('invalid json object, expected associative array');
+        try {
+            $data = json_decode($response, true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $jex) {
+            throw new ParseException('Cannot parse the response', previous: $jex);
         }
 
+        if (!is_array($data)) {
+            $dataType = get_debug_type($data);
+
+            throw new ParseException("Expected a valid JSON object, received {$dataType}.");
+        }
+
+        // Check for any missing required keys
         $requiredKeys = ['key', 'value', 'reason', 'variant'];
         $missingKeys = array_diff($requiredKeys, array_keys($data));
         if (count($missingKeys) > 0) {
@@ -83,7 +94,18 @@ class Validator
             throw new ParseException('reason is not a string');
         }
 
-        return $data;
+        $result = [
+            'key' => $data['key'],
+            'value' => $data['value'],
+            'reason' => $data['reason'],
+            'variant' => $data['variant'],
+        ];
+
+        if (array_key_exists('metadata', $data) && is_array($data['metadata'])) {
+            $result['metadata'] = $data['metadata'];
+        }
+
+        return $result;
     }
 
     /**
@@ -133,31 +155,28 @@ class Validator
     }
 
     /**
-     * Validate the flag metadata, if any, to be compliant with https://openfeature.dev/specification/types#flag-metadata
+     * Sanitize the flag metadata, if any, to be compliant with https://openfeature.dev/specification/types#flag-metadata
      *
      * @param mixed $metadata - The metadata to validate
      *
-     * @throws ParseException
-     *
-     * @phpstan-assert array<string,bool|float|int|string>|null $metadata
+     * @return array<string,bool|float|int|string>|null
      */
-    public static function validateFlagMetadata(mixed &$metadata): void
+    public static function sanitizeFlagMetadata(mixed $metadata): ?array
     {
         if (!is_array($metadata)) {
-            throw new ParseException('metadata is not a valid container');
+            // We short-circuit by returning null, since only associative arrays can be treated as valid metadata containers
+            return null;
         }
 
-        $keys = array_keys($metadata);
-
-        foreach ($keys as $key) {
-            // For simplicity, we remove keys that are not strings to be compliant with OpenFeature spec.
-            if (!is_string($key)) {
-                unset($metadata[$key]);
-            } elseif (!is_scalar($metadata[$key])) {
-                $itemType = get_debug_type($metadata[$key]);
-
-                throw new ParseException("metadata contains invalid data: value of key '{$key}' is of type {$itemType}");
+        /** @var array<string,bool|float|int|string>|null $sanitized */
+        $sanitized = [];
+        /** @psalm-suppress MixedAssignment */
+        foreach ($metadata as $key => $value) {
+            if (is_scalar($value)) {
+                $sanitized[(string) $key] = $value;
             }
         }
+
+        return $sanitized;
     }
 }

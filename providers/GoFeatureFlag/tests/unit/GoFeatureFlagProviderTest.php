@@ -231,6 +231,7 @@ class GoFeatureFlagProviderTest extends TestCase
         $api->setProvider($provider);
         $client = $api->getClient();
         $got = $client->getObjectDetails('flag-key', ['default' => true], $this->defaultEvaluationContext);
+
         assertEquals(['value' => 'value as object'], $got->getValue());
         assertEquals(Reason::TARGETING_MATCH, $got->getReason());
         assertEquals('default', $got->getVariant());
@@ -271,7 +272,7 @@ class GoFeatureFlagProviderTest extends TestCase
 
     // START: Flag metadata tests
 
-    public function testShouldReturnFlagMetadataAsNullWhenResponseIs200AndMetadataIsNotAvailable(): void
+    public function testShouldReturnFlagMetadataAsEmptyArrayWhenResponseIs200AndMetadataIsNotAvailable(): void
     {
         $mockClient = $this->createMock(ClientInterface::class);
         $mockResponse = new Response(200, [], json_encode([
@@ -279,6 +280,34 @@ class GoFeatureFlagProviderTest extends TestCase
             'value' => ['value' => 'value as object'],
             'reason' => 'TARGETING_MATCH',
             'variant' => 'default',
+        ]));
+
+        $mockClient->expects($this->once())
+            ->method('sendRequest')
+            ->willReturn($mockResponse);
+
+        $config = new Config('http://gofeatureflag.org');
+        $provider = new GoFeatureFlagProvider($config);
+
+        $this->mockHttpClient($provider, $mockClient);
+
+        $api = OpenFeatureAPI::getInstance();
+        $api->setProvider($provider);
+        $client = $api->getClient();
+        $got = $client->getObjectDetails('flag-key', ['default' => true], $this->defaultEvaluationContext);
+        $this->assertIsArray($got->getMetadata());
+        $this->assertEmpty($got->getMetadata());
+    }
+
+    public function testShouldReturnFlagMetadataAsEmptyArrayWhenResponseIs200AndMetadataIsNull(): void
+    {
+        $mockClient = $this->createMock(ClientInterface::class);
+        $mockResponse = new Response(200, [], json_encode([
+            'key' => 'flag-key',
+            'value' => ['value' => 'value as object'],
+            'reason' => 'TARGETING_MATCH',
+            'variant' => 'default',
+            'metadata' => null,
         ]));
 
         $mockClient->expects($this->once())
@@ -343,7 +372,7 @@ class GoFeatureFlagProviderTest extends TestCase
         $this->assertEquals(true, $got->getMetadata()['bool_metadata']);
     }
 
-    public function testShouldReturnErrorWhenResponseIs200AndMetadataIsNotValidArray(): void
+    public function testShouldNotReturnErrorWhenResponseIs200AndMetadataIsNotValidArray(): void
     {
         $mockClient = $this->createMock(ClientInterface::class);
         $mockResponse = new Response(200, [], json_encode([
@@ -367,12 +396,11 @@ class GoFeatureFlagProviderTest extends TestCase
         $api->setProvider($provider);
         $client = $api->getClient();
         $got = $client->getObjectDetails('flag-key', ['default' => true], $this->defaultEvaluationContext);
-        $this->assertNotEmpty($got->getError());
-        $this->assertEquals(ErrorCode::PARSE_ERROR(), $got->getError()->getResolutionErrorCode());
-        $this->assertEquals('metadata is not a valid container', $got->getError()->getResolutionErrorMessage());
+        $this->assertEmpty($got->getError());
+        $this->assertEmpty($got->getMetadata());
     }
 
-    public function testShouldReturnErrorWhenResponseIs200AndMetadataIsValidArrayWithNonScalarItems(): void
+    public function testShouldNotReturnErrorWhenResponseIs200AndMetadataIsValidArrayWithNonScalarItems(): void
     {
         $mockClient = $this->createMock(ClientInterface::class);
         $mockResponse = new Response(200, [], json_encode([
@@ -381,6 +409,7 @@ class GoFeatureFlagProviderTest extends TestCase
             'reason' => 'TARGETING_MATCH',
             'variant' => 'default',
             'metadata' => [
+                'valid_key' => 'valid_value',
                 'nested_metadata' => [
                     'nested_key' => 'nested value',
                 ],
@@ -400,9 +429,10 @@ class GoFeatureFlagProviderTest extends TestCase
         $api->setProvider($provider);
         $client = $api->getClient();
         $got = $client->getObjectDetails('flag-key', ['default' => true], $this->defaultEvaluationContext);
-        $this->assertNotEmpty($got->getError());
-        $this->assertEquals(ErrorCode::PARSE_ERROR(), $got->getError()->getResolutionErrorCode());
-        $this->assertEquals("metadata contains invalid data: value of key 'nested_metadata' is of type array", $got->getError()->getResolutionErrorMessage());
+        $this->assertEmpty($got->getError());
+        $this->assertNotEmpty($got->getMetadata());
+        $this->assertArrayNotHasKey('nested_metadata', $got->getMetadata());
+        $this->assertArrayHasKey('valid_key', $got->getMetadata());
     }
 
     // END: Flag metadata tests

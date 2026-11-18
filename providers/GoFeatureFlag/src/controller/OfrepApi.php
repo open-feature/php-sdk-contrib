@@ -114,8 +114,7 @@ class OfrepApi
     private function parseSuccessResponse(ResponseInterface $response): OfrepApiSuccessResponse
     {
         /** @var array<string, mixed> $parsed */
-        $parsed = json_decode($response->getBody()->getContents(), true);
-        $parsed = Validator::validateSuccessApiResponse($parsed);
+        $parsed = Validator::validateSuccessApiResponse($response->getBody()->getContents());
 
         return new OfrepApiSuccessResponse($parsed);
     }

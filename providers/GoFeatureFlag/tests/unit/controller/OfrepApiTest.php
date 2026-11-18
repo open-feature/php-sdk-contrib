@@ -274,7 +274,29 @@ class OfrepApiTest extends TestCase
         $this->assertEmpty($details->getMetadata());
     }
 
-    public function testShouldNotRaiseAnErrorIf200AndJsonDoesContainTheOptionalKeyMetadataWithValueAsArray()
+    public function testShouldNotRaiseAnErrorIf200AndJsonDoesContainTheOptionalKeysMissingMetadataWithNullValue()
+    {
+        $mockClient = $this->createMock(ClientInterface::class);
+        $mockResponse = new Response(200, [], json_encode([
+            'key' => 'flagKey',
+            'reason' => Reason::TARGETING_MATCH,
+            'variant' => 'default',
+            'value' => true,
+            'metadata' => null,
+        ]));
+        $mockClient->method('sendRequest')->willReturn($mockResponse);
+
+        $api = new OfrepApi(new Config('https://gofeatureflag.org'));
+        $reflection = new ReflectionClass($api);
+        $property = $reflection->getProperty('client');
+        $property->setValue($api, $mockClient);
+
+        $details = $api->evaluate('flagKey', $this->defaultEvaluationContext);
+        $this->assertEquals(OfrepApiSuccessResponse::class, $details::class);
+        $this->assertEmpty($details->getMetadata());
+    }
+
+    public function testShouldNotRaiseAnErrorIf200AndJsonDoesContainTheOptionalKeyMetadataWithValueAsObject()
     {
         $mockClient = $this->createMock(ClientInterface::class);
         $mockResponse = new Response(200, [], json_encode([
@@ -301,9 +323,8 @@ class OfrepApiTest extends TestCase
         $this->assertIsArray($details->getMetadata());
     }
 
-    public function testShouldRaiseAnErrorIf200AndJsonDoesContainTheOptionalKeyMetadataWithValueAsNotArray()
+    public function testShouldNotRaiseAnErrorIf200AndJsonDoesContainTheOptionalKeyMetadataWithValueAsScalar()
     {
-        $this->expectException(ParseException::class);
         $mockClient = $this->createMock(ClientInterface::class);
         $mockResponse = new Response(200, [], json_encode([
             'key' => 'flagKey',
@@ -319,12 +340,13 @@ class OfrepApiTest extends TestCase
         $property = $reflection->getProperty('client');
         $property->setValue($api, $mockClient);
 
-        $api->evaluate('flagKey', $this->defaultEvaluationContext);
+        $result = $api->evaluate('flagKey', $this->defaultEvaluationContext);
+        $this->assertInstanceOf(OfrepApiSuccessResponse::class, $result);
+        $this->assertEmpty($result->getMetadata());
     }
 
-    public function testShouldRaiseAnErrorIf200AndJsonDoesContainTheOptionalKeyMetadataWithValueAsArrayAndItemsAsNonScalarValue()
+    public function testShouldNotRaiseAnErrorIf200AndJsonDoesContainTheOptionalKeyMetadataWithValueAsObjectAndItemsAsNonScalarValue()
     {
-        $this->expectException(ParseException::class);
         $mockClient = $this->createMock(ClientInterface::class);
         $mockResponse = new Response(200, [], json_encode([
             'key' => 'flagKey',
@@ -344,7 +366,9 @@ class OfrepApiTest extends TestCase
         $property = $reflection->getProperty('client');
         $property->setValue($api, $mockClient);
 
-        $api->evaluate('flagKey', $this->defaultEvaluationContext);
+        $result = $api->evaluate('flagKey', $this->defaultEvaluationContext);
+        $this->assertInstanceOf(OfrepApiSuccessResponse::class, $result);
+        $this->assertEquals([], $result->getMetadata());
     }
 
     public function testShouldNotRaiseAnErrorIf200AndJsonDoesContainTheOptionalKeyMetadataWithAnyNotStringTypeKey()
@@ -367,10 +391,10 @@ class OfrepApiTest extends TestCase
         $property = $reflection->getProperty('client');
         $property->setValue($api, $mockClient);
 
-        $flagDetails = $api->evaluate('flagKey', $this->defaultEvaluationContext);
+        $result = $api->evaluate('flagKey', $this->defaultEvaluationContext);
 
-        $this->assertArrayHasKey('valid_key', $flagDetails->getMetadata());
-        $this->assertArrayNotHasKey(0, $flagDetails->getMetadata());
+        $this->assertArrayHasKey('valid_key', $result->getMetadata());
+        $this->assertArrayHasKey('0', $result->getMetadata());
     }
 
     // END: Flag metadata test cases

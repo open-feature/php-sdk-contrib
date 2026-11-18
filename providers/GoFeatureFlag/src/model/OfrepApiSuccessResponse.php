@@ -58,8 +58,7 @@ class OfrepApiSuccessResponse
 
         // Validate and set flag metadata
         if (array_key_exists('metadata', $apiData)) {
-            Validator::validateFlagMetadata($apiData['metadata']);
-            $this->metadata = $apiData['metadata'];
+            $this->metadata = Validator::sanitizeFlagMetadata($apiData['metadata']);
         } else {
             $this->metadata = null;
         }
