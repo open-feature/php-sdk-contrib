@@ -304,7 +304,7 @@ class GoFeatureFlagProviderTest extends TestCase
         $mockClient = $this->createMock(ClientInterface::class);
         $mockResponse = new Response(200, [], json_encode([
             'key' => 'flag-key',
-            'value' => ['value' => 'value as object'],
+            'value' => true,
             'reason' => 'TARGETING_MATCH',
             'variant' => 'default',
             'metadata' => null,
@@ -322,7 +322,9 @@ class GoFeatureFlagProviderTest extends TestCase
         $api = OpenFeatureAPI::getInstance();
         $api->setProvider($provider);
         $client = $api->getClient();
-        $got = $client->getObjectDetails('flag-key', ['default' => true], $this->defaultEvaluationContext);
+        $got = $client->getBooleanDetails('flag-key', false, $this->defaultEvaluationContext);
+        $this->assertEquals(true, $got->getValue());
+        $this->assertEquals(Reason::TARGETING_MATCH, $got->getReason());
         $this->assertIsArray($got->getMetadata());
         $this->assertEmpty($got->getMetadata());
     }
@@ -332,7 +334,7 @@ class GoFeatureFlagProviderTest extends TestCase
         $mockClient = $this->createMock(ClientInterface::class);
         $mockResponse = new Response(200, [], json_encode([
             'key' => 'flag-key',
-            'value' => ['value' => 'value as object'],
+            'value' => 'string value',
             'reason' => 'TARGETING_MATCH',
             'variant' => 'default',
             'metadata' => [
@@ -355,7 +357,9 @@ class GoFeatureFlagProviderTest extends TestCase
         $api = OpenFeatureAPI::getInstance();
         $api->setProvider($provider);
         $client = $api->getClient();
-        $got = $client->getObjectDetails('flag-key', ['default' => true], $this->defaultEvaluationContext);
+        $got = $client->getStringDetails('flag-key', 'default value', $this->defaultEvaluationContext);
+        $this->assertEquals('string value', $got->getValue());
+        $this->assertEquals(Reason::TARGETING_MATCH, $got->getReason());
         $this->assertIsArray($got->getMetadata());
         $this->assertNotEmpty($got->getMetadata());
         // String values
@@ -433,6 +437,42 @@ class GoFeatureFlagProviderTest extends TestCase
         $this->assertNotEmpty($got->getMetadata());
         $this->assertArrayNotHasKey('nested_metadata', $got->getMetadata());
         $this->assertArrayHasKey('valid_key', $got->getMetadata());
+    }
+
+    public function testShouldNotReturnErrorWhenResponseIs200AndMetadataIsValidAndFlagEvaluationHasTypeMismatch(): void
+    {
+        $mockClient = $this->createMock(ClientInterface::class);
+        $mockResponse = new Response(200, [], json_encode([
+            'key' => 'flag-key',
+            'value' => 'string value',
+            'reason' => 'TARGETING_MATCH',
+            'variant' => 'default',
+            'metadata' => [
+                'valid_key' => 'valid_value',
+            ],
+        ]));
+
+        $mockClient->expects($this->once())
+            ->method('sendRequest')
+            ->willReturn($mockResponse);
+
+        $config = new Config('http://gofeatureflag.org');
+        $provider = new GoFeatureFlagProvider($config);
+
+        $this->mockHttpClient($provider, $mockClient);
+
+        $api = OpenFeatureAPI::getInstance();
+        $api->setProvider($provider);
+        $client = $api->getClient();
+        $got = $client->getBooleanDetails('flag-key', false, $this->defaultEvaluationContext);
+
+        $this->assertEquals(false, $got->getValue());
+        $this->assertEquals(Reason::ERROR, $got->getReason());
+        $this->assertNotNull($got->getError());
+        $this->assertEquals(ErrorCode::TYPE_MISMATCH(), $got->getError()->getResolutionErrorCode());
+        $this->assertNotEmpty($got->getMetadata());
+        $this->assertArrayNotHasKey('nested_metadata', $got->getMetadata());
+        $this->assertEquals(['valid_key' => 'valid_value'], $got->getMetadata());
     }
 
     // END: Flag metadata tests
