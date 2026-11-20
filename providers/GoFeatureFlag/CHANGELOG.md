@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/open-feature/php-sdk-contrib/compare/open-feature/go-feature-flag-provider-1.1.1...open-feature/go-feature-flag-provider-1.2.0) (2026-11-20)
+
+
+### Features
+
+* **GoFeatureFlag:** :sparkles: Exposing flag metadata through evaluation details ([#214](https://github.com/open-feature/php-sdk-contrib/issues/214)) ([89fcccd](https://github.com/open-feature/php-sdk-contrib/commit/89fcccd9973429d750c91e5688dcaf22e8047476))
+
 ## [1.1.1](https://github.com/open-feature/php-sdk-contrib/compare/open-feature/go-feature-flag-provider-1.1.0...open-feature/go-feature-flag-provider-1.1.1) (2026-11-04)
 
 
