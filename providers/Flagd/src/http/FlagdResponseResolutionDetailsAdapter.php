@@ -20,7 +20,7 @@ class FlagdResponseResolutionDetailsAdapter
     {
         return (new ResolutionDetailsBuilder())
             ->withValue($defaultValue)
-            ->withError(new ResolutionError(ErrorCode::TYPE_MISMATCH()))
+            ->withError(new ResolutionError(ErrorCode::TYPE_MISMATCH))
             ->build();
     }
 
@@ -35,10 +35,10 @@ class FlagdResponseResolutionDetailsAdapter
         if ($responseErrorCode !== null) {
             $resolutionError = new ResolutionError(
                 $responseErrorCode,
-                $response['message'] ?? (string) ErrorCode::GENERAL(),
+                $response['message'] ?? ErrorCode::GENERAL->value,
             );
         } else {
-            $resolutionError = new ResolutionError(ErrorCode::GENERAL(), (string) ErrorCode::GENERAL());
+            $resolutionError = new ResolutionError(ErrorCode::GENERAL, ErrorCode::GENERAL->value);
         }
 
         return (new ResolutionDetailsBuilder())
