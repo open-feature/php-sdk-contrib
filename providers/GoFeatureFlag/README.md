@@ -118,12 +118,12 @@ $client->getObjectValue('my-flag-key', ["default" => true], new MutableEvaluatio
 ## Features status
 
 | Status | Feature         | Description                                                                |
-|-------|-----------------|----------------------------------------------------------------------------|
+|--------|-----------------|----------------------------------------------------------------------------|
 | ✅     | Flag evaluation | It is possible to evaluate all the type of flags                           |
 | ❌     | Caching         | Mechanism is in place to refresh the cache in case of configuration change |
 | ❌     | Event Streaming | Not supported by the SDK                                                   |
 | ❌     | Logging         | Not supported by the SDK                                                   |
-| ❌     | Flag Metadata   | Not supported by the SDK                                                   |
+| ✅     | Flag Metadata   | Flags metadata will be validated against the [OpenFeature flag metadata spec](https://openfeature.dev/specification/types/#flag-metadata).                                                  |
 
 
 <sub>**Implemented**: ✅ | In-progress: ⚠️ | Not implemented yet: ❌</sub>
