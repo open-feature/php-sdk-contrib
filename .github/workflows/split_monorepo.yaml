@@ -61,8 +61,11 @@ jobs:
           - [provider, split, Split]
           - [provider, go-feature-flag, GoFeatureFlag]
           - [provider, flagsmith, Flagsmith]
+    # Job env overrides the env a Docker action declares for itself. Do not
+    # reuse the git-filter-repo action's names (TARGET_BRANCH, TARGET_REPO,
+    # TAG_FILTER...): a job-level TARGET_BRANCH made tag mode push to main.
     env:
-      TARGET_BRANCH: ${{ inputs.branch || 'main' }}
+      SYNC_BRANCH: ${{ inputs.branch || 'main' }}
       PKG_TYPE: ${{ matrix.config[0] }}
       PKG_NAME: ${{ matrix.config[1] }}
       PKG_DIR: ${{ matrix.config[2] }}
@@ -127,12 +130,16 @@ jobs:
         env:
           MODE: ${{ steps.mode.outputs.mode }}
           EVENT_NAME: ${{ github.event_name }}
+          INPUT_TAG: ${{ inputs.tag }}
         run: |
           git clone "$GITHUB_SERVER_URL"/"$GITHUB_REPOSITORY" "$GITHUB_WORKSPACE"
           cd "$GITHUB_WORKSPACE"
           if [ "$MODE" = "branch" ] && [ "$EVENT_NAME" = "workflow_dispatch" ]; then
-            git fetch origin "refs/heads/$TARGET_BRANCH"
+            git fetch origin "refs/heads/$SYNC_BRANCH"
             git checkout --detach FETCH_HEAD
+          elif [ "$MODE" = "tag" ] && [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            # GITHUB_SHA is the dispatching branch here, not the release.
+            git checkout "refs/tags/$INPUT_TAG"
           else
             git checkout "$GITHUB_SHA"
           fi
@@ -162,6 +169,18 @@ jobs:
             --subdirectory-filter "${{matrix.config[0] }}s/${{ matrix.config[2] }}/" \
             --tag-rename "open-feature/${{ matrix.config[1] }}-${{ matrix.config[0] }}-:" \
             --force
+
+      # The action exits 0 when its push is a no-op, so check the result.
+      - name: Verify tag on split repository
+        if: ${{ steps.mode.outputs.mode == 'tag' }}
+        env:
+          TARGET_REF: ${{ steps.mode.outputs.target_ref }}
+        run: |
+          repo="https://github.com/open-feature-php/${PKG_NAME}-${PKG_TYPE}.git"
+          if ! git ls-remote --exit-code "$repo" "$TARGET_REF"; then
+            echo "::error::${TARGET_REF} is missing on ${repo} after the push."
+            exit 1
+          fi
 
       # Branch mode is plain git because the action cannot do this: with a
       # branch name it runs a non-force `git push HEAD:<branch>`, so the
@@ -212,9 +231,9 @@ jobs:
             # Concurrency does not order queued runs. Only force when the
             # source branch has not moved since checkout. Non-force pushes
             # are already protected by git's fast-forward check.
-            current_sha="$(git ls-remote --exit-code "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" "refs/heads/$TARGET_BRANCH" | cut -f1)"
+            current_sha="$(git ls-remote --exit-code "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" "refs/heads/$SYNC_BRANCH" | cut -f1)"
             if [ "$current_sha" != "$SOURCE_SHA" ]; then
-              echo "::error::Refusing forced push: $TARGET_BRANCH moved to ${current_sha}, this run checked out ${SOURCE_SHA}. Re-dispatch for the current branch."
+              echo "::error::Refusing forced push: $SYNC_BRANCH moved to ${current_sha}, this run checked out ${SOURCE_SHA}. Re-dispatch for the current branch."
               exit 1
             fi
             force_flag="--force"
@@ -232,4 +251,4 @@ jobs:
           # Same filter on same history gives identical SHAs, so this is a
           # fast-forward (or "Everything up-to-date") after the first sync.
           # shellcheck disable=SC2086
-          git push $force_flag "https://github.com/open-feature-php/${PKG_NAME}-${PKG_TYPE}.git" "HEAD:refs/heads/$TARGET_BRANCH"
+          git push $force_flag "https://github.com/open-feature-php/${PKG_NAME}-${PKG_TYPE}.git" "HEAD:refs/heads/$SYNC_BRANCH"
