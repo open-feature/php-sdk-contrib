@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace OpenFeature\Hooks\Validators\Test\integration;
+namespace OpenFeature\Hooks\Validators\Test\unit;
 
 use OpenFeature\Hooks\Validators\Exceptions\ValidationException;
 use OpenFeature\Hooks\Validators\Regexp\InvalidRegularExpressionException;
