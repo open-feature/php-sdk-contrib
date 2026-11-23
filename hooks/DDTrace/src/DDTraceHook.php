@@ -19,8 +19,8 @@ use Throwable;
 use function class_exists;
 
 /**
- * Creates a DDTrace hook for OpenFeature. This emits a structured log event
- * containing information about the feature flag for the current trace.
+ * Creates a DDTrace hook for OpenFeature. Each flag evaluation is recorded as
+ * a child span of the active span, tagged with information about the feature flag.
  *
  * This generally follows the structure of the semantic convention of feature
  * flags in OpenTelemetry, as OpenTracing (which DDTrace is based upon) is
@@ -31,6 +31,7 @@ use function class_exists;
  */
 class DDTraceHook implements Hook
 {
+    private const EVALUATION_SPAN_NAME = 'feature_flag.evaluation';
     private const FLAG_KEY = 'feature_flag.key';
     private const FLAG_PROVIDER_NAME = 'feature_flag.provider_name';
     private const FLAG_VARIANT = 'feature_flag.variant';
@@ -65,14 +66,22 @@ class DDTraceHook implements Hook
 
     public function after(HookContext $context, ResolutionDetails $details, HookHints $hints): void
     {
-        $span = self::getCurrentSpan();
-        if (!$span) {
+        $parentSpan = self::getCurrentSpan();
+        if (!$parentSpan) {
             return;
         }
 
-        $span->setTag(self::FLAG_KEY, $context->getFlagKey());
-        $span->setTag(self::FLAG_PROVIDER_NAME, OpenFeatureAPI::getInstance()->getProvider()->getMetadata()->getName());
-        $span->setTag(self::FLAG_VARIANT, $details->getVariant());
+        // Tags are stored by key, so each evaluation gets its own child span
+        // to keep several evaluations under one parent span from overwriting each other
+        $span = GlobalTracer::get()->startSpan(self::EVALUATION_SPAN_NAME, [
+            'child_of' => $parentSpan,
+            'tags' => [
+                self::FLAG_KEY => $context->getFlagKey(),
+                self::FLAG_PROVIDER_NAME => OpenFeatureAPI::getInstance()->getProvider()->getMetadata()->getName(),
+                self::FLAG_VARIANT => $details->getVariant(),
+            ],
+        ]);
+        $span->finish();
     }
 
     public function error(HookContext $context, Throwable $error, HookHints $hints): void
