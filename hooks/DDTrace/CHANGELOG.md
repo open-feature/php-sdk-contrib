@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/open-feature/php-sdk-contrib/compare/open-feature/dd-trace-hook-1.0.0...open-feature/dd-trace-hook-1.0.1) (2026-11-26)
+
+
+### Bug Fixes
+
+* **ddtrace:** set flag details as a span tags in the after hook ([#220](https://github.com/open-feature/php-sdk-contrib/issues/220)) ([208e37d](https://github.com/open-feature/php-sdk-contrib/commit/208e37d00173f8d469f572a57af8876c6c222ebf))
+
 ## [1.0.0](https://github.com/open-feature/php-sdk-contrib/compare/open-feature/dd-trace-hook-v1.0.0...open-feature/dd-trace-hook-1.0.0) (2024-09-04)
 
 
