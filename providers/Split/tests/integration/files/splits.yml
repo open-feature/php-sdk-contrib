@@ -8,3 +8,7 @@
     treatment: '3.14'
 - 'dev.openfeature.object_flag':
     treatment: '{"name":"OpenFeature","version":"1.0.0"}'
+- 'dev.openfeature.decimal_int_flag':
+    treatment: '3.99'
+- 'dev.openfeature.exponent_int_flag':
+    treatment: '1e3'

@@ -251,6 +251,154 @@ class OfrepApiTest extends TestCase
         $api->evaluate('flagKey', $this->defaultEvaluationContext);
     }
 
+    // START: Flag metadata test cases
+
+    public function testShouldNotRaiseAnErrorIf200AndJsonDoesNotContainTheOptionalKeysMissingMetadata()
+    {
+        $mockClient = $this->createMock(ClientInterface::class);
+        $mockResponse = new Response(200, [], json_encode([
+            'key' => 'flagKey',
+            'reason' => Reason::TARGETING_MATCH,
+            'variant' => 'default',
+            'value' => true,
+        ]));
+        $mockClient->method('sendRequest')->willReturn($mockResponse);
+
+        $api = new OfrepApi(new Config('https://gofeatureflag.org'));
+        $reflection = new ReflectionClass($api);
+        $property = $reflection->getProperty('client');
+        $property->setValue($api, $mockClient);
+
+        $details = $api->evaluate('flagKey', $this->defaultEvaluationContext);
+        $this->assertEquals(OfrepApiSuccessResponse::class, $details::class);
+        $this->assertEmpty($details->getMetadata());
+    }
+
+    public function testShouldNotRaiseAnErrorIf200AndJsonDoesContainTheOptionalKeysMissingMetadataWithNullValue()
+    {
+        $mockClient = $this->createMock(ClientInterface::class);
+        $mockResponse = new Response(200, [], json_encode([
+            'key' => 'flagKey',
+            'reason' => Reason::TARGETING_MATCH,
+            'variant' => 'default',
+            'value' => true,
+            'metadata' => null,
+        ]));
+        $mockClient->method('sendRequest')->willReturn($mockResponse);
+
+        $api = new OfrepApi(new Config('https://gofeatureflag.org'));
+        $reflection = new ReflectionClass($api);
+        $property = $reflection->getProperty('client');
+        $property->setValue($api, $mockClient);
+
+        $details = $api->evaluate('flagKey', $this->defaultEvaluationContext);
+        $this->assertEquals(OfrepApiSuccessResponse::class, $details::class);
+        $this->assertEmpty($details->getMetadata());
+    }
+
+    public function testShouldNotRaiseAnErrorIf200AndJsonDoesContainTheOptionalKeyMetadataWithValueAsObject()
+    {
+        $mockClient = $this->createMock(ClientInterface::class);
+        $mockResponse = new Response(200, [], json_encode([
+            'key' => 'flagKey',
+            'reason' => Reason::TARGETING_MATCH,
+            'variant' => 'default',
+            'value' => true,
+            'metadata' => [
+                'string_metadata' => 'string value',
+                'int_metadata' => 10,
+                'float_metadata' => 10.10,
+                'bool_metadata' => true,
+            ],
+        ]));
+        $mockClient->method('sendRequest')->willReturn($mockResponse);
+
+        $api = new OfrepApi(new Config('https://gofeatureflag.org'));
+        $reflection = new ReflectionClass($api);
+        $property = $reflection->getProperty('client');
+        $property->setValue($api, $mockClient);
+
+        $details = $api->evaluate('flagKey', $this->defaultEvaluationContext);
+        $this->assertEquals(OfrepApiSuccessResponse::class, $details::class);
+        $this->assertIsArray($details->getMetadata());
+    }
+
+    public function testShouldNotRaiseAnErrorIf200AndJsonDoesContainTheOptionalKeyMetadataWithValueAsScalar()
+    {
+        $mockClient = $this->createMock(ClientInterface::class);
+        $mockResponse = new Response(200, [], json_encode([
+            'key' => 'flagKey',
+            'reason' => Reason::TARGETING_MATCH,
+            'variant' => 'default',
+            'value' => true,
+            'metadata' => 'metadata value',
+        ]));
+        $mockClient->method('sendRequest')->willReturn($mockResponse);
+
+        $api = new OfrepApi(new Config('https://gofeatureflag.org'));
+        $reflection = new ReflectionClass($api);
+        $property = $reflection->getProperty('client');
+        $property->setValue($api, $mockClient);
+
+        $result = $api->evaluate('flagKey', $this->defaultEvaluationContext);
+        $this->assertInstanceOf(OfrepApiSuccessResponse::class, $result);
+        $this->assertEmpty($result->getMetadata());
+    }
+
+    public function testShouldNotRaiseAnErrorIf200AndJsonDoesContainTheOptionalKeyMetadataWithValueAsObjectAndItemsAsNonScalarValue()
+    {
+        $mockClient = $this->createMock(ClientInterface::class);
+        $mockResponse = new Response(200, [], json_encode([
+            'key' => 'flagKey',
+            'reason' => Reason::TARGETING_MATCH,
+            'variant' => 'default',
+            'value' => true,
+            'metadata' => [
+                'non_scalar_metadata' => [
+                    'inner_metadata' => true,
+                ],
+            ],
+        ]));
+        $mockClient->method('sendRequest')->willReturn($mockResponse);
+
+        $api = new OfrepApi(new Config('https://gofeatureflag.org'));
+        $reflection = new ReflectionClass($api);
+        $property = $reflection->getProperty('client');
+        $property->setValue($api, $mockClient);
+
+        $result = $api->evaluate('flagKey', $this->defaultEvaluationContext);
+        $this->assertInstanceOf(OfrepApiSuccessResponse::class, $result);
+        $this->assertEquals([], $result->getMetadata());
+    }
+
+    public function testShouldNotRaiseAnErrorIf200AndJsonDoesContainTheOptionalKeyMetadataWithAnyNotStringTypeKey()
+    {
+        $mockClient = $this->createMock(ClientInterface::class);
+        $mockResponse = new Response(200, [], json_encode([
+            'key' => 'flagKey',
+            'reason' => Reason::TARGETING_MATCH,
+            'variant' => 'default',
+            'value' => true,
+            'metadata' => [
+                'valid_key' => 'valid value',
+                0 => 'invalid key',
+            ],
+        ]));
+        $mockClient->method('sendRequest')->willReturn($mockResponse);
+
+        $api = new OfrepApi(new Config('https://gofeatureflag.org'));
+        $reflection = new ReflectionClass($api);
+        $property = $reflection->getProperty('client');
+        $property->setValue($api, $mockClient);
+
+        $result = $api->evaluate('flagKey', $this->defaultEvaluationContext);
+
+        $this->assertArrayHasKey('valid_key', $result->getMetadata());
+        $this->assertArrayHasKey('0', $result->getMetadata());
+    }
+
+    // END: Flag metadata test cases
+
     public function testShouldRaiseAnErrorIf400AndJsonDoesNotContainTheRequiredKeysMissingKey()
     {
         $this->expectException(ParseException::class);

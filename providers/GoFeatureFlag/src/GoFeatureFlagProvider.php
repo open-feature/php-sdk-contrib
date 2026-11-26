@@ -93,6 +93,7 @@ class GoFeatureFlagProvider extends AbstractProvider implements Provider
                         "Invalid type for $flagKey, got " . gettype($apiResp->getValue()) . ' expected ' . implode(', ', $allowedClasses),
                     ))
                     ->withValue($defaultValue)
+                    ->withMetadata($apiResp->getMetadata())
                     ->build();
             }
 
@@ -100,6 +101,7 @@ class GoFeatureFlagProvider extends AbstractProvider implements Provider
                 ->withValue($apiResp->getValue())
                 ->withReason($apiResp->getReason())
                 ->withVariant($apiResp->getVariant())
+                ->withMetadata($apiResp->getMetadata())
                 ->build();
         } catch (BaseOfrepException $e) {
             $err = new ResolutionError($e->getErrorCode(), $e->getMessage());

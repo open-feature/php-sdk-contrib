@@ -15,6 +15,7 @@ use function json_last_error;
 
 use const FILTER_NULL_ON_FAILURE;
 use const FILTER_VALIDATE_BOOLEAN;
+use const FILTER_VALIDATE_INT;
 use const JSON_ERROR_NONE;
 
 class TreatmentValidator
@@ -30,8 +31,9 @@ class TreatmentValidator
                     filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE),
                 );
             case FlagValueType::FLOAT:
-            case FlagValueType::INTEGER:
                 return is_numeric($value);
+            case FlagValueType::INTEGER:
+                return filter_var($value, FILTER_VALIDATE_INT) !== false;
             case FlagValueType::OBJECT:
                 /**
                  * @psalm-suppress UnusedFunctionCall

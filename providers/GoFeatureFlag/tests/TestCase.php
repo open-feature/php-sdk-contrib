@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenFeature\Providers\GoFeatureFlag\Test;
 
+use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
