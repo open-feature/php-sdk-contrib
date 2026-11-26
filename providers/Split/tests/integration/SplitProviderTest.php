@@ -174,6 +174,32 @@ class SplitProviderTest extends TestCase
         $this->assertEquals($expectedValue, $actualValue);
     }
 
+    public function testResolvesObjectDefaultValueWhenTreatmentIsNumber(): void
+    {
+        // Given
+        $defaultValue = ['name' => 'default'];
+
+        // When
+        $actualDetails = $this->provider->resolveObjectValue('dev.openfeature.number_object_flag', $defaultValue, $this->evaluationContext);
+
+        // Then
+        $this->assertEquals($defaultValue, $actualDetails->getValue());
+        $this->assertEquals(ErrorCode::TYPE_MISMATCH(), $actualDetails->getError()?->getResolutionErrorCode());
+    }
+
+    public function testResolvesObjectDefaultValueWhenTreatmentIsNull(): void
+    {
+        // Given
+        $defaultValue = ['name' => 'default'];
+
+        // When
+        $actualDetails = $this->provider->resolveObjectValue('dev.openfeature.null_object_flag', $defaultValue, $this->evaluationContext);
+
+        // Then
+        $this->assertEquals($defaultValue, $actualDetails->getValue());
+        $this->assertEquals(ErrorCode::TYPE_MISMATCH(), $actualDetails->getError()?->getResolutionErrorCode());
+    }
+
     public function testCanResolveString(): void
     {
         // Given

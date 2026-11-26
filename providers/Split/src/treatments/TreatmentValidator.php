@@ -8,15 +8,14 @@ use OpenFeature\Providers\Split\errors\InvalidTreatmentTypeException;
 use OpenFeature\interfaces\flags\FlagValueType;
 
 use function filter_var;
+use function is_array;
 use function is_bool;
 use function is_numeric;
 use function json_decode;
-use function json_last_error;
 
 use const FILTER_NULL_ON_FAILURE;
 use const FILTER_VALIDATE_BOOLEAN;
 use const FILTER_VALIDATE_INT;
-use const JSON_ERROR_NONE;
 
 class TreatmentValidator
 {
@@ -35,12 +34,8 @@ class TreatmentValidator
             case FlagValueType::INTEGER:
                 return filter_var($value, FILTER_VALIDATE_INT) !== false;
             case FlagValueType::OBJECT:
-                /**
-                 * @psalm-suppress UnusedFunctionCall
-                 */
-                json_decode($value);
-
-                return json_last_error() === JSON_ERROR_NONE;
+                // Valid JSON scalars such as "42" or "null" are not objects
+                return is_array(json_decode($value, true));
             case FlagValueType::STRING:
                 return true;
             default:

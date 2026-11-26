@@ -12,3 +12,7 @@
     treatment: '3.99'
 - 'dev.openfeature.exponent_int_flag':
     treatment: '1e3'
+- 'dev.openfeature.number_object_flag':
+    treatment: '42'
+- 'dev.openfeature.null_object_flag':
+    treatment: 'null'
