@@ -194,7 +194,7 @@ final class FlagdContext implements Context
         }
 
         Assert::assertNotNull($error);
-        Assert::assertEquals($code, (string) $error->getResolutionErrorCode()->getValue());
+        Assert::assertEquals($code, $error->getResolutionErrorCode()->value);
     }
 
     private function buildContext(): ?EvaluationContextInterface
