@@ -166,7 +166,11 @@ class RoxyHealthcheck:
     return True
   
   def healthcheck(self):
-    return self.client.get_all_flags().is_success()
+    try:
+      return self.client.get_all_flags().is_success()
+    except OSError:
+      # Server not accepting connections yet
+      return False
 
 class LogLevel:
   TRACE = 0
@@ -219,9 +223,6 @@ class Logger:
     
     return LogLevel.INFO
 
-def coalesce(*arg):
-  return reduce(lambda x, y: x if x is not None else y, arg)
-
 def env(key, default_value):
   return os.environ.get(key, default_value)
 
@@ -254,7 +255,9 @@ def main():
   service.setup()
 
   logger.info("Awaiting healthy server...")
-  healthcheck.await_healthy()
+  if (not healthcheck.await_healthy()):
+    logger.error("Roxy server did not become healthy; aborting integration test setup")
+    sys.exit(1)
 
   logger.info("Deleting any existing flags...")
   client.delete_all_flags()

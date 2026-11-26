@@ -7,11 +7,8 @@ namespace OpenFeature\Providers\CloudBees\Test\integration;
 use OpenFeature\Providers\CloudBees\CloudBeesProvider;
 use OpenFeature\Providers\CloudBees\Test\TestCase;
 use OpenFeature\interfaces\provider\Provider;
-use Rox\Core\Consts\Environment;
 use Rox\Server\RoxOptions;
 use Rox\Server\RoxOptionsBuilder;
-
-use function putenv;
 
 class CloudBeesProviderTest extends TestCase
 {
@@ -20,8 +17,6 @@ class CloudBeesProviderTest extends TestCase
 
     protected function setUp(): void
     {
-        putenv(Environment::ENV_VAR_NAME . '=' . Environment::LOCAL);
-
         $apiKey = self::API_KEY;
 
         $instance = CloudBeesProvider::setup(
